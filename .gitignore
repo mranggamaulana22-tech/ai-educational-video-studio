@@ -1,0 +1,26 @@
+# rahasia
+.env
+
+# dependency
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# build dan hasil
+dist/
+build/
+out/
+output/*
+!output/.gitkeep
+
+# file media berat (jangan masuk Git)
+storage/projects/*
+!storage/projects/.gitkeep
+storage/library/**/*.mp3
+storage/library/**/*.wav
+storage/library/**/*.mp4
+
+# sistem
+.DS_Store
+Thumbs.db
