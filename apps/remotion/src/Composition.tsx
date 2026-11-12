@@ -1,75 +1,115 @@
+import React from "react";
 import {
   AbsoluteFill,
-  CalculateMetadataFunction,
+  Audio,
   Composition,
+  Sequence,
   interpolate,
+  staticFile,
   useCurrentFrame,
+  useVideoConfig,
 } from "remotion";
+import { storyboard } from "./storyboard";
+import { Background, CodeScene, SummaryCards, TitleReveal, msToFrames } from "./components";
 
-type Props = {};
+// Registri komponen: storyboard hanya boleh memakai komponen yang terdaftar di sini.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const registry: Record<string, React.FC<any>> = { TitleReveal, CodeScene, SummaryCards };
 
-const calculateMetadata: CalculateMetadataFunction<Props> = () => {
-  return {};
-};
-
-export const MyComposition = () => {
-  return (
-    <Composition
-      id="MyComp"
-      component={MyComponent}
-      durationInFrames={300}
-      fps={30}
-      width={1080}
-      height={1920}
-      calculateMetadata={calculateMetadata}
-    />
-  );
-};
-
-export const MyComponent: React.FC<Props> = () => {
+const SubtitleLine: React.FC<{ text: string }> = ({ text }) => {
   const frame = useCurrentFrame();
-  const opacity = interpolate(frame, [0, 30], [0, 1], {
+  const opacity = interpolate(frame, [0, 6], [0, 1], {
+    extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const y = interpolate(frame, [0, 30], [60, 0], {
-    extrapolateRight: "clamp",
-  });
-
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(160deg, #1f3a5f, #0b1220)",
-        justifyContent: "center",
+        justifyContent: "flex-end",
         alignItems: "center",
+        paddingBottom: 380,
+        paddingLeft: 70,
+        paddingRight: 70,
       }}
     >
       <div
         style={{
           opacity,
-          transform: `translateY(${y}px)`,
-          color: "white",
-          fontSize: 96,
-          fontFamily: "Arial, sans-serif",
-          fontWeight: 700,
           textAlign: "center",
-          padding: 80,
+          fontFamily: "Arial, Helvetica, sans-serif",
+          fontWeight: 800,
+          fontSize: 56,
+          lineHeight: 1.35,
+          color: "white",
         }}
       >
-        Tes Render
-        <br />
-        {frame} / 300
+        <span
+          style={{
+            background: "rgba(0,0,0,0.6)",
+            padding: "6px 22px",
+            borderRadius: 18,
+            boxDecorationBreak: "clone",
+            WebkitBoxDecorationBreak: "clone",
+          }}
+        >
+          {text}
+        </span>
       </div>
-      <div
-        style={{
-          position: "absolute",
-          bottom: 300,
-          width: 200,
-          height: 200,
-          borderRadius: 40,
-          background: "#4da3ff",
-          transform: `rotate(${frame * 2}deg)`,
-        }}
-      />
     </AbsoluteFill>
+  );
+};
+
+const SubtitleTrack: React.FC = () => {
+  const { fps } = useVideoConfig();
+  return (
+    <>
+      {storyboard.subtitles.map((s) => {
+        const from = msToFrames(s.startMs, fps);
+        const dur = Math.max(1, msToFrames(s.endMs, fps) - from);
+        return (
+          <Sequence key={s.id} from={from} durationInFrames={dur}>
+            <SubtitleLine text={s.text} />
+          </Sequence>
+        );
+      })}
+    </>
+  );
+};
+
+const VideoRoot: React.FC = () => {
+  const { fps } = useVideoConfig();
+  return (
+    <AbsoluteFill>
+      <Background />
+      <Audio src={staticFile(storyboard.audio.src)} />
+      {storyboard.scenes.map((scene) => {
+        const Comp = registry[scene.component];
+        if (!Comp) {
+          throw new Error(`Komponen belum terdaftar: ${scene.component}`);
+        }
+        const from = msToFrames(scene.startMs, fps);
+        const dur = msToFrames(scene.startMs + scene.durationMs, fps) - from;
+        return (
+          <Sequence key={scene.id} from={from} durationInFrames={dur}>
+            <Comp {...scene.props} />
+          </Sequence>
+        );
+      })}
+      <SubtitleTrack />
+    </AbsoluteFill>
+  );
+};
+
+export const MyComposition: React.FC = () => {
+  const { video } = storyboard;
+  return (
+    <Composition
+      id="HtmlCssJs"
+      component={VideoRoot}
+      durationInFrames={Math.round((video.durationMs * video.fps) / 1000)}
+      fps={video.fps}
+      width={video.width}
+      height={video.height}
+    />
   );
 };
