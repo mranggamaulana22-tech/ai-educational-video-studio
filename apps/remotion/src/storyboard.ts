@@ -1,5 +1,3 @@
-import data from "./storyboards/html-css-js.json";
-
 export type Subtitle = { id: string; startMs: number; endMs: number; text: string };
 
 export type Scene = {
@@ -17,5 +15,3 @@ export type Storyboard = {
   scenes: Scene[];
   subtitles: Subtitle[];
 };
-
-export const storyboard = data as Storyboard;

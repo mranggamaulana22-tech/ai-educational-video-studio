@@ -11,18 +11,23 @@
 │       ├── .gitignore
 │       ├── .prettierrc
 │       ├── eslint.config.mjs
-│       ├── out/
-│       │   └── test.mp4
 │       ├── package-lock.json
 │       ├── package.json
-│       ├── README.md
-│       ├── remotion.config.ts
+│       ├── public/
+│       │   └── audio/
+│       │       └── voiceover-v1.wav
 │       ├── src/
 │       │   ├── Composition.tsx
 │       │   ├── Root.tsx
 │       │   ├── components.tsx
 │       │   ├── index.ts
-│       │   └── storyboard.ts
+│       │   ├── storyboard.ts
+│       │   └── storyboards/
+│       │       └── html-css-js.json
+│       ├── scripts/
+│       │   └── validate-storyboard.mjs
+│       ├── remotion.config.ts
+│       ├── README.md
 │       └── tsconfig.json
 ├── docs/
 │   └── CONTEXT.md
@@ -52,6 +57,4 @@
     │   └── sound-effects/
     │       └── .gitkeep
     └── projects/
-        └── html-css-js/
-            └── audio/
-                └── voiceover-v1.wav
+        └── .gitkeep

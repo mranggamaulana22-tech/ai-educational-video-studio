@@ -2,14 +2,13 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
-  Composition,
   Sequence,
   interpolate,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { storyboard } from "./storyboard";
+import type { Storyboard, Subtitle } from "./storyboard";
 import { Background, CodeScene, SummaryCards, TitleReveal, msToFrames } from "./components";
 
 // Registri komponen: storyboard hanya boleh memakai komponen yang terdaftar di sini.
@@ -59,11 +58,11 @@ const SubtitleLine: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const SubtitleTrack: React.FC = () => {
+const SubtitleTrack: React.FC<{ subtitles: Subtitle[] }> = ({ subtitles }) => {
   const { fps } = useVideoConfig();
   return (
     <>
-      {storyboard.subtitles.map((s) => {
+      {subtitles.map((s) => {
         const from = msToFrames(s.startMs, fps);
         const dur = Math.max(1, msToFrames(s.endMs, fps) - from);
         return (
@@ -76,13 +75,14 @@ const SubtitleTrack: React.FC = () => {
   );
 };
 
-const VideoRoot: React.FC = () => {
+// Props video = isi file storyboard JSON (langsung, tanpa dibungkus).
+export const VideoRoot: React.FC<Storyboard> = ({ audio, scenes, subtitles }) => {
   const { fps } = useVideoConfig();
   return (
     <AbsoluteFill>
       <Background />
-      <Audio src={staticFile(storyboard.audio.src)} />
-      {storyboard.scenes.map((scene) => {
+      <Audio src={staticFile(audio.src)} />
+      {scenes.map((scene) => {
         const Comp = registry[scene.component];
         if (!Comp) {
           throw new Error(`Komponen belum terdaftar: ${scene.component}`);
@@ -95,21 +95,7 @@ const VideoRoot: React.FC = () => {
           </Sequence>
         );
       })}
-      <SubtitleTrack />
+      <SubtitleTrack subtitles={subtitles} />
     </AbsoluteFill>
-  );
-};
-
-export const MyComposition: React.FC = () => {
-  const { video } = storyboard;
-  return (
-    <Composition
-      id="HtmlCssJs"
-      component={VideoRoot}
-      durationInFrames={Math.round((video.durationMs * video.fps) / 1000)}
-      fps={video.fps}
-      width={video.width}
-      height={video.height}
-    />
   );
 };
