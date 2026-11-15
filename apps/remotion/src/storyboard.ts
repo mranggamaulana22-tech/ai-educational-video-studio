@@ -6,11 +6,19 @@ export type Scene = {
   durationMs: number;
   component: string;
   props: Record<string, unknown>;
+  transition?: "none" | "fade" | "slide" | "zoom" | "wipe";
 };
 
 export type Storyboard = {
   schemaVersion: string;
-  video: { title: string; width: number; height: number; fps: number; durationMs: number };
+  video: {
+    title: string;
+    width: number;
+    height: number;
+    fps: number;
+    durationMs: number;
+    theme?: "classic" | "v2";
+  };
   audio: { src: string; durationMs: number };
   scenes: Scene[];
   subtitles: Subtitle[];

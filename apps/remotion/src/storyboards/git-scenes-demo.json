@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.1",
+  "video": {
+    "title": "Uji ilustrasi Git",
+    "theme": "v2",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 24000
+  },
+  "audio": { "src": "audio/voiceover-v2.wav", "durationMs": 24000 },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 8000,
+      "component": "FileChaos",
+      "transition": "fade",
+      "props": {
+        "files": ["final", "final_revisi", "final_banget", "final_fix"],
+        "cuesMs": [600, 1700, 2800, 3900]
+      }
+    },
+    {
+      "id": "scene-002",
+      "startMs": 8000,
+      "durationMs": 8000,
+      "component": "CommitTimeline",
+      "transition": "slide",
+      "props": {
+        "labels": ["v1", "v2", "v3", "v4", "v5"],
+        "cuesMs": [400, 1400, 2400, 3400, 4400],
+        "rewindMs": 6000,
+        "rewindTo": 2,
+        "rewindLabel": "Kembali!"
+      }
+    },
+    {
+      "id": "scene-003",
+      "startMs": 16000,
+      "durationMs": 8000,
+      "component": "CloudSync",
+      "transition": "zoom",
+      "props": {
+        "uploadMs": [1500, 3000],
+        "teamMs": [4500, 5200],
+        "downloadMs": [5800, 5900, 6700]
+      }
+    }
+  ],
+  "subtitles": []
+}

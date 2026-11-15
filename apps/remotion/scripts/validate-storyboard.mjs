@@ -42,8 +42,41 @@ const COMPONENTS = {
     headline: "string",
     headlineMs: "number",
   },
+  KeyPoints: {
+    badge: "string",
+    accent: "string",
+    heading: "string",
+    points: "points",
+    revealMs: "number[]",
+  },
+  IconShowcase: {
+    names: "string[]?",
+  },
+  FileChaos: { files: "string[]", cuesMs: "number[]" },
+  CommitTimeline: {
+    labels: "string[]",
+    cuesMs: "number[]",
+    rewindMs: "number",
+    rewindTo: "number",
+    rewindLabel: "string?",
+    headLabel: "string?",
+  },
+  CloudSync: {
+    uploadMs: "number[]",
+    teamMs: "number[]",
+    downloadMs: "number[]",
+    laptopMs: "number?",
+    cloudMs: "number?",
+  },
+  IconSummary: {
+    items: "iconItems",
+    revealMs: "number[]",
+    headline: "string",
+    headlineMs: "number",
+  },
 };
 
+const ICON_NAMES = ["file", "folder", "cloud", "laptop", "commit", "branch", "check", "clock", "lock", "people", "code", "gear", "arrow", "bug"];
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const isStr = (v) => typeof v === "string" && v.trim().length > 0;
 
@@ -78,6 +111,20 @@ function checkValue(value, spec, where) {
     case "number[]":
       if (!Array.isArray(value) || !value.every(isNum)) {
         err(`${where}: harus berupa daftar angka`);
+      }
+      break;
+    case "iconItems":
+      if (
+        !Array.isArray(value) ||
+        value.length === 0 ||
+        !value.every((it) => it && isStr(it.label) && isStr(it.text) && isStr(it.color) && ICON_NAMES.includes(it.icon))
+      ) {
+        err(`${where}: setiap item harus punya icon (${ICON_NAMES.join(", ")}), label, text, dan color`);
+      }
+      break;
+    case "points":
+      if (!Array.isArray(value) || value.length === 0 || !value.every((p) => p && isStr(p.text))) {
+        err(`${where}: setiap poin harus punya text`);
       }
       break;
     case "cards":
@@ -143,6 +190,9 @@ scenes.forEach((s, i) => {
 
   if (!isNum(s.startMs) || s.startMs < 0) err(`${w}: startMs harus angka >= 0`);
   if (!isNum(s.durationMs) || s.durationMs <= 0) err(`${w}: durationMs harus angka > 0`);
+  if (s.transition !== undefined && !["none", "fade", "slide", "zoom", "wipe"].includes(s.transition)) {
+    err(`${w}: transition "${s.transition}" tidak dikenal. Pilihan: none, fade, slide, zoom, wipe`);
+  }
 
   if (isNum(s.startMs) && isNum(s.durationMs)) {
     if (s.startMs !== expectedStart) {
@@ -181,6 +231,55 @@ scenes.forEach((s, i) => {
       if (start + props.typeMs > s.durationMs) {
         warn(`${w}: animasi mengetik baru selesai setelah scene berakhir`);
       }
+    }
+  }
+  if (s.component === "KeyPoints") {
+    if (
+      Array.isArray(props.points) &&
+      Array.isArray(props.revealMs) &&
+      props.points.length !== props.revealMs.length
+    ) {
+      err(`${w}: jumlah revealMs (${props.revealMs.length}) harus sama dengan jumlah points (${props.points.length})`);
+    }
+    if (
+      Array.isArray(props.revealMs) &&
+      props.revealMs.some((t) => isNum(t) && isNum(s.durationMs) && t >= s.durationMs)
+    ) {
+      err(`${w}: ada waktu kemunculan yang melewati durasi scene (${s.durationMs} ms)`);
+    }
+  }
+  if (["FileChaos", "CommitTimeline", "CloudSync"].includes(s.component)) {
+    const times = [];
+    for (const k of ["cuesMs", "uploadMs", "teamMs", "downloadMs"]) {
+      if (Array.isArray(props[k])) times.push(...props[k]);
+    }
+    for (const k of ["rewindMs", "laptopMs", "cloudMs"]) {
+      if (isNum(props[k])) times.push(props[k]);
+    }
+    if (times.some((t) => isNum(t) && isNum(s.durationMs) && t >= s.durationMs)) {
+      err(`${w}: ada waktu kemunculan yang melewati durasi scene (${s.durationMs} ms)`);
+    }
+  }
+  if (s.component === "FileChaos" && Array.isArray(props.files) && Array.isArray(props.cuesMs)) {
+    if (props.files.length !== props.cuesMs.length) {
+      err(`${w}: jumlah cuesMs (${props.cuesMs.length}) harus sama dengan jumlah files (${props.files.length})`);
+    }
+  }
+  if (s.component === "CommitTimeline" && Array.isArray(props.labels) && Array.isArray(props.cuesMs)) {
+    if (props.labels.length !== props.cuesMs.length) {
+      err(`${w}: jumlah cuesMs (${props.cuesMs.length}) harus sama dengan jumlah labels (${props.labels.length})`);
+    }
+    if (isNum(props.rewindTo) && (props.rewindTo < 0 || props.rewindTo >= props.labels.length)) {
+      err(`${w}: rewindTo harus antara 0 dan ${props.labels.length - 1}`);
+    }
+  }
+  if (s.component === "IconSummary") {
+    if (Array.isArray(props.items) && Array.isArray(props.revealMs) && props.items.length !== props.revealMs.length) {
+      err(`${w}: jumlah revealMs (${props.revealMs.length}) harus sama dengan jumlah items (${props.items.length})`);
+    }
+    const times = [...(Array.isArray(props.revealMs) ? props.revealMs : []), props.headlineMs];
+    if (times.some((t) => isNum(t) && isNum(s.durationMs) && t >= s.durationMs)) {
+      err(`${w}: ada waktu kemunculan yang melewati durasi scene (${s.durationMs} ms)`);
     }
   }
   if (s.component === "SummaryCards") {

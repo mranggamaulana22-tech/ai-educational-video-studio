@@ -1,0 +1,113 @@
+{
+    "schemaVersion":  "1.1",
+    "video":  {
+                  "title":  "Git dan GitHub",
+                  "theme":  "v2",
+                  "width":  1080,
+                  "height":  1920,
+                  "fps":  30,
+                  "durationMs":  43960
+              },
+    "audio":  {
+                  "src":  "audio/voiceover-v2.wav",
+                  "durationMs":  43960
+              },
+    "scenes":  [
+                   {
+                       "props":  {
+                                     "names":  [
+                                                   "file",
+                                                   "folder",
+                                                   "clock",
+                                                   "cloud",
+                                                   "laptop",
+                                                   "people"
+                                               ]
+                                 },
+                       "component":  "IconShowcase",
+                       "startMs":  0,
+                       "id":  "scene-001",
+                       "durationMs":  43960
+                   }
+               ],
+    "subtitles":  [
+                      {
+                          "id":  "sub-001",
+                          "startMs":  273,
+                          "endMs":  5738,
+                          "text":  "Pernah ngerjain tugas, lalu file-nya jadi \"final\", \"final revisi\", \"final banget\"?"
+                      },
+                      {
+                          "id":  "sub-002",
+                          "startMs":  6736,
+                          "endMs":  8626,
+                          "text":  "Git itu penyelamatnya."
+                      },
+                      {
+                          "id":  "sub-003",
+                          "startMs":  9130,
+                          "endMs":  12091,
+                          "text":  "Bayangkan Git seperti fitur save di game."
+                      },
+                      {
+                          "id":  "sub-004",
+                          "startMs":  12393,
+                          "endMs":  15876,
+                          "text":  "Setiap kali kamu menyimpan perubahan, Git mencatat satu titik."
+                      },
+                      {
+                          "id":  "sub-005",
+                          "startMs":  16400,
+                          "endMs":  17146,
+                          "text":  "Kalau ada yang rusak,"
+                      },
+                      {
+                          "id":  "sub-006",
+                          "startMs":  17564,
+                          "endMs":  19498,
+                          "text":  "kamu tinggal kembali ke titik sebelumnya."
+                      },
+                      {
+                          "id":  "sub-007",
+                          "startMs":  20126,
+                          "endMs":  23326,
+                          "text":  "Tapi semua catatan itu masih tersimpan di laptopmu sendiri."
+                      },
+                      {
+                          "id":  "sub-008",
+                          "startMs":  23785,
+                          "endMs":  25338,
+                          "text":  "Di sinilah GitHub berperan."
+                      },
+                      {
+                          "id":  "sub-009",
+                          "startMs":  25887,
+                          "endMs":  29185,
+                          "text":  "GitHub adalah tempat menyimpan proyek Git di internet."
+                      },
+                      {
+                          "id":  "sub-010",
+                          "startMs":  29610,
+                          "endMs":  33436,
+                          "text":  "Jadi ada cadangan, dan kamu bisa mengerjakannya bareng orang lain."
+                      },
+                      {
+                          "id":  "sub-011",
+                          "startMs":  33854,
+                          "endMs":  36600,
+                          "text":  "Singkatnya, Git untuk mencatat riwayat perubahan,"
+                      },
+                      {
+                          "id":  "sub-012",
+                          "startMs":  36600,
+                          "endMs":  39444,
+                          "text":  "GitHub untuk menyimpan dan berbagi."
+                      },
+                      {
+                          "id":  "sub-013",
+                          "startMs":  39933,
+                          "endMs":  43570,
+                          "text":  "Dua alat sederhana yang bikin kerja tim programmer jauh lebih aman."
+                      }
+                  ]
+}

@@ -9,11 +9,16 @@ import {
   useVideoConfig,
 } from "remotion";
 import type { Storyboard, Subtitle } from "./storyboard";
-import { Background, CodeScene, SummaryCards, TitleReveal, msToFrames } from "./components";
+import { Background, CodeScene, KeyPoints, SummaryCards, TitleReveal, msToFrames } from "./components";
+import { Backdrop } from "./Backdrop";
+import { IconShowcase } from "./Icons";
+import { KineticTrack } from "./Kinetic";
+import { CloudSync, CommitTimeline, FileChaos, IconSummary } from "./GitScenes";
+import { SceneTransition, TRANSITION_OVERLAP } from "./Transition";
 
 // Registri komponen: storyboard hanya boleh memakai komponen yang terdaftar di sini.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const registry: Record<string, React.FC<any>> = { TitleReveal, CodeScene, SummaryCards };
+const registry: Record<string, React.FC<any>> = { TitleReveal, CodeScene, SummaryCards, KeyPoints, IconShowcase, FileChaos, CommitTimeline, CloudSync, IconSummary };
 
 const SubtitleLine: React.FC<{ text: string }> = ({ text }) => {
   const frame = useCurrentFrame();
@@ -76,26 +81,40 @@ const SubtitleTrack: React.FC<{ subtitles: Subtitle[] }> = ({ subtitles }) => {
 };
 
 // Props video = isi file storyboard JSON (langsung, tanpa dibungkus).
-export const VideoRoot: React.FC<Storyboard> = ({ audio, scenes, subtitles }) => {
+export const VideoRoot: React.FC<Storyboard> = ({ video, audio, scenes, subtitles }) => {
   const { fps } = useVideoConfig();
   return (
     <AbsoluteFill>
-      <Background />
+      {video.theme === "v2" ? <Backdrop /> : <Background />}
       <Audio src={staticFile(audio.src)} />
-      {scenes.map((scene) => {
+      {scenes.map((scene, idx) => {
         const Comp = registry[scene.component];
         if (!Comp) {
           throw new Error(`Komponen belum terdaftar: ${scene.component}`);
         }
         const from = msToFrames(scene.startMs, fps);
         const dur = msToFrames(scene.startMs + scene.durationMs, fps) - from;
+        const t = scene.transition ?? "none";
+
+        if (t === "none") {
+          return (
+            <Sequence key={scene.id} from={from} durationInFrames={dur}>
+              <Comp {...scene.props} />
+            </Sequence>
+          );
+        }
+
+        const isLast = idx === scenes.length - 1;
+        const total = isLast ? dur : dur + TRANSITION_OVERLAP;
         return (
-          <Sequence key={scene.id} from={from} durationInFrames={dur}>
-            <Comp {...scene.props} />
+          <Sequence key={scene.id} from={from} durationInFrames={total}>
+            <SceneTransition type={t} total={total} hasOut={!isLast}>
+              <Comp {...scene.props} />
+            </SceneTransition>
           </Sequence>
         );
       })}
-      <SubtitleTrack subtitles={subtitles} />
+      {video.theme === "v2" ? <KineticTrack subtitles={subtitles} /> : <SubtitleTrack subtitles={subtitles} />}
     </AbsoluteFill>
   );
 };

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.1",
+  "video": {
+    "title": "Uji transisi",
+    "theme": "v2",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 24000
+  },
+  "audio": { "src": "audio/voiceover-v2.wav", "durationMs": 24000 },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 6000,
+      "component": "IconShowcase",
+      "transition": "fade",
+      "props": { "names": ["file", "folder", "cloud"] }
+    },
+    {
+      "id": "scene-002",
+      "startMs": 6000,
+      "durationMs": 6000,
+      "component": "IconShowcase",
+      "transition": "slide",
+      "props": { "names": ["laptop", "people", "lock"] }
+    },
+    {
+      "id": "scene-003",
+      "startMs": 12000,
+      "durationMs": 6000,
+      "component": "IconShowcase",
+      "transition": "zoom",
+      "props": { "names": ["commit", "branch", "code"] }
+    },
+    {
+      "id": "scene-004",
+      "startMs": 18000,
+      "durationMs": 6000,
+      "component": "IconShowcase",
+      "transition": "wipe",
+      "props": { "names": ["check", "clock", "arrow", "bug", "gear"] }
+    }
+  ],
+  "subtitles": []
+}

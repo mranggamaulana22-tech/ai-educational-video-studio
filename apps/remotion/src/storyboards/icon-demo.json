@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.1",
+  "video": {
+    "title": "Uji ikon",
+    "theme": "v2",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 6000
+  },
+  "audio": { "src": "audio/voiceover-v2.wav", "durationMs": 6000 },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 6000,
+      "component": "IconShowcase",
+      "props": {}
+    }
+  ],
+  "subtitles": []
+}

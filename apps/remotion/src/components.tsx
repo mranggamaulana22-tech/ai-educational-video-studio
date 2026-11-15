@@ -311,3 +311,87 @@ export const SummaryCards: React.FC<{
     </AbsoluteFill>
   );
 };
+
+type Point = { text: string; color?: string };
+
+export const KeyPoints: React.FC<{
+  badge: string;
+  accent: string;
+  heading: string;
+  points: Point[];
+  revealMs: number[];
+}> = ({ badge, accent, heading, points, revealMs }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const fade = interpolate(frame, [0, 10], [0, 1], clamp);
+
+  return (
+    <AbsoluteFill style={{ opacity: fade, fontFamily: FONT, alignItems: "center" }}>
+      <div style={{ marginTop: 170, textAlign: "center" }}>
+        <div
+          style={{
+            display: "inline-block",
+            background: accent,
+            color: "#0b1220",
+            fontSize: 84,
+            fontWeight: 800,
+            padding: "6px 44px",
+            borderRadius: 28,
+          }}
+        >
+          {badge}
+        </div>
+        <div style={{ color: "white", fontSize: 54, marginTop: 24, fontWeight: 600 }}>
+          {heading}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 90, display: "flex", flexDirection: "column", gap: 36 }}>
+        {points.map((p, i) => {
+          const f = msToFrames(revealMs[i] ?? 0, fps);
+          const s = spring({ frame: Math.max(0, frame - f), fps, config: { damping: 16 } });
+          const op = interpolate(frame, [f, f + 8], [0, 1], clamp);
+          return (
+            <div
+              key={p.text}
+              style={{
+                width: 920,
+                minHeight: 200,
+                borderRadius: 32,
+                background: "#16263d",
+                border: `3px solid ${p.color ?? accent}`,
+                display: "flex",
+                alignItems: "center",
+                gap: 36,
+                padding: "0 48px",
+                opacity: op,
+                transform: `translateX(${(1 - s) * 120}px)`,
+              }}
+            >
+              <div
+                style={{
+                  width: 90,
+                  height: 90,
+                  borderRadius: 45,
+                  background: p.color ?? accent,
+                  color: "#0b1220",
+                  fontSize: 54,
+                  fontWeight: 800,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                {i + 1}
+              </div>
+              <div style={{ color: "white", fontSize: 52, fontWeight: 600, lineHeight: 1.25 }}>
+                {p.text}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </AbsoluteFill>
+  );
+};
