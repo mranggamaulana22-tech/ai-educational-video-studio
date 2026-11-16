@@ -1,0 +1,229 @@
+{
+  "schemaVersion": "1.1",
+  "video": {
+    "title": "Software Engineer vs Software Developer",
+    "theme": "v2",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 63488,
+    "badge": {
+      "day": "HARI 1/15",
+      "course": "Intro to Software Engineering"
+    }
+  },
+  "audio": {
+    "src": "audio/engineer-vs-developer.wav",
+    "durationMs": 63488
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 8410,
+      "component": "HookScene",
+      "transition": "fade",
+      "props": {}
+    },
+    {
+      "id": "scene-002",
+      "startMs": 8410,
+      "durationMs": 8040,
+      "component": "JobScene",
+      "transition": "slide",
+      "props": {}
+    },
+    {
+      "id": "scene-003",
+      "startMs": 16450,
+      "durationMs": 12350,
+      "component": "RestaurantScene",
+      "transition": "zoom",
+      "props": {}
+    },
+    {
+      "id": "scene-004",
+      "startMs": 28800,
+      "durationMs": 6420,
+      "component": "DeveloperScene",
+      "transition": "fade",
+      "props": {}
+    },
+    {
+      "id": "scene-005",
+      "startMs": 35220,
+      "durationMs": 7180,
+      "component": "CompareScene",
+      "transition": "slide",
+      "props": {}
+    },
+    {
+      "id": "scene-006",
+      "startMs": 42400,
+      "durationMs": 5450,
+      "component": "VennScene",
+      "transition": "zoom",
+      "props": {}
+    },
+    {
+      "id": "scene-007",
+      "startMs": 47850,
+      "durationMs": 2230,
+      "component": "StrikeScene",
+      "transition": "wipe",
+      "props": {}
+    },
+    {
+      "id": "scene-008",
+      "startMs": 50080,
+      "durationMs": 3530,
+      "component": "LaptopScene",
+      "transition": "fade",
+      "props": {}
+    },
+    {
+      "id": "scene-009",
+      "startMs": 53610,
+      "durationMs": 5430,
+      "component": "SdlcScene",
+      "transition": "slide",
+      "props": {}
+    },
+    {
+      "id": "scene-010",
+      "startMs": 59040,
+      "durationMs": 4448,
+      "component": "CtaScene",
+      "transition": "zoom",
+      "props": {}
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "sub-001",
+      "startMs": 250,
+      "endMs": 2890,
+      "text": "Hari pertama belajar coding, gue bingung."
+    },
+    {
+      "id": "sub-002",
+      "startMs": 3300,
+      "endMs": 6210,
+      "text": "{{teal:Software Engineer}} sama {{orange:Software Developer}} itu beda,"
+    },
+    {
+      "id": "sub-003",
+      "startMs": 6470,
+      "endMs": 7990,
+      "text": "atau cuma beda nama doang?"
+    },
+    {
+      "id": "sub-004",
+      "startMs": 8410,
+      "endMs": 10640,
+      "text": "Di lowongan kerja dua-duanya sering muncul."
+    },
+    {
+      "id": "sub-005",
+      "startMs": 11340,
+      "endMs": 14000,
+      "text": "Dan ternyata, di banyak perusahaan,"
+    },
+    {
+      "id": "sub-006",
+      "startMs": 14000,
+      "endMs": 15850,
+      "text": "dua istilah ini memang dipakai gantian."
+    },
+    {
+      "id": "sub-007",
+      "startMs": 16450,
+      "endMs": 18790,
+      "text": "Tapi kalau dibedah, ada sedikit bedanya."
+    },
+    {
+      "id": "sub-008",
+      "startMs": 19470,
+      "endMs": 20800,
+      "text": "Bayangin lu bangun restoran."
+    },
+    {
+      "id": "sub-009",
+      "startMs": 21320,
+      "endMs": 23770,
+      "text": "{{teal:Software Engineer}} mikirin keseluruhan sistemnya:"
+    },
+    {
+      "id": "sub-010",
+      "startMs": 24240,
+      "endMs": 28600,
+      "text": "alur pesanan, kerja dapur, sampai tetap lancar pas lagi rame."
+    },
+    {
+      "id": "sub-011",
+      "startMs": 28980,
+      "endMs": 31460,
+      "text": "{{orange:Software Developer}} fokus membangun bagiannya,"
+    },
+    {
+      "id": "sub-012",
+      "startMs": 31660,
+      "endMs": 34850,
+      "text": "misalnya sistem pemesanan atau fitur pembayaran."
+    },
+    {
+      "id": "sub-013",
+      "startMs": 35220,
+      "endMs": 38620,
+      "text": "Jadi {{teal:Engineer}} mikirin gimana sistem dirancang biar kuat."
+    },
+    {
+      "id": "sub-014",
+      "startMs": 38960,
+      "endMs": 41940,
+      "text": "{{orange:Developer}} fokus membangun dan memastikan fiturnya jalan."
+    },
+    {
+      "id": "sub-015",
+      "startMs": 42400,
+      "endMs": 44060,
+      "text": "Tapi ini gambaran umum ya,"
+    },
+    {
+      "id": "sub-016",
+      "startMs": 44360,
+      "endMs": 47410,
+      "text": "di dunia kerja tanggung jawabnya sering tumpang tindih."
+    },
+    {
+      "id": "sub-017",
+      "startMs": 47850,
+      "endMs": 49800,
+      "text": "Jadi nggak usah pusing soal title dulu."
+    },
+    {
+      "id": "sub-018",
+      "startMs": 50080,
+      "endMs": 53310,
+      "text": "Yang penting belajar bikin software yang beneran bisa dipakai orang."
+    },
+    {
+      "id": "sub-019",
+      "startMs": 53610,
+      "endMs": 55450,
+      "text": "Besok kita bahas SDLC,"
+    },
+    {
+      "id": "sub-020",
+      "startMs": 55640,
+      "endMs": 58760,
+      "text": "tahapan bikin software dari ide sampai siap dipakai."
+    },
+    {
+      "id": "sub-021",
+      "startMs": 59040,
+      "endMs": 61100,
+      "text": "{{orange:Follow}} kalau mau belajar coding bareng dari nol!"
+    }
+  ]
+}

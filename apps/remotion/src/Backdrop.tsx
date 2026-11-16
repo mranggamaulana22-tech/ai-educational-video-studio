@@ -2,36 +2,48 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import { theme } from "./theme";
 
-// Latar penuh layar: gradasi gelap, titik-titik halus, dan dua cahaya yang bergeser pelan.
+// Simbol kode samar yang melayang pelan di latar.
+const TOKENS = [
+  { s: "{ }", x: 0.1, y: 0.07, r: -8, size: 96 },
+  { s: ".css", x: 0.62, y: 0.18, r: 6, size: 80 },
+  { s: "<p>", x: 0.06, y: 0.5, r: 10, size: 84 },
+  { s: "( )", x: 0.8, y: 0.45, r: -6, size: 100 },
+  { s: ".js", x: 0.2, y: 0.82, r: 5, size: 84 },
+  { s: "#", x: 0.74, y: 0.78, r: -10, size: 96 },
+  { s: "[ ]", x: 0.45, y: 0.93, r: 4, size: 84 },
+];
+
 export const Backdrop: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
   const t = frame / fps;
-  const x1 = width * (0.25 + 0.08 * Math.sin(t / 3));
-  const y1 = height * (0.3 + 0.05 * Math.cos(t / 4));
-  const x2 = width * (0.78 + 0.07 * Math.cos(t / 3.5));
-  const y2 = height * (0.72 + 0.05 * Math.sin(t / 5));
 
   return (
-    <AbsoluteFill
-      style={{ background: `linear-gradient(180deg, ${theme.colors.bg1} 0%, ${theme.colors.bg0} 100%)` }}
-    >
+    <AbsoluteFill style={{ background: theme.colors.bg0 }}>
       <AbsoluteFill
         style={{
-          backgroundImage: `radial-gradient(circle, ${theme.colors.line} 2px, transparent 2.5px)`,
-          backgroundSize: "60px 60px",
-          opacity: 0.55,
+          backgroundImage: `radial-gradient(circle, ${theme.colors.line} 2.5px, transparent 3px)`,
+          backgroundSize: "48px 48px",
         }}
       />
-      <AbsoluteFill
-        style={{
-          background: `radial-gradient(700px circle at ${x1}px ${y1}px, rgba(53,224,255,0.14), transparent 70%),
-                       radial-gradient(800px circle at ${x2}px ${y2}px, rgba(255,208,77,0.10), transparent 70%)`,
-        }}
-      />
-      <AbsoluteFill
-        style={{ background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)" }}
-      />
+      {TOKENS.map((k, i) => (
+        <div
+          key={k.s}
+          style={{
+            position: "absolute",
+            left: k.x * width,
+            top: k.y * height + Math.sin(t / (2.5 + i * 0.4) + i) * 16,
+            transform: `rotate(${k.r}deg)`,
+            fontFamily: theme.font.mono,
+            fontWeight: 700,
+            fontSize: k.size,
+            color: theme.colors.ink,
+            opacity: 0.06,
+          }}
+        >
+          {k.s}
+        </div>
+      ))}
     </AbsoluteFill>
   );
 };

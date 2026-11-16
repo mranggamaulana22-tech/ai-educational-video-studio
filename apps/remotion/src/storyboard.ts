@@ -18,6 +18,8 @@ export type Storyboard = {
     fps: number;
     durationMs: number;
     theme?: "classic" | "v2";
+    // Lencana kecil di atas layar, mis. "HARI 1/15 | Intro to Software Engineering".
+    badge?: { day: string; course: string };
   };
   audio: { src: string; durationMs: number };
   scenes: Scene[];
