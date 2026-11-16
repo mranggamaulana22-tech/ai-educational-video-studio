@@ -74,7 +74,39 @@ const COMPONENTS = {
     headline: "string",
     headlineMs: "number",
   },
+  // Scene gaya fun (semua props opsional; cuesMs = waktu muncul relatif awal scene).
+  HookScene: {
+    line1: "string?",
+    line2: "string?",
+    labelA: "string?",
+    labelB: "string?",
+    cuesMs: "number[]?",
+  },
+  JobScene: { label: "string?", cuesMs: "number[]?" },
+  RestaurantScene: { cuesMs: "number[]?" },
+  DeveloperScene: { cuesMs: "number[]?" },
+  CompareScene: { cuesMs: "number[]?" },
+  VennScene: { cuesMs: "number[]?" },
+  StrikeScene: { cuesMs: "number[]?" },
+  LaptopScene: { cuesMs: "number[]?" },
+  SdlcScene: { cuesMs: "number[]?" },
+  CtaScene: { cuesMs: "number[]?" },
 };
+
+const FUN_SCENES = [
+  "HookScene",
+  "JobScene",
+  "RestaurantScene",
+  "DeveloperScene",
+  "CompareScene",
+  "VennScene",
+  "StrikeScene",
+  "LaptopScene",
+  "SdlcScene",
+  "CtaScene",
+];
+const SUBTITLE_COLORS = ["teal", "orange", "violet", "red"];
+const MAX_SCENE_MS = 8000; // ritme: scene lebih lama dari ini terasa membosankan
 
 const ICON_NAMES = ["file", "folder", "cloud", "laptop", "commit", "branch", "check", "clock", "lock", "people", "code", "gear", "arrow", "bug"];
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
@@ -163,6 +195,10 @@ if (!isNum(video.durationMs) || video.durationMs <= 0) {
   err(`Durasi video ${video.durationMs} ms melebihi batas ${MAX_DURATION_MS} ms (90 detik)`);
 }
 
+if (video.badge !== undefined && !(video.badge && isStr(video.badge.day) && isStr(video.badge.course))) {
+  err("video.badge harus punya day dan course (teks tidak kosong)");
+}
+
 // 2. Audio
 if (!isStr(sb.audio?.src)) {
   err("audio.src wajib diisi");
@@ -248,6 +284,14 @@ scenes.forEach((s, i) => {
       err(`${w}: ada waktu kemunculan yang melewati durasi scene (${s.durationMs} ms)`);
     }
   }
+  if (FUN_SCENES.includes(s.component) && Array.isArray(props.cuesMs)) {
+    if (props.cuesMs.some((t) => isNum(t) && isNum(s.durationMs) && t >= s.durationMs)) {
+      err(`${w}: ada waktu kemunculan (cuesMs) yang melewati durasi scene (${s.durationMs} ms)`);
+    }
+  }
+  if (isNum(s.durationMs) && s.durationMs > MAX_SCENE_MS) {
+    warn(`${w}: durasi ${s.durationMs} ms melebihi ${MAX_SCENE_MS} ms; pertimbangkan dipecah jadi dua scene`);
+  }
   if (["FileChaos", "CommitTimeline", "CloudSync"].includes(s.component)) {
     const times = [];
     for (const k of ["cuesMs", "uploadMs", "teamMs", "downloadMs"]) {
@@ -297,7 +341,7 @@ scenes.forEach((s, i) => {
   }
 });
 
-if (scenes.length > 0 && isNum(video.durationMs) && Math.abs(expectedStart - video.durationMs) > 50) {
+if (scenes.length > 0 && isNum(video.durationMs) && Math.abs(expectedStart - video.durationMs) > 50){
   err(`Total durasi scene (${expectedStart} ms) tidak sama dengan durasi video (${video.durationMs} ms)`);
 }
 
@@ -312,6 +356,18 @@ subs.forEach((s, i) => {
   else seenSub.add(s.id);
 
   if (!isStr(s.text)) err(`${w}: teks tidak boleh kosong`);
+  else {
+    const marks = [...s.text.matchAll(/\{\{(\w+):[^}]+\}\}/g)];
+    for (const m of marks) {
+      if (!SUBTITLE_COLORS.includes(m[1])) {
+        err(`${w}: warna "${m[1]}" tidak dikenal. Pilihan: ${SUBTITLE_COLORS.join(", ")}`);
+      }
+    }
+    const rest = s.text.replace(/\{\{\w+:[^}]+\}\}/g, "");
+    if (rest.includes("{{") || rest.includes("}}")) {
+      err(`${w}: penanda warna rusak; bentuk yang benar {{warna:teks}}`);
+    }
+  }
   if (!isNum(s.startMs) || !isNum(s.endMs)) {
     err(`${w}: startMs dan endMs harus angka`);
     return;
