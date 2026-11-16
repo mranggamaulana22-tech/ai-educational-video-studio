@@ -32,17 +32,19 @@ const parseWords = (text: string) => {
   return out;
 };
 
-// Bagi satu subtitle jadi potongan pendek; waktu tiap kata diperkirakan dari panjang huruf.
+// Bagi satu subtitle jadi potongan pendek. Waktu kata: pakai wordStartsMs (waktu asli dari audio)
+// kalau ada dan jumlahnya cocok; kalau tidak, perkirakan dari panjang huruf.
 const buildChunks = (s: Subtitle) => {
   const words = parseWords(s.text);
   const weights = words.map((w) => w.text.length + 2);
   const total = weights.reduce((a, b) => a + b, 0);
   const dur = s.endMs - s.startMs;
+  const real = s.wordStartsMs && s.wordStartsMs.length === words.length ? s.wordStartsMs : null;
   let acc = 0;
   const timed: Word[] = words.map((w, i) => {
-    const startMs = s.startMs + (dur * acc) / total;
+    const est = s.startMs + (dur * acc) / total;
     acc += weights[i];
-    return { ...w, startMs };
+    return { ...w, startMs: real ? real[i] : est };
   });
 
   const groups: Word[][] = [];

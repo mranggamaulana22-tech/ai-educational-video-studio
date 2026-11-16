@@ -24,3 +24,5 @@ storage/library/**/*.mp4
 # sistem
 .DS_Store
 Thumbs.db
+
+.venv-audio/

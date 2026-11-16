@@ -101,129 +101,150 @@
   "subtitles": [
     {
       "id": "sub-001",
-      "startMs": 250,
-      "endMs": 2890,
-      "text": "Hari pertama belajar coding, gue bingung."
+      "startMs": 260,
+      "endMs": 2930,
+      "text": "Hari pertama belajar coding, gue bingung.",
+      "wordStartsMs": [260, 420, 820, 1220, 1890, 2260]
     },
     {
       "id": "sub-002",
-      "startMs": 3300,
-      "endMs": 6210,
-      "text": "{{teal:Software Engineer}} sama {{orange:Software Developer}} itu beda,"
+      "startMs": 3360,
+      "endMs": 6360,
+      "text": "{{teal:Software Engineer}} sama {{orange:Software Developer}} itu beda,",
+      "wordStartsMs": [3360, 3580, 4080, 4500, 4980, 5420, 5620]
     },
     {
       "id": "sub-003",
       "startMs": 6470,
-      "endMs": 7990,
-      "text": "atau cuma beda nama doang?"
+      "endMs": 7910,
+      "text": "atau cuma beda nama doang?",
+      "wordStartsMs": [6470, 6620, 6860, 7080, 7280]
     },
     {
       "id": "sub-004",
       "startMs": 8410,
-      "endMs": 10640,
-      "text": "Di lowongan kerja dua-duanya sering muncul."
+      "endMs": 10650,
+      "text": "Di lowongan kerja dua-duanya sering muncul.",
+      "wordStartsMs": [8410, 8520, 8800, 9310, 9820, 10120]
     },
     {
       "id": "sub-005",
-      "startMs": 11340,
-      "endMs": 14000,
-      "text": "Dan ternyata, di banyak perusahaan,"
+      "startMs": 11330,
+      "endMs": 13810,
+      "text": "Dan ternyata, di banyak perusahaan,",
+      "wordStartsMs": [11330, 11520, 12370, 12720, 12880]
     },
     {
       "id": "sub-006",
-      "startMs": 14000,
-      "endMs": 15850,
-      "text": "dua istilah ini memang dipakai gantian."
+      "startMs": 14040,
+      "endMs": 15830,
+      "text": "dua istilah ini memang dipakai gantian.",
+      "wordStartsMs": [14040, 14140, 14400, 14620, 14820, 15180]
     },
     {
       "id": "sub-007",
-      "startMs": 16450,
-      "endMs": 18790,
-      "text": "Tapi kalau dibedah, ada sedikit bedanya."
+      "startMs": 16440,
+      "endMs": 18850,
+      "text": "Tapi kalau dibedah, ada sedikit bedanya.",
+      "wordStartsMs": [16440, 16600, 16780, 17750, 17980, 18280]
     },
     {
       "id": "sub-008",
       "startMs": 19470,
-      "endMs": 20800,
-      "text": "Bayangin lu bangun restoran."
+      "endMs": 20890,
+      "text": "Bayangin lu bangun restoran.",
+      "wordStartsMs": [19470, 19880, 20000, 20260]
     },
     {
       "id": "sub-009",
-      "startMs": 21320,
-      "endMs": 23770,
-      "text": "{{teal:Software Engineer}} mikirin keseluruhan sistemnya:"
+      "startMs": 21330,
+      "endMs": 23890,
+      "text": "{{teal:Software Engineer}} mikirin keseluruhan sistemnya:",
+      "wordStartsMs": [21330, 21600, 22000, 22600, 23220]
     },
     {
       "id": "sub-010",
       "startMs": 24240,
-      "endMs": 28600,
-      "text": "alur pesanan, kerja dapur, sampai tetap lancar pas lagi rame."
+      "endMs": 28530,
+      "text": "alur pesanan, kerja dapur, sampai tetap lancar pas lagi rame.",
+      "wordStartsMs": [24240, 24460, 25180, 25600, 26360, 26820, 27180, 27600, 27800, 28040]
     },
     {
       "id": "sub-011",
-      "startMs": 28980,
-      "endMs": 31460,
-      "text": "{{orange:Software Developer}} fokus membangun bagiannya,"
+      "startMs": 28990,
+      "endMs": 31430,
+      "text": "{{orange:Software Developer}} fokus membangun bagiannya,",
+      "wordStartsMs": [28990, 29120, 29460, 30180, 30620]
     },
     {
       "id": "sub-012",
-      "startMs": 31660,
-      "endMs": 34850,
-      "text": "misalnya sistem pemesanan atau fitur pembayaran."
+      "startMs": 31650,
+      "endMs": 34630,
+      "text": "misalnya sistem pemesanan atau fitur pembayaran.",
+      "wordStartsMs": [31650, 31980, 32400, 33060, 33600, 33960]
     },
     {
       "id": "sub-013",
       "startMs": 35220,
-      "endMs": 38620,
-      "text": "Jadi {{teal:Engineer}} mikirin gimana sistem dirancang biar kuat."
+      "endMs": 38630,
+      "text": "Jadi {{teal:Engineer}} mikirin gimana sistem dirancang biar kuat.",
+      "wordStartsMs": [35220, 35880, 36120, 36580, 37060, 37300, 37900, 38120]
     },
     {
       "id": "sub-014",
       "startMs": 38960,
-      "endMs": 41940,
-      "text": "{{orange:Developer}} fokus membangun dan memastikan fiturnya jalan."
+      "endMs": 41790,
+      "text": "{{orange:Developer}} fokus membangun dan memastikan fiturnya jalan.",
+      "wordStartsMs": [38960, 39120, 39680, 40240, 40380, 40780, 41260]
     },
     {
       "id": "sub-015",
       "startMs": 42400,
-      "endMs": 44060,
-      "text": "Tapi ini gambaran umum ya,"
+      "endMs": 44130,
+      "text": "Tapi ini gambaran umum ya,",
+      "wordStartsMs": [42400, 42860, 43060, 43380, 43740]
     },
     {
       "id": "sub-016",
-      "startMs": 44360,
-      "endMs": 47410,
-      "text": "di dunia kerja tanggung jawabnya sering tumpang tindih."
+      "startMs": 44430,
+      "endMs": 47390,
+      "text": "di dunia kerja tanggung jawabnya sering tumpang tindih.",
+      "wordStartsMs": [44430, 44540, 44780, 45460, 45680, 46140, 46480, 46780]
     },
     {
       "id": "sub-017",
       "startMs": 47850,
-      "endMs": 49800,
-      "text": "Jadi nggak usah pusing soal title dulu."
+      "endMs": 49790,
+      "text": "Jadi nggak usah pusing soal title dulu.",
+      "wordStartsMs": [47850, 48250, 48400, 48540, 48800, 49040, 49240]
     },
     {
       "id": "sub-018",
       "startMs": 50080,
-      "endMs": 53310,
-      "text": "Yang penting belajar bikin software yang beneran bisa dipakai orang."
+      "endMs": 53030,
+      "text": "Yang penting belajar bikin software yang beneran bisa dipakai orang.",
+      "wordStartsMs": [50080, 50180, 50480, 50980, 51280, 51560, 51780, 52180, 52360, 52620]
     },
     {
       "id": "sub-019",
       "startMs": 53610,
-      "endMs": 55450,
-      "text": "Besok kita bahas SDLC,"
+      "endMs": 55350,
+      "text": "Besok, gue lanjut SDLC,",
+      "wordStartsMs": [53610, 53960, 54100, 54380]
     },
     {
       "id": "sub-020",
-      "startMs": 55640,
-      "endMs": 58760,
-      "text": "tahapan bikin software dari ide sampai siap dipakai."
+      "startMs": 55630,
+      "endMs": 58710,
+      "text": "tahapan bikin software dari ide sampai siap dipakai.",
+      "wordStartsMs": [55630, 56100, 56380, 56660, 56980, 57300, 57740, 58080]
     },
     {
       "id": "sub-021",
       "startMs": 59040,
-      "endMs": 61100,
-      "text": "{{orange:Follow}} kalau mau belajar coding bareng dari nol!"
+      "endMs": 61230,
+      "text": "{{orange:Follow}} kalau mau belajar coding bareng dari nol!",
+      "wordStartsMs": [59040, 59340, 59620, 59760, 60040, 60200, 60580, 60740]
     }
   ]
 }

@@ -110,6 +110,15 @@ const MAX_SCENE_MS = 8000; // ritme: scene lebih lama dari ini terasa membosanka
 
 const ICON_NAMES = ["file", "folder", "cloud", "laptop", "commit", "branch", "check", "clock", "lock", "people", "code", "gear", "arrow", "bug"];
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
+
+// Hitung kata subtitle dengan aturan yang sama seperti pemutar: {{warna:dua kata}} dihitung dua kata.
+function countWords(text) {
+  let n = 0;
+  for (const m of text.matchAll(/\{\{(\w+):([^}]+)\}\}|\S+/g)) {
+    n += m[1] ? m[2].split(/\s+/).filter(Boolean).length : 1;
+  }
+  return n;
+}
 const isStr = (v) => typeof v === "string" && v.trim().length > 0;
 
 function checkValue(value, spec, where) {
@@ -377,6 +386,22 @@ subs.forEach((s, i) => {
     err(`${w}: berada di luar durasi video`);
   }
   if (s.startMs < prevEnd) err(`${w}: tumpang tindih ${prevEnd - s.startMs} ms dengan subtitle sebelumnya`);
+  if (s.wordStartsMs !== undefined) {
+    if (!Array.isArray(s.wordStartsMs) || !s.wordStartsMs.every(isNum)) {
+      err(`${w}: wordStartsMs harus berupa daftar angka`);
+    } else {
+      const n = isStr(s.text) ? countWords(s.text) : 0;
+      if (s.wordStartsMs.length !== n) {
+        err(`${w}: jumlah wordStartsMs (${s.wordStartsMs.length}) harus sama dengan jumlah kata (${n})`);
+      }
+      if (s.wordStartsMs.some((t, k) => k > 0 && t < s.wordStartsMs[k - 1])) {
+        err(`${w}: wordStartsMs harus naik terus (tidak boleh mundur)`);
+      }
+      if (s.wordStartsMs.some((t) => t < s.startMs || t > s.endMs)) {
+        err(`${w}: ada waktu kata di luar rentang subtitle (${s.startMs}-${s.endMs} ms)`);
+      }
+    }
+  }
   prevEnd = s.endMs;
 });
 

@@ -1,4 +1,12 @@
-export type Subtitle = { id: string; startMs: number; endMs: number; text: string };
+export type Subtitle = {
+  id: string;
+  startMs: number;
+  endMs: number;
+  text: string;
+  // Waktu mulai tiap kata (ms), urutan sama dengan kata di teks. Diisi tools/apply_word_times.py.
+  // Kalau kosong, waktu kata diperkirakan dari panjang huruf.
+  wordStartsMs?: number[];
+};
 
 export type Scene = {
   id: string;
