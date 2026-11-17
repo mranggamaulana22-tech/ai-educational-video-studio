@@ -1,0 +1,1 @@
+Hari pertama belajar coding, gue bingung. Git itu penyelamatnya. Setiap kali kamu commit, GitHub menyimpan satu titik. Kalau ada bug, kamu tinggal balik ke versi sebelumnya lewat API.

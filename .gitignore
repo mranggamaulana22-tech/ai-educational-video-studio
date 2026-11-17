@@ -26,3 +26,4 @@ storage/library/**/*.mp4
 Thumbs.db
 
 .venv-audio/
+.env
