@@ -1,13 +1,17 @@
 """API backend AI Educational Video Studio. Jalankan:  uvicorn app.main:app --reload  (dari apps/backend)"""
 from contextlib import asynccontextmanager
 
+import subprocess
+import sys
+
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from . import db, service, stages
+from . import config, db, service, stages
 from .models import Artifact, Run, Series, Video
 
 
@@ -19,6 +23,21 @@ async def lifespan(app):
 
 
 app = FastAPI(title="AI Educational Video Studio", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Suara bawaan Gemini TTS (pilihan narator)
+VOICES = [
+    "Zephyr", "Puck", "Charon", "Kore", "Fenrir", "Leda", "Orus", "Aoede", "Callirrhoe", "Autonoe",
+    "Enceladus", "Iapetus", "Umbriel", "Algieba", "Despina", "Erinome", "Algenib", "Rasalgethi",
+    "Laomedeia", "Achernar", "Alnilam", "Schedar", "Gacrux", "Pulcherrima", "Achird",
+    "Zubenelgenubi", "Vindemiatrix", "Sadachbia", "Sadaltager", "Sulafat",
+]
+SAMPLE_TEXT = "Halo, aku narator videomu. Hari ini kita belajar tentang tahapan membuat software dari ide sampai siap dipakai."
 
 
 class SeriesIn(BaseModel):
@@ -69,6 +88,30 @@ def video_dict(session, v: Video):
 def labels(session, v: Video):
     s = session.get(Series, v.series_id) if v.series_id else None
     return (f"HARI {v.day}/{s.total_days}" if s else f"HARI {v.day}"), (s.course if s else "")
+
+
+@app.get("/voices")
+def voices():
+    return VOICES
+
+
+@app.get("/voices/{voice}/sample")
+def voice_sample(voice: str):
+    """Contoh suara narator (dibuat sekali dengan Gemini TTS lalu disimpan)."""
+    if voice not in VOICES:
+        raise HTTPException(404, "Suara tidak dikenal")
+    out = config.STORAGE / "voice-samples" / f"{voice}.wav"
+    if not out.exists():
+        out.parent.mkdir(parents=True, exist_ok=True)
+        txt = out.with_suffix(".txt")
+        txt.write_text(SAMPLE_TEXT, encoding="utf-8")
+        r = subprocess.run(
+            [sys.executable, "tools/tts_gemini.py", str(txt), str(out), "--voice", voice],
+            cwd=str(config.ROOT), capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
+        if r.returncode != 0 or not out.exists():
+            raise HTTPException(502, "Gagal membuat contoh suara: " + (r.stdout + r.stderr).strip()[-400:])
+    return FileResponse(out, media_type="audio/wav")
 
 
 @app.get("/health")
@@ -175,6 +218,14 @@ def run_stage(video_id: int, stage: str, tasks: BackgroundTasks, session: Sessio
     day_label, course = labels(session, v)
     tasks.add_task(service.execute_run, db.SessionLocal, run.id, day_label, course)
     return {"run_id": run.id, "status": "queued"}
+
+
+@app.get("/videos/{video_id}/runs")
+def video_runs(video_id: int, session: Session = Depends(db.get_session)):
+    get_video(session, video_id)
+    rows = session.scalars(select(Run).where(Run.video_id == video_id).order_by(Run.id.desc()).limit(20))
+    return [{"id": r.id, "stage": r.stage, "status": r.status, "log": r.log,
+             "started_at": r.started_at.isoformat() if r.started_at else None} for r in rows]
 
 
 @app.get("/runs/{run_id}")

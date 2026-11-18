@@ -112,15 +112,23 @@ def scan_existing(session: Session, video: Video):
     return found
 
 
+def stage_is_auto(stage):
+    return stage not in stages.MANUAL
+
+
 def summary(session: Session, video: Video):
     out = {}
     for s in stages.ORDER:
+        why = can_run(session, video, s)
         a = latest(session, video.id, s)
         r = session.scalars(select(Run).where(Run.video_id == video.id, Run.stage == s).order_by(Run.id.desc())).first()
         out[s] = {
+            "artifact_id": a.id if a else None,
             "version": a.version if a else None,
             "status": a.status if a else "empty",
             "source": a.source if a else None,
+            "can_run": (not why) if stage_is_auto(s) else False,
+            "why_not": why if stage_is_auto(s) else "",
             "last_run": {"id": r.id, "status": r.status} if r else None,
         }
     return out
