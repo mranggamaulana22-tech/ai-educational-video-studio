@@ -9,17 +9,41 @@ konfigurasi lokal yang dapat dibuat ulang tidak dirinci.
 
 ```text
 ai-educational-video-studio/
-├── .env.example                         # Template variabel lingkungan
-├── .gitignore                            # Aturan file yang diabaikan Git
-├── README.md                             # Ringkasan tujuan dan status proyek
-├── strukture.md                          # Dokumentasi struktur repository ini
+├── .env.example                          # Template variabel lingkungan
+├── .gitignore                             # Aturan file yang diabaikan Git
+├── README.md                              # Ringkasan tujuan dan status proyek
+├── strukture.md                           # Dokumentasi struktur repository ini
 │
 ├── apps/
 │   ├── backend/
-│   │   └── .gitkeep                      # Placeholder backend
+│   │   ├── .gitkeep                       # Placeholder direktori backend
+│   │   ├── README.md                      # Instruksi backend
+│   │   ├── requirements.txt               # Dependency Python backend
+│   │   ├── video_studio.db                # Database SQLite aplikasi
+│   │   ├── app/
+│   │   │   ├── __init__.py
+│   │   │   ├── config.py                  # Konfigurasi aplikasi
+│   │   │   ├── db.py                      # Koneksi dan setup database
+│   │   │   ├── main.py                    # Entry point API
+│   │   │   ├── models.py                  # Model database
+│   │   │   ├── service.py                 # Service dan logika bisnis
+│   │   │   └── stages.py                  # Tahapan pipeline produksi
+│   │   └── tests/
+│   │       └── smoke_test.py              # Smoke test backend
 │   │
 │   ├── frontend/
-│   │   └── .gitkeep                      # Placeholder frontend
+│   │   ├── .gitignore                     # Ignore dependency dan hasil build
+│   │   ├── .gitkeep                       # Placeholder direktori frontend
+│   │   ├── README.md                      # Instruksi frontend
+│   │   ├── index.html                     # HTML entry point Vite
+│   │   ├── package.json                   # Dependency dan script frontend
+│   │   ├── package-lock.json              # Lockfile dependency npm
+│   │   ├── vite.config.js                 # Konfigurasi Vite
+│   │   └── src/
+│   │       ├── App.jsx                    # Komponen aplikasi utama
+│   │       ├── api.js                    # Client API backend
+│   │       ├── main.jsx                  # Entry point React
+│   │       └── styles.css                # Style aplikasi
 │   │
 │   └── remotion/
 │       ├── .gitignore                    # Ignore dependency dan hasil render
@@ -37,6 +61,8 @@ ai-educational-video-studio/
 │       │       ├── engineer-vs-developer.words.json # Timing kata audio
 │       │       ├── hari2-sdlc.wav                   # Audio runtime
 │       │       ├── hari2-sdlc.words.json             # Timing kata audio
+│       │       ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.wav
+│       │       ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.words.json
 │       │       ├── tes-tts.wav                       # Audio uji TTS
 │       │       ├── tes1.wav                          # Audio runtime storyboard tes1
 │       │       ├── tes1.words.json                   # Timing kata audio
@@ -81,11 +107,19 @@ ai-educational-video-studio/
 │               ├── html-css-js.json       # Pengantar HTML, CSS, dan JavaScript
 │               ├── icon-demo.json         # Demo komponen dan variasi ikon
 │               ├── kinetic-demo.json      # Demo subtitle kinetic
+│               ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.json
 │               ├── tes1.json              # Storyboard uji pertama
 │               └── transition-demo.json   # Demo variasi transisi
 │
 ├── catatan/
-│   └── hari2-sdlc.txt                     # Catatan materi SDLC
+│   ├── hari2-sdlc.txt                     # Catatan materi SDLC
+│   ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.txt
+│   ├── sdlc-hari4-siapa-saja-stakeholders-dala.txt
+│   ├── sdlc-hari5-cara-menggali-dan-menyusun-r.txt
+│   ├── sdlc-hari6-membongkar-isi-dokumen-srs.txt
+│   ├── sdlc-hari7-perbedaan-urs-dan-sysrs-waji.txt
+│   ├── sdlc.notes.json                    # Catatan terstruktur
+│   └── sdlc.notes.md                      # Ringkasan catatan SDLC
 │
 ├── docs/
 │   ├── COMPONENTS.md                      # Katalog komponen dan props storyboard
@@ -94,6 +128,7 @@ ai-educational-video-studio/
 ├── naskah/
 │   ├── engineer-vs-developer.txt          # Naskah perbandingan engineer/developer
 │   ├── hari2-sdlc.txt                     # Naskah materi SDLC
+│   ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.txt
 │   └── tes1.txt                           # Naskah uji
 │
 ├── output/
@@ -101,12 +136,17 @@ ai-educational-video-studio/
 │
 ├── prompts/
 │   ├── .gitkeep                           # Placeholder prompt tingkat root
+│   ├── content_planner.md                 # Prompt perencana konten
+│   ├── learning_agent.md                  # Prompt learning agent
 │   ├── prompts/
 │   │   ├── CARA_PAKAI.md                  # Cara menggunakan prompt
 │   │   └── storyboard_agent.md            # Prompt storyboard agent versi nested
 │   ├── script_reviewer.md                 # Prompt peninjau naskah
 │   ├── scriptwriter_agent.md              # Prompt penulis naskah
 │   └── storyboard_agent.md                # Prompt pembuat storyboard
+│
+├── rencana/
+│   └── sdlc.plan.json                     # Rencana konten SDLC
 │
 ├── scripts/
 │   └── .gitkeep                           # Placeholder script lintas aplikasi
@@ -132,24 +172,32 @@ ai-educational-video-studio/
 │   │   └── sound-effects/
 │   │       └── .gitkeep                   # Library sound effect
 │   │
-│   └── projects/
-│       ├── .gitkeep                       # Placeholder aset proyek
-│       ├── git-github/
-│       │   └── audio/
-│       │       └── voiceover-v2.wav       # Audio sumber proyek Git/GitHub
-│       └── html-css-js/
-│           └── audio/
-│               └── voiceover-v1.wav       # Audio sumber proyek HTML/CSS/JS
+│   ├── projects/
+│   │   ├── .gitkeep                       # Placeholder aset proyek
+│   │   ├── git-github/
+│   │   │   └── audio/
+│   │   │       └── voiceover-v2.wav       # Audio sumber proyek Git/GitHub
+│   │   └── html-css-js/
+│   │       └── audio/
+│   │           └── voiceover-v1.wav       # Audio sumber proyek HTML/CSS/JS
+│
+│   └── voice-samples/
+│       ├── Kore.txt                       # Metadata/sample voice
+│       └── Kore.wav                       # Audio sample voice
 │
 └── tools/
+    ├── agentkit.py                        # Helper agent
     ├── align_audio.py                     # Menyelaraskan audio dan timing
     ├── apply_word_times.py                # Menerapkan timing per kata
     ├── llm.py                             # Helper komunikasi dengan LLM
     ├── make_agent_input.py                # Membuat input untuk agent
     ├── naskah-tes.txt                     # Naskah input uji tool
     ├── pipeline.py                        # Orkestrasi pipeline produksi
+    ├── run_content_planner.py             # Menjalankan content planner agent
+    ├── run_learning_agent.py              # Menjalankan learning agent
     ├── run_scriptwriter.py                # Menjalankan scriptwriter agent
     ├── run_storyboard_agent.py            # Menjalankan storyboard agent
+    ├── setup_db.py                        # Menyiapkan database aplikasi
     └── tts_gemini.py                      # Menghasilkan audio dengan Gemini TTS
 ```
 
@@ -262,6 +310,8 @@ dibaca Remotion harus tersedia di `apps/remotion/public/audio/`.
 | --- | --- | --- | --- |
 | `html-css-js` | `storage/projects/html-css-js/audio/voiceover-v1.wav` | `apps/remotion/public/audio/voiceover-v1.wav` | `audio/voiceover-v1.wav` |
 | `git-github` | `storage/projects/git-github/audio/voiceover-v2.wav` | `apps/remotion/public/audio/voiceover-v2.wav` | `audio/voiceover-v2.wav` |
+| `hari2-sdlc` | — | `apps/remotion/public/audio/hari2-sdlc.wav` | `audio/hari2-sdlc.wav` |
+| `sdlc-hari3` | — | `apps/remotion/public/audio/sdlc-hari3-kenalan-dengan-6-tahapan-sdl.wav` | `audio/sdlc-hari3-kenalan-dengan-6-tahapan-sdl.wav` |
 
 ## Folder yang sengaja tidak dirinci
 
