@@ -91,7 +91,21 @@ const COMPONENTS = {
   LaptopScene: { cuesMs: "number[]?" },
   SdlcScene: { cuesMs: "number[]?" },
   CtaScene: { cuesMs: "number[]?" },
+  // Scene umum (isi penuh dari JSON). Lihat docs/COMPONENTS.md.
+  BigStatement: { kicker: "string?", icon: "funIcon?", iconColor: "string?", lines: "textColor", cuesMs: "number[]?" },
+  CompareCards: { heading: "string?", left: "side", right: "side", cuesMs: "number[]?" },
+  FlowSteps: { heading: "string?", steps: "labelColor", cuesMs: "number[]?" },
+  CardList: { heading: "string?", items: "textColor", cuesMs: "number[]?" },
+  CtaCard: { title: "string", subtitle: "string?", button: "string?", color: "string?", icon: "funIcon?", cuesMs: "number[]?" },
+  IconHero: { icon: "funIcon", title: "string", subtitle: "string?", color: "string?", motion: "motion?", cuesMs: "number[]?" },
+  IconGrid: { heading: "string?", items: "iconLabel", cuesMs: "number[]?" },
 };
+
+const GENERIC_SCENES = ["BigStatement", "CompareCards", "FlowSteps", "CardList", "CtaCard", "IconHero", "IconGrid"];
+const FUN_ICONS = ["laptop", "code", "gear", "cloud", "people", "bug", "check", "lock", "clock", "bulb", "rocket", "book", "server", "database", "chat", "star", "target", "puzzle", "folder", "file", "restaurant", "arrow"];
+const okIcon = (i) => i === undefined || FUN_ICONS.includes(i);
+const COLOR_NAMES = ["teal", "orange", "violet", "red", "green", "yellow"];
+const okColor = (c) => c === undefined || COLOR_NAMES.includes(c);
 
 const FUN_SCENES = [
   "HookScene",
@@ -161,6 +175,32 @@ function checkValue(value, spec, where) {
         !value.every((it) => it && isStr(it.label) && isStr(it.text) && isStr(it.color) && ICON_NAMES.includes(it.icon))
       ) {
         err(`${where}: setiap item harus punya icon (${ICON_NAMES.join(", ")}), label, text, dan color`);
+      }
+      break;
+    case "funIcon":
+      if (!FUN_ICONS.includes(value)) err(`${where}: ikon "${value}" tidak dikenal. Pilihan: ${FUN_ICONS.join(", ")}`);
+      break;
+    case "motion":
+      if (!["float", "wiggle", "pulse", "spin", "none"].includes(value)) err(`${where}: motion harus float, wiggle, pulse, spin, atau none`);
+      break;
+    case "iconLabel":
+      if (!Array.isArray(value) || value.length < 2 || value.length > 4 || !value.every((x) => x && isStr(x.label) && FUN_ICONS.includes(x.icon) && okColor(x.color))) {
+        err(`${where}: 2-4 item, tiap item punya icon (${FUN_ICONS.join(", ")}), label, dan color opsional`);
+      }
+      break;
+    case "textColor":
+      if (!Array.isArray(value) || value.length === 0 || value.length > 5 || !value.every((x) => x && isStr(x.text) && okColor(x.color) && okIcon(x.icon))) {
+        err(`${where}: 1-5 item, tiap item punya text dan color (opsional: ${COLOR_NAMES.join(", ")})`);
+      }
+      break;
+    case "labelColor":
+      if (!Array.isArray(value) || value.length < 2 || value.length > 5 || !value.every((x) => x && isStr(x.label) && okColor(x.color) && okIcon(x.icon))) {
+        err(`${where}: 2-5 langkah, tiap langkah punya label dan color (opsional: ${COLOR_NAMES.join(", ")})`);
+      }
+      break;
+    case "side":
+      if (!value || !isStr(value.title) || !okColor(value.color) || !okIcon(value.icon) || !Array.isArray(value.items) || value.items.length === 0 || value.items.length > 4 || !value.items.every(isStr)) {
+        err(`${where}: harus punya title, items (1-4 teks), dan color opsional (${COLOR_NAMES.join(", ")})`);
       }
       break;
     case "points":
@@ -293,7 +333,7 @@ scenes.forEach((s, i) => {
       err(`${w}: ada waktu kemunculan yang melewati durasi scene (${s.durationMs} ms)`);
     }
   }
-  if (FUN_SCENES.includes(s.component) && Array.isArray(props.cuesMs)) {
+  if ((FUN_SCENES.includes(s.component) || GENERIC_SCENES.includes(s.component)) && Array.isArray(props.cuesMs)) {
     if (props.cuesMs.some((t) => isNum(t) && isNum(s.durationMs) && t >= s.durationMs)) {
       err(`${w}: ada waktu kemunculan (cuesMs) yang melewati durasi scene (${s.durationMs} ms)`);
     }

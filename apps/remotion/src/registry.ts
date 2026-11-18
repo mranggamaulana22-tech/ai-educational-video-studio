@@ -5,6 +5,7 @@ import { CloudSync, CommitTimeline, FileChaos, IconSummary } from "./GitScenes";
 import { HookScene } from "./FunScenes";
 import { JobScene } from "./JobScene";
 import { RestaurantScene } from "./RestaurantScene";
+import { BigStatement, CardList, CompareCards, CtaCard, FlowSteps, IconGrid, IconHero } from "./GenericScenes";
 import { CompareScene, CtaScene, DeveloperScene, LaptopScene, SdlcScene, StrikeScene, VennScene } from "./FunScenes2";
 
 // Registri komponen: storyboard hanya boleh memakai komponen yang terdaftar di sini.
@@ -29,4 +30,11 @@ export const registry: Record<string, React.FC<any>> = {
   LaptopScene,
   SdlcScene,
   CtaScene,
+  BigStatement,
+  CompareCards,
+  FlowSteps,
+  CardList,
+  CtaCard,
+  IconHero,
+  IconGrid,
 };

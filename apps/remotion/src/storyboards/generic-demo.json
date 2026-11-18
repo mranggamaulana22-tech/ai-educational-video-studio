@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "1.1",
+  "video": {
+    "title": "Demo scene umum v2",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 28000,
+    "badge": {
+      "day": "HARI 0/15",
+      "course": "Demo"
+    }
+  },
+  "audio": {
+    "src": "audio/engineer-vs-developer.wav",
+    "durationMs": 28000
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 4000,
+      "component": "IconHero",
+      "props": {
+        "icon": "gear",
+        "title": "Sistem besar",
+        "subtitle": "Dirancang engineer",
+        "color": "teal",
+        "motion": "spin"
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-002",
+      "startMs": 4000,
+      "durationMs": 4000,
+      "component": "BigStatement",
+      "props": {
+        "kicker": "Kenapa penting?",
+        "icon": "bulb",
+        "lines": [
+          {
+            "text": "Satu ide",
+            "color": "teal"
+          },
+          {
+            "text": "Banyak cara",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "slide"
+    },
+    {
+      "id": "scene-003",
+      "startMs": 8000,
+      "durationMs": 4000,
+      "component": "CompareCards",
+      "props": {
+        "heading": "Beda peran",
+        "left": {
+          "title": "FRONTEND",
+          "icon": "laptop",
+          "color": "teal",
+          "items": [
+            "Tampilan web",
+            "Interaksi pengguna"
+          ]
+        },
+        "right": {
+          "title": "BACKEND",
+          "icon": "server",
+          "color": "orange",
+          "items": [
+            "Server dan data",
+            "Logika bisnis"
+          ]
+        }
+      },
+      "transition": "zoom"
+    },
+    {
+      "id": "scene-004",
+      "startMs": 12000,
+      "durationMs": 4000,
+      "component": "FlowSteps",
+      "props": {
+        "heading": "Alur kerja",
+        "steps": [
+          {
+            "label": "Ide",
+            "icon": "bulb"
+          },
+          {
+            "label": "Kode",
+            "icon": "code",
+            "color": "orange"
+          },
+          {
+            "label": "Tes",
+            "icon": "bug",
+            "color": "violet"
+          },
+          {
+            "label": "Rilis",
+            "icon": "rocket",
+            "color": "green"
+          }
+        ]
+      },
+      "transition": "wipe"
+    },
+    {
+      "id": "scene-005",
+      "startMs": 16000,
+      "durationMs": 4000,
+      "component": "IconGrid",
+      "props": {
+        "heading": "Empat tahap",
+        "items": [
+          {
+            "icon": "book",
+            "label": "Belajar"
+          },
+          {
+            "icon": "code",
+            "label": "Kode"
+          },
+          {
+            "icon": "bug",
+            "label": "Tes"
+          },
+          {
+            "icon": "rocket",
+            "label": "Rilis"
+          }
+        ]
+      },
+      "transition": "slide"
+    },
+    {
+      "id": "scene-006",
+      "startMs": 20000,
+      "durationMs": 4000,
+      "component": "CardList",
+      "props": {
+        "heading": "Tiga hal penting",
+        "items": [
+          {
+            "text": "Pahami masalah dulu",
+            "icon": "book"
+          },
+          {
+            "text": "Pecah jadi bagian kecil",
+            "icon": "puzzle"
+          },
+          {
+            "text": "Tes sambil jalan",
+            "icon": "check"
+          }
+        ]
+      },
+      "transition": "zoom"
+    },
+    {
+      "id": "scene-007",
+      "startMs": 24000,
+      "durationMs": 4000,
+      "component": "CtaCard",
+      "props": {
+        "title": "Sampai besok!",
+        "subtitle": "Hari 2: SDLC",
+        "button": "Follow ya",
+        "icon": "rocket"
+      },
+      "transition": "fade"
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "sub-001",
+      "startMs": 300,
+      "endMs": 3500,
+      "text": "Satu ide, {{orange:banyak cara}}."
+    },
+    {
+      "id": "sub-002",
+      "startMs": 4200,
+      "endMs": 7800,
+      "text": "Ini demo scene umum."
+    }
+  ]
+}
