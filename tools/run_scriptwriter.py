@@ -15,6 +15,8 @@ import llm  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 MIN_WORDS, MAX_WORDS = 90, 170
+MAX_SENTENCE = 16  # kalimat lebih panjang dari ini ditolak (aturan prompt: maks 14 kata)
+ACRONYMS = ["SDLC", "SRS", "URS", "SysRS", "UAT", "API", "UI", "UX", "SQL", "HTML", "CSS", "MVP", "PRD", "TTS", "JSON", "CLI", "SDK"]
 
 
 def parse(reply):
@@ -31,7 +33,14 @@ def parse(reply):
 def clean(text):
     t = re.sub(r"[*#_`>]+", "", text)
     t = re.sub(r"\s+", " ", t).strip()
+    for ac in ACRONYMS:  # singkatan selalu ditulis kapital agar dibaca huruf demi huruf
+        t = re.sub(r"\b" + ac + r"\b", ac, t, flags=re.I)
     return t
+
+
+def long_sentences(text):
+    parts = re.split(r"(?<=[.?!])\s+", text)
+    return [p for p in parts if count_words(p) > MAX_SENTENCE]
 
 
 def count_words(text):
@@ -55,13 +64,23 @@ def ask(provider, model, system, user, check, tries=3):
     raise SystemExit("[GAGAL] AI tidak menghasilkan naskah yang memenuhi aturan setelah beberapa percobaan.")
 
 
-def check_script(d):
-    if not isinstance(d, dict) or not isinstance(d.get("script"), str) or not d["script"].strip():
-        return 'JSON harus punya field "script" (teks).'
-    n = count_words(clean(d["script"]))
-    if n < MIN_WORDS or n > MAX_WORDS:
-        return f"Naskah {n} kata; harus {MIN_WORDS}-{MAX_WORDS} kata."
-    return ""
+def make_check():
+    state = {"style_rejects": 0}
+
+    def check_script(d):
+        if not isinstance(d, dict) or not isinstance(d.get("script"), str) or not d["script"].strip():
+            return 'JSON harus punya field "script" (teks).'
+        text = clean(d["script"])
+        n = count_words(text)
+        if n < MIN_WORDS or n > MAX_WORDS:
+            return f"Naskah {n} kata; harus {MIN_WORDS}-{MAX_WORDS} kata."
+        longs = long_sentences(text)
+        if longs and state["style_rejects"] < 2:  # soal gaya: maks 2 kali minta ulang, lalu diterima
+            state["style_rejects"] += 1
+            return f"Ada {len(longs)} kalimat lebih dari {MAX_SENTENCE} kata, mis.: \"{longs[0]}\". Pecah jadi kalimat pendek (maks 14 kata)."
+        return ""
+
+    return check_script
 
 
 def main():
@@ -91,7 +110,7 @@ def main():
 
     writer = (ROOT / "prompts" / "scriptwriter_agent.md").read_text(encoding="utf-8-sig")
     print("[1/2] Scriptwriter menulis naskah...")
-    d = ask(a.provider, a.model, writer, f"CATATAN:\n{notes}\n\nInfo:\n{info_text}", check_script)
+    d = ask(a.provider, a.model, writer, f"CATATAN:\n{notes}\n\nInfo:\n{info_text}", make_check())
     script = clean(d["script"])
     title = d.get("title", "")
     print(f"    Judul: {title} | {count_words(script)} kata")
@@ -101,7 +120,7 @@ def main():
         print("[2/2] Reviewer memeriksa naskah...")
         r = ask(
             a.provider, a.model, reviewer,
-            f"CATATAN:\n{notes}\n\nInfo:\n{info_text}\n\nNASKAH:\n{script}", check_script,
+            f"CATATAN:\n{notes}\n\nInfo:\n{info_text}\n\nNASKAH:\n{script}", make_check(),
         )
         for issue in r.get("issues", []) or []:
             print("    -", issue)

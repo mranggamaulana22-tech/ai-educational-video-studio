@@ -1,0 +1,10 @@
+Kursus: Intro to Software Engineering
+Modul: Phases in SDLC
+
+Topik: Penggalian dan Pendokumentasian Requirement
+Kebutuhan digali melalui berbagai metode lalu didokumentasikan agar sejalan dengan goals dan mudah dipahami.
+- Penggalian kebutuhan dilakukan melalui survei, kuesioner, dan interview.
+- Dokumen requirement harus sejalan dengan goals, dapat dicapai, dan mudah dipahami oleh stakeholder.
+- Analisis requirement harus konsisten, jelas, dan lengkap.
+- Skala prioritas ditentukan berdasarkan apa yang harus ada, prioritas tinggi, dan bagus jika ada.
+- Istilah Requirement: Kebutuhan atau spesifikasi yang harus dipenuhi oleh sistem.

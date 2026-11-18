@@ -1,0 +1,11 @@
+Kursus: Intro to Software Engineering
+Modul: Phases in SDLC
+
+Topik: Langkah 1: Identifikasi Stakeholders dan Menetapkan Tujuan
+Tahap awal planning melibatkan identifikasi pemangku kepentingan serta penentuan tujuan dan objektif proyek.
+- Identifikasi stakeholders meliputi decision maker/PM, end user, system administrator, engineering, marketing, sales, dan customer support.
+- Goals adalah tujuan jangka panjang yang ingin dicapai.
+- Objectives adalah hal yang dapat ditindaklanjuti dan diukur untuk mencapai target.
+- Istilah Stakeholders: Pemangku kepentingan yang terlibat dalam proyek.
+- Istilah Goals: Tujuan jangka panjang yang bisa dicapai.
+- Istilah Objectives: Target yang dapat ditindaklanjuti dan diukur.

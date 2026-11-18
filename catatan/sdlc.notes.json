@@ -1,0 +1,130 @@
+{
+  "course": "Intro to Software Engineering",
+  "module": "Phases in SDLC",
+  "topics": [
+    {
+      "title": "Pengenalan Phases in SDLC",
+      "summary": "Software Development Life Cycle (SDLC) terdiri dari enam tahapan utama mulai dari perencanaan hingga pemeliharaan.",
+      "key_points": [
+        "Planning: mencatat requirement dan membuat Software Requirement Specification (SRS).",
+        "Design: membuat dokumen arsitektur software dan desain sistem.",
+        "Development: membagikan task dan menulis kode sesuai product requirement.",
+        "Testing: mencoba aplikasi untuk memastikan aman, stabil, dan sesuai requirement.",
+        "Deployment: menyiapkan production environment dan mendeploy aplikasi.",
+        "Maintenance: memperbaiki bug dan code untuk kelancaran serta kestabilan aplikasi."
+      ],
+      "definitions": [
+        {
+          "term": "SDLC",
+          "meaning": "Software Development Life Cycle, siklus hidup pengembangan perangkat lunak."
+        }
+      ],
+      "examples": []
+    },
+    {
+      "title": "Langkah 1: Identifikasi Stakeholders dan Menetapkan Tujuan",
+      "summary": "Tahap awal planning melibatkan identifikasi pemangku kepentingan serta penentuan tujuan dan objektif proyek.",
+      "key_points": [
+        "Identifikasi stakeholders meliputi decision maker/PM, end user, system administrator, engineering, marketing, sales, dan customer support.",
+        "Goals adalah tujuan jangka panjang yang ingin dicapai.",
+        "Objectives adalah hal yang dapat ditindaklanjuti dan diukur untuk mencapai target."
+      ],
+      "definitions": [
+        {
+          "term": "Stakeholders",
+          "meaning": "Pemangku kepentingan yang terlibat dalam proyek."
+        },
+        {
+          "term": "Goals",
+          "meaning": "Tujuan jangka panjang yang bisa dicapai."
+        },
+        {
+          "term": "Objectives",
+          "meaning": "Target yang dapat ditindaklanjuti dan diukur."
+        }
+      ],
+      "examples": []
+    },
+    {
+      "title": "Penggalian dan Pendokumentasian Requirement",
+      "summary": "Kebutuhan digali melalui berbagai metode lalu didokumentasikan agar sejalan dengan goals dan mudah dipahami.",
+      "key_points": [
+        "Penggalian kebutuhan dilakukan melalui survei, kuesioner, dan interview.",
+        "Dokumen requirement harus sejalan dengan goals, dapat dicapai, dan mudah dipahami oleh stakeholder.",
+        "Analisis requirement harus konsisten, jelas, dan lengkap.",
+        "Skala prioritas ditentukan berdasarkan apa yang harus ada, prioritas tinggi, dan bagus jika ada."
+      ],
+      "definitions": [
+        {
+          "term": "Requirement",
+          "meaning": "Kebutuhan atau spesifikasi yang harus dipenuhi oleh sistem."
+        }
+      ],
+      "examples": []
+    },
+    {
+      "title": "Dokumen SRS (Software Requirements Specification)",
+      "summary": "SRS adalah dokumen output dari tahap planning yang merinci fungsionalitas, performa, batasan, dan kategori requirement.",
+      "key_points": [
+        "SRS mencakup fungsionalitas software, standar performa, tujuan, ruang lingkup, serta batasan dan asumsi.",
+        "Functional requirement adalah fitur yang harus bisa dilakukan oleh sistem.",
+        "External interface requirement menjelaskan interaksi sistem dengan komponen eksternal.",
+        "System feature menjelaskan fitur utama dan detail perilakunya.",
+        "Non-functional requirement menjelaskan kualitas sistem seperti security, performa, usability, dan reliability."
+      ],
+      "definitions": [
+        {
+          "term": "SRS",
+          "meaning": "Software Requirements Specification, dokumen spesifikasi kebutuhan perangkat lunak."
+        },
+        {
+          "term": "Functional Requirement",
+          "meaning": "Fitur yang harus bisa dilakukan oleh sistem."
+        },
+        {
+          "term": "Non-functional Requirement",
+          "meaning": "Kualitas sistem yang harus dipenuhi seperti security dan performa."
+        }
+      ],
+      "examples": []
+    },
+    {
+      "title": "Dokumen URS (User Requirement Specification)",
+      "summary": "URS mendeskripsikan kebutuhan bisnis dan ekspektasi user yang dikonfirmasi melalui UAT.",
+      "key_points": [
+        "Mendeskripsikan apa yang bisnis butuhkan dan ekspektasi user.",
+        "Menggunakan user stories untuk menjawab siapa pengguna, fitur yang dibutuhkan, dan alasan pengguna membutuhkannya.",
+        "Dikonfirmasi melalui User Acceptance Testing (UAT).",
+        "URS nantinya digabungkan ke dalam SRS."
+      ],
+      "definitions": [
+        {
+          "term": "URS",
+          "meaning": "User Requirement Specification, dokumen kebutuhan pengguna."
+        },
+        {
+          "term": "UAT",
+          "meaning": "User Acceptance Testing, proses pengujian oleh pengguna untuk memastikan aplikasi sesuai kebutuhan."
+        }
+      ],
+      "examples": []
+    },
+    {
+      "title": "Dokumen SysRS (System Requirement Specification)",
+      "summary": "SysRS merinci kemampuan sistem, karakteristik antarmuka, kebijakan, regulasi, performa, security, dan ekspektasi hardware.",
+      "key_points": [
+        "Menjelaskan kemampuan sistem (system capabilities) dan karakteristik pengguna/interface.",
+        "Memuat policy (kebijakan internal) dan regulation (standar eksternal).",
+        "Menjelaskan personel, performance, security, system acceptance criteria, dan hardware expectation."
+      ],
+      "definitions": [
+        {
+          "term": "SysRS",
+          "meaning": "System Requirement Specification, dokumen spesifikasi kebutuhan sistem."
+        }
+      ],
+      "examples": []
+    }
+  ],
+  "gaps": []
+}

@@ -1,0 +1,13 @@
+Kursus: Intro to Software Engineering
+Modul: Phases in SDLC
+
+Topik: Dokumen SRS (Software Requirements Specification)
+SRS adalah dokumen output dari tahap planning yang merinci fungsionalitas, performa, batasan, dan kategori requirement.
+- SRS mencakup fungsionalitas software, standar performa, tujuan, ruang lingkup, serta batasan dan asumsi.
+- Functional requirement adalah fitur yang harus bisa dilakukan oleh sistem.
+- External interface requirement menjelaskan interaksi sistem dengan komponen eksternal.
+- System feature menjelaskan fitur utama dan detail perilakunya.
+- Non-functional requirement menjelaskan kualitas sistem seperti security, performa, usability, dan reliability.
+- Istilah SRS: Software Requirements Specification, dokumen spesifikasi kebutuhan perangkat lunak.
+- Istilah Functional Requirement: Fitur yang harus bisa dilakukan oleh sistem.
+- Istilah Non-functional Requirement: Kualitas sistem yang harus dipenuhi seperti security dan performa.

@@ -1,0 +1,18 @@
+Kursus: Intro to Software Engineering
+Modul: Phases in SDLC
+
+Topik: Dokumen URS (User Requirement Specification)
+URS mendeskripsikan kebutuhan bisnis dan ekspektasi user yang dikonfirmasi melalui UAT.
+- Mendeskripsikan apa yang bisnis butuhkan dan ekspektasi user.
+- Menggunakan user stories untuk menjawab siapa pengguna, fitur yang dibutuhkan, dan alasan pengguna membutuhkannya.
+- Dikonfirmasi melalui User Acceptance Testing (UAT).
+- URS nantinya digabungkan ke dalam SRS.
+- Istilah URS: User Requirement Specification, dokumen kebutuhan pengguna.
+- Istilah UAT: User Acceptance Testing, proses pengujian oleh pengguna untuk memastikan aplikasi sesuai kebutuhan.
+
+Topik: Dokumen SysRS (System Requirement Specification)
+SysRS merinci kemampuan sistem, karakteristik antarmuka, kebijakan, regulasi, performa, security, dan ekspektasi hardware.
+- Menjelaskan kemampuan sistem (system capabilities) dan karakteristik pengguna/interface.
+- Memuat policy (kebijakan internal) dan regulation (standar eksternal).
+- Menjelaskan personel, performance, security, system acceptance criteria, dan hardware expectation.
+- Istilah SysRS: System Requirement Specification, dokumen spesifikasi kebutuhan sistem.

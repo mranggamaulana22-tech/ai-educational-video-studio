@@ -1,0 +1,400 @@
+{
+  "schemaVersion": "1.1",
+  "video": {
+    "title": "Kenalan dengan 6 Tahapan SDLC",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 50040,
+    "badge": {
+      "day": "HARI 3/15",
+      "course": "Intro to Software Engineering"
+    }
+  },
+  "audio": {
+    "src": "audio/sdlc-hari3-kenalan-dengan-6-tahapan-sdl.wav",
+    "durationMs": 50040
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 3760,
+      "component": "IconHero",
+      "props": {
+        "icon": "rocket",
+        "title": "Aplikasi Dari Nol",
+        "subtitle": "Pernah Penasaran?",
+        "color": "teal",
+        "motion": "float"
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-002",
+      "startMs": 3760,
+      "durationMs": 4480,
+      "component": "BigStatement",
+      "props": {
+        "kicker": "SDLC",
+        "icon": "bulb",
+        "iconColor": "orange",
+        "lines": [
+          {
+            "text": "6 Tahapan Penting",
+            "color": "teal"
+          },
+          {
+            "text": "Wajib Kita Tahu",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "slide"
+    },
+    {
+      "id": "scene-003",
+      "startMs": 8240,
+      "durationMs": 3990,
+      "component": "IconHero",
+      "props": {
+        "icon": "book",
+        "title": "Tahap Planning",
+        "subtitle": "Catat Kebutuhan Sistem",
+        "color": "violet",
+        "motion": "pulse"
+      },
+      "transition": "zoom"
+    },
+    {
+      "id": "scene-004",
+      "startMs": 12230,
+      "durationMs": 5410,
+      "component": "CardList",
+      "props": {
+        "heading": "Dokumen SRS",
+        "items": [
+          {
+            "text": "Software Requirement Specification",
+            "icon": "file",
+            "color": "green"
+          }
+        ]
+      },
+      "transition": "wipe"
+    },
+    {
+      "id": "scene-005",
+      "startMs": 17640,
+      "durationMs": 5260,
+      "component": "IconHero",
+      "props": {
+        "icon": "gear",
+        "title": "Tahap Design",
+        "subtitle": "Arsitektur & Sistem Jelas",
+        "color": "orange",
+        "motion": "spin"
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-006",
+      "startMs": 22900,
+      "durationMs": 4840,
+      "component": "FlowSteps",
+      "props": {
+        "heading": "Tahap Development",
+        "steps": [
+          {
+            "label": "Bagi Tugas",
+            "icon": "people",
+            "color": "teal"
+          },
+          {
+            "label": "Tulis Kode",
+            "icon": "code",
+            "color": "violet"
+          }
+        ]
+      },
+      "transition": "slide"
+    },
+    {
+      "id": "scene-007",
+      "startMs": 27740,
+      "durationMs": 6150,
+      "component": "IconGrid",
+      "props": {
+        "heading": "Tahap Testing",
+        "items": [
+          {
+            "icon": "check",
+            "label": "Aman & Stabil",
+            "color": "green"
+          },
+          {
+            "icon": "target",
+            "label": "Sesuai Requirement",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "zoom"
+    },
+    {
+      "id": "scene-008",
+      "startMs": 33890,
+      "durationMs": 4730,
+      "component": "IconHero",
+      "props": {
+        "icon": "server",
+        "title": "Deployment",
+        "subtitle": "Production Environment",
+        "color": "teal",
+        "motion": "float"
+      },
+      "transition": "wipe"
+    },
+    {
+      "id": "scene-009",
+      "startMs": 38620,
+      "durationMs": 5400,
+      "component": "CardList",
+      "props": {
+        "heading": "Tahap Maintenance",
+        "items": [
+          {
+            "text": "Memperbaiki Bug",
+            "icon": "bug",
+            "color": "red"
+          },
+          {
+            "text": "Aplikasi Lancar & Stabil",
+            "icon": "check",
+            "color": "green"
+          }
+        ]
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-010",
+      "startMs": 44020,
+      "durationMs": 6020,
+      "component": "CtaCard",
+      "props": {
+        "title": "Besok: Stakeholders",
+        "subtitle": "Siapa saja dalam proyek?",
+        "button": "Follow",
+        "color": "orange",
+        "icon": "star"
+      },
+      "transition": "slide"
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "sub-001",
+      "startMs": 280,
+      "endMs": 3760,
+      "text": "Pernah penasaran gimana aplikasi keren dibuat dari nol.",
+      "wordStartsMs": [
+        280,
+        520,
+        1040,
+        1640,
+        2160,
+        2500,
+        2920,
+        3140
+      ]
+    },
+    {
+      "id": "sub-002",
+      "startMs": 3760,
+      "endMs": 8240,
+      "text": "Ternyata ada enam tahapan penting dalam SDLC yang wajib kita tahu.",
+      "wordStartsMs": [
+        3760,
+        4620,
+        4860,
+        5200,
+        5540,
+        5980,
+        6200,
+        6840,
+        7100,
+        7500,
+        7700
+      ]
+    },
+    {
+      "id": "sub-003",
+      "startMs": 8240,
+      "endMs": 12230,
+      "text": "Kita mulai dari tahap planning untuk catat semua kebutuhan sistem.",
+      "wordStartsMs": [
+        8240,
+        8740,
+        9080,
+        9260,
+        9580,
+        9840,
+        10380,
+        10780,
+        11160,
+        11600
+      ]
+    },
+    {
+      "id": "sub-004",
+      "startMs": 12230,
+      "endMs": 17640,
+      "text": "Hasilnya dicatat dalam dokumen Software Requirement Specification atau SRS.",
+      "wordStartsMs": [
+        12230,
+        13100,
+        13660,
+        13880,
+        14320,
+        14800,
+        15380,
+        16180,
+        16680
+      ]
+    },
+    {
+      "id": "sub-005",
+      "startMs": 17640,
+      "endMs": 22900,
+      "text": "Lanjut ke tahap design untuk membuat arsitektur software dan desain sistem yang jelas.",
+      "wordStartsMs": [
+        17640,
+        18320,
+        18520,
+        18760,
+        19240,
+        19600,
+        19940,
+        20500,
+        20880,
+        21260,
+        21600,
+        21960,
+        22140
+      ]
+    },
+    {
+      "id": "sub-006",
+      "startMs": 22900,
+      "endMs": 27890,
+      "text": "Masuk tahap development, para engineer mulai membagi tugas dan menulis kode program.",
+      "wordStartsMs": [
+        22900,
+        23600,
+        23860,
+        24610,
+        24980,
+        25320,
+        25720,
+        26080,
+        26460,
+        26660,
+        27060,
+        27060
+      ]
+    },
+    {
+      "id": "sub-007",
+      "startMs": 28010,
+      "endMs": 33890,
+      "text": "Selesai ngoding, ada tahap testing untuk pastikan aplikasi aman dan stabil sesuai requirement.",
+      "wordStartsMs": [
+        28010,
+        28660,
+        29260,
+        29520,
+        29780,
+        30180,
+        30540,
+        31040,
+        31580,
+        31900,
+        32160,
+        32560,
+        33160
+      ]
+    },
+    {
+      "id": "sub-008",
+      "startMs": 33890,
+      "endMs": 37890,
+      "text": "Kalau sudah lolos, baru deh dilakukan deployment ke production environment.",
+      "wordStartsMs": [
+        33890,
+        34480,
+        34680,
+        35490,
+        35700,
+        35900,
+        36260,
+        36780,
+        36920,
+        37280
+      ]
+    },
+    {
+      "id": "sub-009",
+      "startMs": 38620,
+      "endMs": 44020,
+      "text": "Tahap terakhir adalah maintenance untuk memperbaiki bug agar aplikasi tetap lancar dan stabil.",
+      "wordStartsMs": [
+        38620,
+        38860,
+        39320,
+        39600,
+        40620,
+        40800,
+        41300,
+        41620,
+        42000,
+        42460,
+        42920,
+        43260,
+        43380
+      ]
+    },
+    {
+      "id": "sub-010",
+      "startMs": 44020,
+      "endMs": 47560,
+      "text": "Besok kita bakal bahas siapa saja stakeholders dalam proyek.",
+      "wordStartsMs": [
+        44020,
+        44860,
+        45060,
+        45340,
+        45680,
+        45920,
+        46240,
+        46620,
+        47000
+      ]
+    },
+    {
+      "id": "sub-011",
+      "startMs": 47880,
+      "endMs": 49790,
+      "text": "Jangan lupa follow biar nggak ketinggalan ya.",
+      "wordStartsMs": [
+        47880,
+        48080,
+        48300,
+        48580,
+        48840,
+        48960,
+        49500
+      ]
+    }
+  ]
+}

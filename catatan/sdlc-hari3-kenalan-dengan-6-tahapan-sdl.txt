@@ -1,0 +1,12 @@
+Kursus: Intro to Software Engineering
+Modul: Phases in SDLC
+
+Topik: Pengenalan Phases in SDLC
+Software Development Life Cycle (SDLC) terdiri dari enam tahapan utama mulai dari perencanaan hingga pemeliharaan.
+- Planning: mencatat requirement dan membuat Software Requirement Specification (SRS).
+- Design: membuat dokumen arsitektur software dan desain sistem.
+- Development: membagikan task dan menulis kode sesuai product requirement.
+- Testing: mencoba aplikasi untuk memastikan aman, stabil, dan sesuai requirement.
+- Deployment: menyiapkan production environment dan mendeploy aplikasi.
+- Maintenance: memperbaiki bug dan code untuk kelancaran serta kestabilan aplikasi.
+- Istilah SDLC: Software Development Life Cycle, siklus hidup pengembangan perangkat lunak.

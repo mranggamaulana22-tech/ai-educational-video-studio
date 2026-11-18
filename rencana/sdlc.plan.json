@@ -1,0 +1,61 @@
+{
+  "series": "Intro to Software Engineering: Phases in SDLC",
+  "videos": [
+    {
+      "day": 3,
+      "title": "Kenalan dengan 6 Tahapan SDLC",
+      "angle": "Bayangkan membangun rumah tanpablueprint; SDLC adalah peta jalan dari nol sampai jadi.",
+      "topics": [
+        "Pengenalan Phases in SDLC"
+      ],
+      "why": "Memberikan fondasi pemahaman dasar tentang seluruh siklus pengembangan perangkat lunak sebelum masuk ke detail tahapan.",
+      "name": "sdlc-hari3-kenalan-dengan-6-tahapan-sdl",
+      "next": "Siapa Saja Stakeholders dalam Proyek?"
+    },
+    {
+      "day": 4,
+      "title": "Siapa Saja Stakeholders dalam Proyek?",
+      "angle": "Menentukan tujuan proyek ibarat menyamakan kompas bagi semua kru kapal yang terlibat.",
+      "topics": [
+        "Langkah 1: Identifikasi Stakeholders dan Menetapkan Tujuan"
+      ],
+      "why": "Melanjutkan ke tahap awal planning yaitu mengenali siapa yang terlibat dan menetapkan arah proyek.",
+      "name": "sdlc-hari4-siapa-saja-stakeholders-dala",
+      "next": "Cara Menggali dan Menyusun Requirement"
+    },
+    {
+      "day": 5,
+      "title": "Cara Menggali dan Menyusun Requirement",
+      "angle": "Menggali requirement itu seperti detektif yang merangkai petunjuk agar sesuai dengan tujuan akhir.",
+      "topics": [
+        "Penggalian dan Pendokumentasian Requirement"
+      ],
+      "why": "Menjelaskan cara teknis mengumpulkan kebutuhan dari berbagai metode survei dan interview.",
+      "name": "sdlc-hari5-cara-menggali-dan-menyusun-r",
+      "next": "Membongkar Isi Dokumen SRS"
+    },
+    {
+      "day": 6,
+      "title": "Membongkar Isi Dokumen SRS",
+      "angle": "SRS adalah kitab suci developer yang merinci batasan dan kemampuan sistem secara presisi.",
+      "topics": [
+        "Dokumen SRS (Software Requirements Specification)"
+      ],
+      "why": "Membedah output utama dari tahap planning yaitu dokumen spesifikasi fungsional dan non-fungsional.",
+      "name": "sdlc-hari6-membongkar-isi-dokumen-srs",
+      "next": "Perbedaan URS dan SysRS Wajib Tahu"
+    },
+    {
+      "day": 7,
+      "title": "Perbedaan URS dan SysRS Wajib Tahu",
+      "angle": "URS bicara soal suara pengguna, sedangkan SysRS bicara soal kesiapan sistem dan perangkat keras.",
+      "topics": [
+        "Dokumen URS (User Requirement Specification)",
+        "Dokumen SysRS (System Requirement Specification)"
+      ],
+      "why": "Menggabungkan dua dokumen spesifikasi pelengkap untuk menutup rangkaian materi perencanaan requirement.",
+      "name": "sdlc-hari7-perbedaan-urs-dan-sysrs-waji",
+      "next": ""
+    }
+  ]
+}
