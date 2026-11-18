@@ -3,7 +3,8 @@
 Pemakaian (dari folder utama proyek, pakai python di .venv-audio):
   .\\.venv-audio\\Scripts\\python.exe tools\\pipeline.py NAMA --day "HARI 1/15" --course "Intro to Software Engineering"
 
-Yang dibutuhkan: file naskah\\NAMA.txt. Hasil:
+Yang dibutuhkan: file naskah\\NAMA.txt, ATAU catatan belajar catatan\\NAMA.txt dengan opsi --notes
+(naskah lalu dibuat otomatis oleh Scriptwriter + Reviewer). Hasil:
   apps\\remotion\\public\\audio\\NAMA.wav            (suara)
   apps\\remotion\\public\\audio\\NAMA.words.json     (waktu tiap kata)
   apps\\remotion\\src\\storyboards\\NAMA.json        (storyboard dari AI)
@@ -13,6 +14,8 @@ Pilihan:
   --voice Kore            suara Gemini TTS
   --provider gemini       penyedia AI untuk storyboard (gemini|openrouter|deepseek)
   --model NAMA_MODEL      model AI untuk storyboard
+  --notes                 buat naskah dari catatan\\NAMA.txt (Scriptwriter + Reviewer)
+  --next "SDLC"           topik video besok (untuk teaser di naskah)
   --skip-tts              pakai NAMA.wav yang sudah ada (mis. rekaman sendiri)
   --skip-align            pakai NAMA.words.json yang sudah ada
   --auto                  jangan berhenti menunggu persetujuan audio
@@ -47,6 +50,8 @@ def main():
     ap.add_argument("--voice", default="Kore")
     ap.add_argument("--provider", default="gemini")
     ap.add_argument("--model")
+    ap.add_argument("--notes", action="store_true")
+    ap.add_argument("--next", dest="nxt")
     ap.add_argument("--skip-tts", action="store_true")
     ap.add_argument("--skip-align", action="store_true")
     ap.add_argument("--auto", action="store_true")
@@ -59,6 +64,28 @@ def main():
     words = REMOTION / "public" / "audio" / f"{n}.words.json"
     sb = REMOTION / "src" / "storyboards" / f"{n}.json"
     mp4 = REMOTION / "out" / f"{n}.mp4"
+
+    if a.notes:
+        notes = ROOT / "catatan" / f"{n}.txt"
+        if not notes.exists():
+            print(f"[GAGAL] Catatan tidak ada: {notes}")
+            return 1
+        cmd = [PY, "tools/run_scriptwriter.py", str(notes), str(script), "--provider", a.provider]
+        if a.model:
+            cmd += ["--model", a.model]
+        if a.day:
+            cmd += ["--day", a.day]
+        if a.course:
+            cmd += ["--course", a.course]
+        if a.nxt:
+            cmd += ["--next", a.nxt]
+        run("0. Naskah (Scriptwriter + Reviewer)", cmd)
+        if not a.auto:
+            print(f"\nBuka dan baca naskahnya: {script}")
+            ans = input("Naskah sudah oke? Edit file-nya dulu bila perlu, lalu ketik y untuk lanjut (n untuk berhenti): ").strip().lower()
+            if ans != "y":
+                print("Dihentikan. Edit naskah, lalu jalankan lagi tanpa --notes.")
+                return 0
 
     if not script.exists():
         print(f"[GAGAL] Naskah tidak ada: {script}")

@@ -1,0 +1,390 @@
+{
+  "schemaVersion": "1.1",
+  "video": {
+    "title": "Tahap Planning dalam SDLC",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 46600,
+    "badge": {
+      "day": "HARI 2/15",
+      "course": "Intro to Software Engineering"
+    }
+  },
+  "audio": {
+    "src": "audio/hari2-sdlc.wav",
+    "durationMs": 46600
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 5610,
+      "component": "IconHero",
+      "props": {
+        "icon": "rocket",
+        "title": "Bikin Aplikasi Dari Nol",
+        "subtitle": "Pernah penasaran caranya?",
+        "color": "teal",
+        "motion": "float"
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-002",
+      "startMs": 5610,
+      "durationMs": 3870,
+      "component": "BigStatement",
+      "props": {
+        "kicker": "FOKUS",
+        "icon": "target",
+        "iconColor": "orange",
+        "lines": [
+          {
+            "text": "Tahap Planning",
+            "color": "teal"
+          },
+          {
+            "text": "Dalam SDLC",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "slide"
+    },
+    {
+      "id": "scene-003",
+      "startMs": 9480,
+      "durationMs": 7770,
+      "component": "IconHero",
+      "props": {
+        "icon": "bulb",
+        "title": "Ibarat Bangun Rumah",
+        "subtitle": "Bikin denah dan diskusi kebutuhan",
+        "color": "violet",
+        "motion": "wiggle"
+      },
+      "transition": "zoom"
+    },
+    {
+      "id": "scene-004",
+      "startMs": 17250,
+      "durationMs": 5830,
+      "component": "CardList",
+      "props": {
+        "heading": "Catat Kebutuhan",
+        "items": [
+          {
+            "text": "User & Tim Marketing",
+            "icon": "people",
+            "color": "teal"
+          },
+          {
+            "text": "Tujuan Aplikasi",
+            "icon": "target",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "wipe"
+    },
+    {
+      "id": "scene-005",
+      "startMs": 23080,
+      "durationMs": 4160,
+      "component": "FlowSteps",
+      "props": {
+        "heading": "Tetapkan Tujuan",
+        "steps": [
+          {
+            "label": "Tujuan Jelas",
+            "icon": "target",
+            "color": "teal"
+          },
+          {
+            "label": "Arah Tepat",
+            "icon": "arrow",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-006",
+      "startMs": 27240,
+      "durationMs": 5630,
+      "component": "IconHero",
+      "props": {
+        "icon": "chat",
+        "title": "Survei & Interview",
+        "subtitle": "Gali semua kebutuhan",
+        "color": "violet",
+        "motion": "pulse"
+      },
+      "transition": "slide"
+    },
+    {
+      "id": "scene-007",
+      "startMs": 32870,
+      "durationMs": 4880,
+      "component": "IconGrid",
+      "props": {
+        "heading": "Dokumen Penting",
+        "items": [
+          {
+            "icon": "file",
+            "label": "SRS & URS",
+            "color": "teal"
+          },
+          {
+            "icon": "code",
+            "label": "Panduan Developer",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "zoom"
+    },
+    {
+      "id": "scene-008",
+      "startMs": 37750,
+      "durationMs": 3390,
+      "component": "BigStatement",
+      "props": {
+        "kicker": "PANDUAN",
+        "icon": "check",
+        "iconColor": "green",
+        "lines": [
+          {
+            "text": "Acuan Utama",
+            "color": "teal"
+          },
+          {
+            "text": "Para Developer",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "wipe"
+    },
+    {
+      "id": "scene-009",
+      "startMs": 41140,
+      "durationMs": 5460,
+      "component": "CtaCard",
+      "props": {
+        "title": "Besok Desain Arsitektur",
+        "subtitle": "Jangan lupa follow biar gak ketinggalan ya",
+        "button": "Follow Sekarang",
+        "color": "teal",
+        "icon": "arrow"
+      },
+      "transition": "fade"
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "sub-001",
+      "startMs": 280,
+      "endMs": 5160,
+      "text": "Pernah gak sih lo penasaran gimana cara bikin aplikasi yang rapi dari nol?",
+      "wordStartsMs": [
+        280,
+        700,
+        800,
+        1020,
+        1140,
+        1960,
+        2680,
+        2960,
+        3280,
+        3800,
+        4000,
+        4500,
+        4720
+      ]
+    },
+    {
+      "id": "sub-002",
+      "startMs": 5610,
+      "endMs": 8930,
+      "text": "Semua itu dimulai dari tahap planning dalam SDLC.",
+      "wordStartsMs": [
+        5610,
+        5900,
+        6280,
+        6880,
+        7100,
+        7420,
+        7800,
+        8140
+      ]
+    },
+    {
+      "id": "sub-003",
+      "startMs": 9480,
+      "endMs": 10970,
+      "text": "Ibarat mau bangun rumah,",
+      "wordStartsMs": [
+        9480,
+        10060,
+        10220,
+        10500
+      ]
+    },
+    {
+      "id": "sub-004",
+      "startMs": 11360,
+      "endMs": 16790,
+      "text": "tahap ini tuh kayak bikin denah dan ngobrol sama semua yang bakal pakai atau urus rumah itu.",
+      "wordStartsMs": [
+        11360,
+        11580,
+        11740,
+        11920,
+        12140,
+        12660,
+        13260,
+        13500,
+        13920,
+        14140,
+        14660,
+        14920,
+        15200,
+        15520,
+        15820,
+        16160,
+        16360
+      ]
+    },
+    {
+      "id": "sub-005",
+      "startMs": 17250,
+      "endMs": 20710,
+      "text": "Kita catat dulu nih siapa aja yang butuhin aplikasinya,",
+      "wordStartsMs": [
+        17250,
+        17440,
+        17740,
+        18000,
+        18260,
+        18780,
+        19240,
+        19540,
+        19880
+      ]
+    },
+    {
+      "id": "sub-006",
+      "startMs": 21080,
+      "endMs": 23110,
+      "text": "dari user sampai tim marketing.",
+      "wordStartsMs": [
+        21080,
+        21280,
+        21700,
+        22320,
+        22620
+      ]
+    },
+    {
+      "id": "sub-007",
+      "startMs": 23580,
+      "endMs": 26730,
+      "text": "Terus kita tetapkan tujuannya mau dibawa ke mana.",
+      "wordStartsMs": [
+        23580,
+        24060,
+        24340,
+        24860,
+        25360,
+        25740,
+        26000,
+        26000
+      ]
+    },
+    {
+      "id": "sub-008",
+      "startMs": 27140,
+      "endMs": 32390,
+      "text": "Abis itu kita gali semua kebutuhannya lewat survei atau interview biar jelas.",
+      "wordStartsMs": [
+        27140,
+        27360,
+        27870,
+        28240,
+        28700,
+        28980,
+        29720,
+        30140,
+        30740,
+        30960,
+        31520,
+        31840
+      ]
+    },
+    {
+      "id": "sub-009",
+      "startMs": 32870,
+      "endMs": 37150,
+      "text": "Hasil akhirnya jadi dokumen penting seperti SRS dan URS.",
+      "wordStartsMs": [
+        32870,
+        33140,
+        34030,
+        34200,
+        34600,
+        35200,
+        35500,
+        36340,
+        36580
+      ]
+    },
+    {
+      "id": "sub-010",
+      "startMs": 37750,
+      "endMs": 40290,
+      "text": "Dokumen itu jadi panduan utama para developer.",
+      "wordStartsMs": [
+        37750,
+        38060,
+        38480,
+        38720,
+        39180,
+        39640,
+        39840
+      ]
+    },
+    {
+      "id": "sub-011",
+      "startMs": 41130,
+      "endMs": 44190,
+      "text": "Besok kita bakal bahas tahap design arsitekturnya.",
+      "wordStartsMs": [
+        41130,
+        41840,
+        42000,
+        42340,
+        42660,
+        42940,
+        43260
+      ]
+    },
+    {
+      "id": "sub-012",
+      "startMs": 44540,
+      "endMs": 46370,
+      "text": "Jangan lupa follow biar gak ketinggalan ya.",
+      "wordStartsMs": [
+        44540,
+        44720,
+        44920,
+        45240,
+        45480,
+        45600,
+        46100
+      ]
+    }
+  ]
+}

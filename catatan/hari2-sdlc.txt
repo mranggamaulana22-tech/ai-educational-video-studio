@@ -1,0 +1,70 @@
+Phases in SDLC
+
+Part of sdlc
+1.Planing : mencatat requirement dan develop softwere softwere requirement spesification (SRS).
+2.Design : document sofwere arsitektur yang dibutuhkan, dan desain sistem arsitektur.
+3.Development : membagikan task ke developer, menulis code yang sesuai dengan produk requirement.
+4.Testing : mencoba aplikasi untuk memastikan aman dan stabil dan sesuai dengan requirement.
+5.Deployment : menyiapkan production environment, dan mendeploy aplikasi untuk menuju ke lingkungan produksi.
+6.Maintenance : fix bug yang dilaporkan oleh pengguna dan memperbaiki code untuk kelancaran dan kestabilan aplikasi.
+
+Di dalam step 1 planing, tugas pertama adalah mencatat requirement.
+Step untuk menulis requirement :
+1)Identifikasi siapa saja stekholders / pemangku kepentingan projek ini.
+a)Ketua/decision maker/ projek menejer (PM)
+b)End user / user
+c)System administrator / admin sistem
+d)Engineering 
+e)Marketing
+f)Sales
+g)Curtomer support
+2)Menetapkan tujuan dan objektivitas
+a)Goals : Tujuan jangka panjang yang bisa dicapai
+b)Objectives : Dapat di tindak lanjuti dan diukur untuk mencapai target
+3)Penggalian kebutuhan dari stekholders
+a)Penggalian kebutuhan : 
+1)Survei
+2)kuisioner
+3)Intervew
+4)Mendokumentasikan kebutuhan / requirement
+a)Document harus :
+1)Sejalan dengan goals dan dapat dicapai
+2)Mudah di pahami oleh stekholder
+5)Analisa dan mengkonfirmasi requirement
+a)Requirement harus konsisten
+b)Jelas
+c)Lengkap 
+6)Tentukan skala prioritas
+a)Mana yang harus ada
+b)Prioritas tinggi
+c)Bagus jika ada
+Jika sudah melakukan semuanya, output dari langkah 1 ini adalah dokumen dokumen berikut: 
+1)Softwere requirements spesification (SRS)
+a)Menentukan fungsionalitas yang harus dapat dilakukan softwere.
+b)Standar performa aplikasi.
+c)Tujuan dan ruang lingkup
+d)Batasan, asumsi, ketergantungan
+e)Requirement yang harus di jalankan perkategori
+1)Functional requirement : fitur yang yang harus bisa dilakukan oleh sistem
+2)External interface requirement : menjelaskan bagaimana sistem berinteraksi dengan pihak atau  komponen eksternal
+3)System feature : menjelaskan fitur utama sistem beserta detail perilakunya
+4)Non-functional requirement : menjelaskan bagaimana kualitas sistem harus dipenuhi, bukan fitur apa yang disediakan (security, performa,usability, reliability)
+
+2)User requirement spesification (URS)
+a)Mendeskripsikan apa yang bisnis butuhkan dan ekspektasi user
+b)User stories :
+1)Siapa yang menggunakan applikasinya?
+2)Fitur apa saja yang dibutuhkan untuk bisa perform?
+3)Knp user membutuhkan fiturnya?
+c)URS dikonfirmasi melalui user accepted testing (UAT) proses pengujian yang dilakukan oleh pengguna atau perwakilan pengguna untuk memastikan aplikasi sudah sesuai kebutuhan mereka
+d)URS digabungkan ke dalam SRS 
+3)System requirement spesification (SysRS)
+a)System capabilities. Menjelaskan kemampuan yang harus dimiliki sistem
+b)Interface and user characteristics. Menjelaskan bagaimana sistem berinteraksi dengan pengguna maupun sistem lain, serta karakteristik penggunanya.
+c)Policy. Kebijakan dan aturan yang harus diterapkan di dalam sistem (aturan internal organisasi)
+d)Regulation. Menjelaskan peraturan atau standart eksternal yang harus dipenuhi sistem (aturan dari pihak yang berwenang)
+e)Personnel. Menjelaskan orang orang yang terlibat dalam pengoperasian dan pemeliharaan sistem.
+f)Performance. Menjelaskan standar kinerja yang harus dicapai sistem
+g)Security. Menjelaskan bagaimana sistem melindungi data dan mencegah akses yang tidak sah
+h)System acceptent kriteria. Menjelaskan kriteria yang harus dipenuhi sebelum sistem dinyatakan layak diterima.
+i)Hardware expectation. Menjelaskan kebutuhan perangkat keras untuk menjalankan sistem

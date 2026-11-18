@@ -1,0 +1,594 @@
+{
+ "audio": "hari2-sdlc.wav",
+ "durationMs": 46600,
+ "model": "small",
+ "silences": [
+  [
+   0,
+   280
+  ],
+  [
+   5010,
+   5610
+  ],
+  [
+   8890,
+   9480
+  ],
+  [
+   11020,
+   11360
+  ],
+  [
+   16650,
+   17250
+  ],
+  [
+   20680,
+   21080
+  ],
+  [
+   23100,
+   23580
+  ],
+  [
+   26580,
+   27140
+  ],
+  [
+   32330,
+   32870
+  ],
+  [
+   33800,
+   34030
+  ],
+  [
+   37210,
+   37750
+  ],
+  [
+   40490,
+   41130
+  ],
+  [
+   41610,
+   41830
+  ],
+  [
+   44060,
+   44540
+  ],
+  [
+   46290,
+   46600
+  ]
+ ],
+ "words": [
+  {
+   "text": "Pernah",
+   "startMs": 280,
+   "endMs": 700
+  },
+  {
+   "text": "nggak",
+   "startMs": 700,
+   "endMs": 800
+  },
+  {
+   "text": "sih",
+   "startMs": 800,
+   "endMs": 1020
+  },
+  {
+   "text": "lo",
+   "startMs": 1020,
+   "endMs": 1140
+  },
+  {
+   "text": "penasaran,",
+   "startMs": 1140,
+   "endMs": 1960
+  },
+  {
+   "text": "gimana",
+   "startMs": 1960,
+   "endMs": 2680
+  },
+  {
+   "text": "cara",
+   "startMs": 2680,
+   "endMs": 2960
+  },
+  {
+   "text": "bikin",
+   "startMs": 2960,
+   "endMs": 3280
+  },
+  {
+   "text": "aplikasi",
+   "startMs": 3280,
+   "endMs": 3800
+  },
+  {
+   "text": "yang",
+   "startMs": 3800,
+   "endMs": 4000
+  },
+  {
+   "text": "rapi",
+   "startMs": 4000,
+   "endMs": 4500
+  },
+  {
+   "text": "dari",
+   "startMs": 4500,
+   "endMs": 4720
+  },
+  {
+   "text": "nol?",
+   "startMs": 4720,
+   "endMs": 5010
+  },
+  {
+   "text": "Semua",
+   "startMs": 5610,
+   "endMs": 5900
+  },
+  {
+   "text": "itu",
+   "startMs": 5900,
+   "endMs": 6280
+  },
+  {
+   "text": "dimulai",
+   "startMs": 6280,
+   "endMs": 6880
+  },
+  {
+   "text": "dari",
+   "startMs": 6880,
+   "endMs": 7100
+  },
+  {
+   "text": "tahap",
+   "startMs": 7100,
+   "endMs": 7420
+  },
+  {
+   "text": "planning",
+   "startMs": 7420,
+   "endMs": 7800
+  },
+  {
+   "text": "dalam",
+   "startMs": 7800,
+   "endMs": 8140
+  },
+  {
+   "text": "SDLC.",
+   "startMs": 8140,
+   "endMs": 8780
+  },
+  {
+   "text": "Ibarat",
+   "startMs": 9480,
+   "endMs": 10060
+  },
+  {
+   "text": "mau",
+   "startMs": 10060,
+   "endMs": 10220
+  },
+  {
+   "text": "bangun",
+   "startMs": 10220,
+   "endMs": 10500
+  },
+  {
+   "text": "rumah,",
+   "startMs": 10500,
+   "endMs": 10820
+  },
+  {
+   "text": "tahap",
+   "startMs": 11360,
+   "endMs": 11580
+  },
+  {
+   "text": "ini",
+   "startMs": 11580,
+   "endMs": 11740
+  },
+  {
+   "text": "tuh",
+   "startMs": 11740,
+   "endMs": 11920
+  },
+  {
+   "text": "kayak",
+   "startMs": 11920,
+   "endMs": 12140
+  },
+  {
+   "text": "bikin",
+   "startMs": 12140,
+   "endMs": 12660
+  },
+  {
+   "text": "dengah",
+   "startMs": 12660,
+   "endMs": 13260
+  },
+  {
+   "text": "dan",
+   "startMs": 13260,
+   "endMs": 13500
+  },
+  {
+   "text": "ngobrol",
+   "startMs": 13500,
+   "endMs": 13920
+  },
+  {
+   "text": "sama",
+   "startMs": 13920,
+   "endMs": 14140
+  },
+  {
+   "text": "semua",
+   "startMs": 14140,
+   "endMs": 14660
+  },
+  {
+   "text": "yang",
+   "startMs": 14660,
+   "endMs": 14920
+  },
+  {
+   "text": "bakal",
+   "startMs": 14920,
+   "endMs": 15200
+  },
+  {
+   "text": "pakai",
+   "startMs": 15200,
+   "endMs": 15520
+  },
+  {
+   "text": "atau",
+   "startMs": 15520,
+   "endMs": 15820
+  },
+  {
+   "text": "urus",
+   "startMs": 15820,
+   "endMs": 16160
+  },
+  {
+   "text": "rumah",
+   "startMs": 16160,
+   "endMs": 16360
+  },
+  {
+   "text": "itu.",
+   "startMs": 16360,
+   "endMs": 16640
+  },
+  {
+   "text": "Kita",
+   "startMs": 17250,
+   "endMs": 17440
+  },
+  {
+   "text": "catet",
+   "startMs": 17440,
+   "endMs": 17740
+  },
+  {
+   "text": "dulu",
+   "startMs": 17740,
+   "endMs": 18000
+  },
+  {
+   "text": "nih",
+   "startMs": 18000,
+   "endMs": 18260
+  },
+  {
+   "text": "siapa",
+   "startMs": 18260,
+   "endMs": 18780
+  },
+  {
+   "text": "aja",
+   "startMs": 18780,
+   "endMs": 19240
+  },
+  {
+   "text": "yang",
+   "startMs": 19240,
+   "endMs": 19540
+  },
+  {
+   "text": "butuhin",
+   "startMs": 19540,
+   "endMs": 19880
+  },
+  {
+   "text": "aplikasinya,",
+   "startMs": 19880,
+   "endMs": 20560
+  },
+  {
+   "text": "dari",
+   "startMs": 21080,
+   "endMs": 21280
+  },
+  {
+   "text": "user",
+   "startMs": 21280,
+   "endMs": 21700
+  },
+  {
+   "text": "sampai",
+   "startMs": 21700,
+   "endMs": 22320
+  },
+  {
+   "text": "team",
+   "startMs": 22320,
+   "endMs": 22620
+  },
+  {
+   "text": "marketing.",
+   "startMs": 22620,
+   "endMs": 22960
+  },
+  {
+   "text": "Terus",
+   "startMs": 23580,
+   "endMs": 24060
+  },
+  {
+   "text": "kita",
+   "startMs": 24060,
+   "endMs": 24340
+  },
+  {
+   "text": "tetapkan",
+   "startMs": 24340,
+   "endMs": 24860
+  },
+  {
+   "text": "tujuannya",
+   "startMs": 24860,
+   "endMs": 25360
+  },
+  {
+   "text": "mau",
+   "startMs": 25360,
+   "endMs": 25740
+  },
+  {
+   "text": "dibawa",
+   "startMs": 25740,
+   "endMs": 26000
+  },
+  {
+   "text": "kemana.",
+   "startMs": 26000,
+   "endMs": 26580
+  },
+  {
+   "text": "Abis",
+   "startMs": 27140,
+   "endMs": 27360
+  },
+  {
+   "text": "itu,",
+   "startMs": 27360,
+   "endMs": 27870
+  },
+  {
+   "text": "kita",
+   "startMs": 27870,
+   "endMs": 28240
+  },
+  {
+   "text": "gali",
+   "startMs": 28240,
+   "endMs": 28700
+  },
+  {
+   "text": "semua",
+   "startMs": 28700,
+   "endMs": 28980
+  },
+  {
+   "text": "kebutuhannya",
+   "startMs": 28980,
+   "endMs": 29720
+  },
+  {
+   "text": "lewat",
+   "startMs": 29720,
+   "endMs": 30140
+  },
+  {
+   "text": "survei",
+   "startMs": 30140,
+   "endMs": 30740
+  },
+  {
+   "text": "atau",
+   "startMs": 30740,
+   "endMs": 30960
+  },
+  {
+   "text": "interview,",
+   "startMs": 30960,
+   "endMs": 31520
+  },
+  {
+   "text": "biar",
+   "startMs": 31520,
+   "endMs": 31840
+  },
+  {
+   "text": "jelas.",
+   "startMs": 31840,
+   "endMs": 32240
+  },
+  {
+   "text": "Hasil",
+   "startMs": 32870,
+   "endMs": 33140
+  },
+  {
+   "text": "akhirnya,",
+   "startMs": 33140,
+   "endMs": 33740
+  },
+  {
+   "text": "jadi",
+   "startMs": 34030,
+   "endMs": 34200
+  },
+  {
+   "text": "dokumen",
+   "startMs": 34200,
+   "endMs": 34600
+  },
+  {
+   "text": "penting,",
+   "startMs": 34600,
+   "endMs": 35200
+  },
+  {
+   "text": "seperti",
+   "startMs": 35200,
+   "endMs": 35500
+  },
+  {
+   "text": "SRS",
+   "startMs": 35500,
+   "endMs": 36340
+  },
+  {
+   "text": "dan",
+   "startMs": 36340,
+   "endMs": 36580
+  },
+  {
+   "text": "URS.",
+   "startMs": 36580,
+   "endMs": 37000
+  },
+  {
+   "text": "Dokumen",
+   "startMs": 37750,
+   "endMs": 38060
+  },
+  {
+   "text": "itu,",
+   "startMs": 38060,
+   "endMs": 38480
+  },
+  {
+   "text": "jadi",
+   "startMs": 38480,
+   "endMs": 38720
+  },
+  {
+   "text": "panduan",
+   "startMs": 38720,
+   "endMs": 39180
+  },
+  {
+   "text": "utama",
+   "startMs": 39180,
+   "endMs": 39640
+  },
+  {
+   "text": "para",
+   "startMs": 39640,
+   "endMs": 39840
+  },
+  {
+   "text": "developer.",
+   "startMs": 39840,
+   "endMs": 40140
+  },
+  {
+   "text": "Besok,",
+   "startMs": 41130,
+   "endMs": 41610
+  },
+  {
+   "text": "kita",
+   "startMs": 41840,
+   "endMs": 42000
+  },
+  {
+   "text": "bakal",
+   "startMs": 42000,
+   "endMs": 42340
+  },
+  {
+   "text": "bahas",
+   "startMs": 42340,
+   "endMs": 42660
+  },
+  {
+   "text": "tahap",
+   "startMs": 42660,
+   "endMs": 42940
+  },
+  {
+   "text": "desain",
+   "startMs": 42940,
+   "endMs": 43260
+  },
+  {
+   "text": "arsitekturnya.",
+   "startMs": 43260,
+   "endMs": 44040
+  },
+  {
+   "text": "Jangan",
+   "startMs": 44540,
+   "endMs": 44720
+  },
+  {
+   "text": "lupa",
+   "startMs": 44720,
+   "endMs": 44920
+  },
+  {
+   "text": "follow,",
+   "startMs": 44920,
+   "endMs": 45240
+  },
+  {
+   "text": "biar",
+   "startMs": 45240,
+   "endMs": 45480
+  },
+  {
+   "text": "nggak",
+   "startMs": 45480,
+   "endMs": 45600
+  },
+  {
+   "text": "ketinggalan",
+   "startMs": 45600,
+   "endMs": 46100
+  },
+  {
+   "text": "ya.",
+   "startMs": 46100,
+   "endMs": 46220
+  }
+ ]
+}
