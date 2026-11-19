@@ -86,13 +86,20 @@ def can_run(session: Session, video: Video, stage: str):
     prev = stages.ORDER[idx - 1]
     prev_art = latest(session, video.id, prev)
 
-    # Kompatibilitas mundur: jika video dimulai langsung dengan PUT /notes (tanpa material/analysis),
-    # tahap 'script' tetap boleh jalan selama 'notes' sudah ada dan valid (tidak stale).
+    # Kompatibilitas mundur: jika tahap 'review' belum ada tapi 'script' sudah disetujui langsung,
+    # izinkan 'audio' memakai hasil 'script' secara langsung.
+    if stage == "audio" and not prev_art:
+        prev = "script"
+        prev_art = latest(session, video.id, prev)
+
     if not prev_art or prev_art.status == "stale":
         return f"Tahap sebelumnya ('{prev}') belum siap atau sudah usang."
 
     need = stages.REQUIRES_APPROVAL.get(stage)
     if need and not _is_approved(session, video.id, need):
+        # Kompatibilitas mundur: jika notes diinput manual (PUT /notes), langsung izinkan script jalan.
+        if need == "notes" and prev_art.source == "manual":
+            return ""
         return f"Titik persetujuan '{need}' belum disetujui."
 
     return ""
