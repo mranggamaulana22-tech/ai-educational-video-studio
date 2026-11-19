@@ -1,4 +1,4 @@
-"""Logika inti: versi hasil tahap, penandaan usang, persetujuan, dan menjalankan tahap."""
+"""Logika inti: versi hasil tahap, penandaan usang, persetujuan, dan orchestrator tahap."""
 import shutil
 import subprocess
 from datetime import datetime, timezone
@@ -51,6 +51,10 @@ def approve(session: Session, video: Video, point: str):
         raise ValueError(f"Titik persetujuan tidak dikenal: {point}")
     stage = stages.APPROVAL_POINTS[point]
     art = latest(session, video.id, stage)
+    # Kompatibilitas mundur: jika 'review' belum ada tapi 'script' sudah ada (mis. alur manual/legacy), setujui 'script'.
+    if not art and point == "script":
+        stage = "script"
+        art = latest(session, video.id, stage)
     if not art:
         raise ValueError(f"Belum ada hasil tahap '{stage}' untuk disetujui.")
     if art.status == "stale":
@@ -61,19 +65,36 @@ def approve(session: Session, video: Video, point: str):
     return art
 
 
+def _is_approved(session: Session, video_id: int, point: str) -> bool:
+    target = stages.APPROVAL_POINTS[point]
+    art = latest(session, video_id, target)
+    if art and art.status == "approved":
+        return True
+    # Kompatibilitas mundur untuk titik 'script' bila memakai artifak 'script' langsung
+    if point == "script":
+        alt = latest(session, video_id, "script")
+        return bool(alt and alt.status == "approved")
+    return False
+
+
 def can_run(session: Session, video: Video, stage: str):
     """Kembalikan pesan alasan bila tahap belum boleh dijalankan, atau '' bila boleh."""
     if stage in stages.MANUAL:
-        return f"Tahap '{stage}' dikerjakan manual (isi catatan lewat PUT /videos/{{id}}/notes)."
+        return f"Tahap '{stage}' dikerjakan manual (isi materi lewat PUT /videos/{{id}}/material)."
+
     idx = stages.ORDER.index(stage)
     prev = stages.ORDER[idx - 1]
-    if not latest(session, video.id, prev):
-        return f"Tahap sebelumnya ('{prev}') belum ada hasilnya."
+    prev_art = latest(session, video.id, prev)
+
+    # Kompatibilitas mundur: jika video dimulai langsung dengan PUT /notes (tanpa material/analysis),
+    # tahap 'script' tetap boleh jalan selama 'notes' sudah ada dan valid (tidak stale).
+    if not prev_art or prev_art.status == "stale":
+        return f"Tahap sebelumnya ('{prev}') belum siap atau sudah usang."
+
     need = stages.REQUIRES_APPROVAL.get(stage)
-    if need:
-        a = latest(session, video.id, stages.APPROVAL_POINTS[need])
-        if not a or a.status != "approved":
-            return f"Titik persetujuan '{need}' belum disetujui."
+    if need and not _is_approved(session, video.id, need):
+        return f"Titik persetujuan '{need}' belum disetujui."
+
     return ""
 
 
@@ -102,11 +123,43 @@ def execute_run(SessionLocal, run_id: int, day_label="", course=""):
         session.commit()
 
 
+def advance_workflow(SessionLocal, video_id: int, day_label="", course=""):
+    """Orchestrator: jalankan berurutan semua tahap otomatis yang siap sampai berhenti di approval gate / selesai."""
+    executed_runs = []
+    while True:
+        with SessionLocal() as session:
+            video = session.get(Video, video_id)
+            if not video:
+                break
+            next_stage = None
+            for s in stages.ORDER:
+                if s in stages.MANUAL:
+                    continue
+                art = latest(session, video.id, s)
+                if (not art or art.status == "stale") and not can_run(session, video, s):
+                    next_stage = s
+                    break
+            if not next_stage:
+                break
+            run = Run(video_id=video.id, stage=next_stage)
+            session.add(run)
+            session.commit()
+            run_id = run.id
+
+        execute_run(SessionLocal, run_id, day_label, course)
+        with SessionLocal() as session:
+            done = session.get(Run, run_id)
+            executed_runs.append({"id": done.id, "stage": done.stage, "status": done.status})
+            if done.status != "ok":
+                break
+    return executed_runs
+
+
 def scan_existing(session: Session, video: Video):
     """Daftarkan file yang sudah ada di lokasi kerja (mis. hasil pipeline.py) sebagai versi 'imported'."""
     found = []
     for stage, path in stages.paths(video.name).items():
-        if path.exists() and not latest(session, video.id, stage):
+        if stage in stages.ORDER and path.exists() and not latest(session, video.id, stage):
             register_artifact(session, video, stage, source="imported")
             found.append(stage)
     return found
@@ -114,6 +167,15 @@ def scan_existing(session: Session, video: Video):
 
 def stage_is_auto(stage):
     return stage not in stages.MANUAL
+
+
+def waiting_approval_point(session: Session, video: Video):
+    """Kembalikan nama titik persetujuan yang sedang menunggu manusia, atau None."""
+    for point, target_stage in stages.APPROVAL_POINTS.items():
+        art = latest(session, video.id, target_stage)
+        if art and art.status == "draft":
+            return point
+    return None
 
 
 def summary(session: Session, video: Video):

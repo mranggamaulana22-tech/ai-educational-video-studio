@@ -1,6 +1,6 @@
 """API backend AI Educational Video Studio. Jalankan:  uvicorn app.main:app --reload  (dari apps/backend)"""
 from contextlib import asynccontextmanager
-
+from pathlib import Path
 import subprocess
 import sys
 
@@ -38,6 +38,7 @@ VOICES = [
     "Zubenelgenubi", "Vindemiatrix", "Sadachbia", "Sadaltager", "Sulafat",
 ]
 SAMPLE_TEXT = "Halo, aku narator videomu. Hari ini kita belajar tentang tahapan membuat software dari ide sampai siap dipakai."
+TEXT_STAGES = ("material", "analysis", "notes", "script", "review", "storyboard")
 
 
 class SeriesIn(BaseModel):
@@ -79,8 +80,16 @@ def get_video(session: Session, video_id: int) -> Video:
 
 def video_dict(session, v: Video):
     return {
-        "id": v.id, "name": v.name, "title": v.title, "day": v.day, "series_id": v.series_id,
-        "next_topic": v.next_topic, "voice": v.voice, "provider": v.provider, "model": v.model,
+        "id": v.id,
+        "name": v.name,
+        "title": v.title,
+        "day": v.day,
+        "series_id": v.series_id,
+        "next_topic": v.next_topic,
+        "voice": v.voice,
+        "provider": v.provider,
+        "model": v.model,
+        "waiting_approval": service.waiting_approval_point(session, v),
         "stages": service.summary(session, v),
     }
 
@@ -178,6 +187,12 @@ def _save_text(session, v: Video, stage: str, text: str):
     return {"stage": stage, "version": art.version, "video": video_dict(session, v)}
 
 
+@app.put("/videos/{video_id}/material")
+def put_material(video_id: int, body: TextIn, session: Session = Depends(db.get_session)):
+    """Simpan materi mentah sebagai pemicu awal alur otomatis (material -> analysis -> notes)."""
+    return _save_text(session, get_video(session, video_id), "material", body.text)
+
+
 @app.put("/videos/{video_id}/notes")
 def put_notes(video_id: int, body: TextIn, session: Session = Depends(db.get_session)):
     return _save_text(session, get_video(session, video_id), "notes", body.text)
@@ -185,19 +200,17 @@ def put_notes(video_id: int, body: TextIn, session: Session = Depends(db.get_ses
 
 @app.put("/videos/{video_id}/script")
 def put_script(video_id: int, body: TextIn, session: Session = Depends(db.get_session)):
-    """Edit naskah manual: jadi versi baru, hasil tahap setelahnya (suara dst.) ditandai usang."""
+    """Edit naskah manual: jadi versi baru, hasil tahap setelahnya ditandai usang."""
     return _save_text(session, get_video(session, video_id), "script", body.text)
 
 
 @app.get("/videos/{video_id}/text/{stage}")
 def get_text(video_id: int, stage: str, session: Session = Depends(db.get_session)):
-    if stage not in ("notes", "script"):
-        raise HTTPException(400, "Hanya notes atau script")
+    if stage not in TEXT_STAGES:
+        raise HTTPException(400, f"Hanya mendukung tahap teks: {', '.join(TEXT_STAGES)}")
     a = service.latest(session, video_id, stage)
     if not a:
         raise HTTPException(404, "Belum ada")
-    from pathlib import Path
-
     return {"version": a.version, "status": a.status, "text": Path(a.path).read_text(encoding="utf-8")}
 
 
@@ -218,6 +231,18 @@ def run_stage(video_id: int, stage: str, tasks: BackgroundTasks, session: Sessio
     day_label, course = labels(session, v)
     tasks.add_task(service.execute_run, db.SessionLocal, run.id, day_label, course)
     return {"run_id": run.id, "status": "queued"}
+
+
+@app.post("/videos/{video_id}/advance")
+def advance_video(video_id: int, tasks: BackgroundTasks, session: Session = Depends(db.get_session)):
+    """Orchestrator: jalankan seluruh tahap otomatis berikutnya sampai menyentuh titik approval manusia."""
+    v = get_video(session, video_id)
+    busy = session.scalars(select(Run).where(Run.video_id == v.id, Run.status.in_(["queued", "running"]))).first()
+    if busy:
+        raise HTTPException(409, f"Tahap '{busy.stage}' masih berjalan (run {busy.id}).")
+    day_label, course = labels(session, v)
+    tasks.add_task(service.advance_workflow, db.SessionLocal, v.id, day_label, course)
+    return {"status": "advancing", "video_id": v.id}
 
 
 @app.get("/videos/{video_id}/runs")
