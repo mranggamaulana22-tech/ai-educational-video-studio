@@ -18,7 +18,10 @@ const warnings = [];
 const err = (m) => errors.push(m);
 const warn = (m) => warnings.push(m);
 
-const KNOWN_VERSIONS = ["1.1"];
+const KNOWN_VERSIONS = ["1.1", "1.3"];
+const DEFAULT_COMPONENT_VERSION = "1.0.0";
+const SUPPORTED_COMPONENT_VERSIONS = ["1.0.0"];
+const SEMVER_RE = /^\d+\.\d+\.\d+$/;
 const MAX_DURATION_MS = 90000;
 
 // Daftar komponen yang terdaftar beserta props-nya.
@@ -99,9 +102,10 @@ const COMPONENTS = {
   CtaCard: { title: "string", subtitle: "string?", button: "string?", color: "string?", icon: "funIcon?", cuesMs: "number[]?" },
   IconHero: { icon: "funIcon", title: "string", subtitle: "string?", color: "string?", motion: "motion?", cuesMs: "number[]?" },
   IconGrid: { heading: "string?", items: "iconLabel", cuesMs: "number[]?" },
+  DiagramScene: { heading: "string?", nodes: "diagramNodes", edges: "diagramEdges?", cuesMs: "number[]?" },
 };
 
-const GENERIC_SCENES = ["BigStatement", "CompareCards", "FlowSteps", "CardList", "CtaCard", "IconHero", "IconGrid"];
+const GENERIC_SCENES = ["BigStatement", "CompareCards", "FlowSteps", "CardList", "CtaCard", "IconHero", "IconGrid", "DiagramScene"];
 const FUN_ICONS = ["laptop", "code", "gear", "cloud", "people", "bug", "check", "lock", "clock", "bulb", "rocket", "book", "server", "database", "chat", "star", "target", "puzzle", "folder", "file", "restaurant", "arrow"];
 const okIcon = (i) => i === undefined || FUN_ICONS.includes(i);
 const COLOR_NAMES = ["teal", "orange", "violet", "red", "green", "yellow"];
@@ -120,7 +124,7 @@ const FUN_SCENES = [
   "CtaScene",
 ];
 const SUBTITLE_COLORS = ["teal", "orange", "violet", "red"];
-const MAX_SCENE_MS = 8000; // ritme: scene lebih lama dari ini terasa membosankan
+const MAX_SCENE_MS = 8000; // DL-8: scene lebih dari 8 detik wajib dipecah (error)
 
 const ICON_NAMES = ["file", "folder", "cloud", "laptop", "commit", "branch", "check", "clock", "lock", "people", "code", "gear", "arrow", "bug"];
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
@@ -198,6 +202,32 @@ function checkValue(value, spec, where) {
         err(`${where}: 2-5 langkah, tiap langkah punya label dan color (opsional: ${COLOR_NAMES.join(", ")})`);
       }
       break;
+    case "diagramNodes":
+      if (
+        !Array.isArray(value) ||
+        value.length < 2 ||
+        value.length > 5 ||
+        !value.every(
+          (n) =>
+            n &&
+            isStr(n.id) &&
+            isStr(n.label) &&
+            (n.sublabel === undefined || isStr(n.sublabel)) &&
+            okIcon(n.icon) &&
+            okColor(n.color),
+        )
+      ) {
+        err(`${where}: 2-5 node, tiap node wajib punya id, label, serta sublabel/icon/color opsional`);
+      }
+      break;
+    case "diagramEdges":
+      if (
+        !Array.isArray(value) ||
+        !value.every((e) => e && isStr(e.from) && isStr(e.to) && (e.label === undefined || isStr(e.label)))
+      ) {
+        err(`${where}: setiap panah (edge) wajib punya from, to, dan label opsional`);
+      }
+      break;
     case "side":
       if (!value || !isStr(value.title) || !okColor(value.color) || !okIcon(value.icon) || !Array.isArray(value.items) || value.items.length === 0 || value.items.length > 4 || !value.items.every(isStr)) {
         err(`${where}: harus punya title, items (1-4 teks), dan color opsional (${COLOR_NAMES.join(", ")})`);
@@ -266,6 +296,8 @@ if (scenes.length === 0) err("scenes: harus ada minimal satu scene");
 
 const seenScene = new Set();
 let expectedStart = 0;
+const resolvedIds = [];
+
 scenes.forEach((s, i) => {
   const w = `Scene #${i + 1} (${s.id ?? "tanpa id"})`;
 
@@ -291,9 +323,26 @@ scenes.forEach((s, i) => {
     expectedStart = s.startMs + s.durationMs;
   }
 
-  const spec = COMPONENTS[s.component];
+  // Dukungan v1.3 (componentId + componentVersion) sekaligus kompatibilitas v1.1 (component)
+  const compId = sb.schemaVersion === "1.3" ? s.componentId : (s.componentId ?? s.component);
+  if (sb.schemaVersion === "1.3" && !isStr(s.componentId)) {
+    err(`${w}: schemaVersion 1.3 mewajibkan "componentId"`);
+  }
+  const compVer = s.componentVersion ?? DEFAULT_COMPONENT_VERSION;
+  if (sb.schemaVersion === "1.3" && !isStr(s.componentVersion)) {
+    err(`${w}: schemaVersion 1.3 mewajibkan "componentVersion" (diisi sistem/resolver)`);
+  } else if (!SEMVER_RE.test(compVer) || !SUPPORTED_COMPONENT_VERSIONS.includes(compVer)) {
+    err(`${w}: componentVersion "${compVer}" tidak valid/tidak didukung (gunakan: ${SUPPORTED_COMPONENT_VERSIONS.join(", ")})`);
+  }
+
+  resolvedIds.push(compId);
+  if (i >= 2 && compId && resolvedIds[i - 1] === compId && resolvedIds[i - 2] === compId) {
+    warn(`${w}: komponen "${compId}" dipakai 3 kali berturut-turut; variasikan komponen agar tidak monoton`);
+  }
+
+  const spec = COMPONENTS[compId];
   if (!spec) {
-    err(`${w}: komponen "${s.component}" belum terdaftar. Yang tersedia: ${Object.keys(COMPONENTS).join(", ")}`);
+    err(`${w}: komponen "${compId}" belum terdaftar. Yang tersedia: ${Object.keys(COMPONENTS).join(", ")}`);
     return;
   }
   const props = s.props ?? {};
@@ -301,10 +350,24 @@ scenes.forEach((s, i) => {
     checkValue(props[key], type, `${w}, props.${key}`);
   }
   for (const key of Object.keys(props)) {
-    if (!(key in spec)) warn(`${w}: props.${key} tidak dikenal oleh ${s.component} dan akan diabaikan`);
+    if (!(key in spec)) warn(`${w}: props.${key} tidak dikenal oleh ${compId} dan akan diabaikan`);
   }
 
-  if (s.component === "CodeScene") {
+  if (compId === "DiagramScene" && Array.isArray(props.nodes)) {
+    const nodeIds = new Set(props.nodes.map((n) => n?.id).filter(Boolean));
+    if (nodeIds.size !== props.nodes.length) {
+      err(`${w}: id pada DiagramScene.nodes harus unik`);
+    }
+    if (Array.isArray(props.edges)) {
+      for (const edge of props.edges) {
+        if (edge && (!nodeIds.has(edge.from) || !nodeIds.has(edge.to))) {
+          err(`${w}: DiagramScene.edges (${edge.from} -> ${edge.to}) merujuk id node yang tidak ada`);
+        }
+      }
+    }
+  }
+
+  if (compId === "CodeScene") {
     if (props.preview === "lamp") {
       if (!isNum(props.lampOnMs)) err(`${w}: preview "lamp" membutuhkan lampOnMs`);
       else if (props.lampOnMs >= s.durationMs) {
@@ -318,7 +381,7 @@ scenes.forEach((s, i) => {
       }
     }
   }
-  if (s.component === "KeyPoints") {
+  if (compId === "KeyPoints") {
     if (
       Array.isArray(props.points) &&
       Array.isArray(props.revealMs) &&
@@ -333,15 +396,15 @@ scenes.forEach((s, i) => {
       err(`${w}: ada waktu kemunculan yang melewati durasi scene (${s.durationMs} ms)`);
     }
   }
-  if ((FUN_SCENES.includes(s.component) || GENERIC_SCENES.includes(s.component)) && Array.isArray(props.cuesMs)) {
+  if ((FUN_SCENES.includes(compId) || GENERIC_SCENES.includes(compId)) && Array.isArray(props.cuesMs)) {
     if (props.cuesMs.some((t) => isNum(t) && isNum(s.durationMs) && t >= s.durationMs)) {
       err(`${w}: ada waktu kemunculan (cuesMs) yang melewati durasi scene (${s.durationMs} ms)`);
     }
   }
   if (isNum(s.durationMs) && s.durationMs > MAX_SCENE_MS) {
-    warn(`${w}: durasi ${s.durationMs} ms melebihi ${MAX_SCENE_MS} ms; pertimbangkan dipecah jadi dua scene`);
+    err(`${w}: durasi ${s.durationMs} ms melebihi batas maksimal ${MAX_SCENE_MS} ms (8 detik); wajib dipecah jadi dua scene`);
   }
-  if (["FileChaos", "CommitTimeline", "CloudSync"].includes(s.component)) {
+  if (["FileChaos", "CommitTimeline", "CloudSync"].includes(compId)) {
     const times = [];
     for (const k of ["cuesMs", "uploadMs", "teamMs", "downloadMs"]) {
       if (Array.isArray(props[k])) times.push(...props[k]);
@@ -353,12 +416,12 @@ scenes.forEach((s, i) => {
       err(`${w}: ada waktu kemunculan yang melewati durasi scene (${s.durationMs} ms)`);
     }
   }
-  if (s.component === "FileChaos" && Array.isArray(props.files) && Array.isArray(props.cuesMs)) {
+  if (compId === "FileChaos" && Array.isArray(props.files) && Array.isArray(props.cuesMs)) {
     if (props.files.length !== props.cuesMs.length) {
       err(`${w}: jumlah cuesMs (${props.cuesMs.length}) harus sama dengan jumlah files (${props.files.length})`);
     }
   }
-  if (s.component === "CommitTimeline" && Array.isArray(props.labels) && Array.isArray(props.cuesMs)) {
+  if (compId === "CommitTimeline" && Array.isArray(props.labels) && Array.isArray(props.cuesMs)) {
     if (props.labels.length !== props.cuesMs.length) {
       err(`${w}: jumlah cuesMs (${props.cuesMs.length}) harus sama dengan jumlah labels (${props.labels.length})`);
     }
@@ -366,7 +429,7 @@ scenes.forEach((s, i) => {
       err(`${w}: rewindTo harus antara 0 dan ${props.labels.length - 1}`);
     }
   }
-  if (s.component === "IconSummary") {
+  if (compId === "IconSummary") {
     if (Array.isArray(props.items) && Array.isArray(props.revealMs) && props.items.length !== props.revealMs.length) {
       err(`${w}: jumlah revealMs (${props.revealMs.length}) harus sama dengan jumlah items (${props.items.length})`);
     }
@@ -375,7 +438,7 @@ scenes.forEach((s, i) => {
       err(`${w}: ada waktu kemunculan yang melewati durasi scene (${s.durationMs} ms)`);
     }
   }
-  if (s.component === "SummaryCards") {
+  if (compId === "SummaryCards") {
     if (
       Array.isArray(props.cards) &&
       Array.isArray(props.revealMs) &&

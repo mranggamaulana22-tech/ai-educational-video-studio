@@ -3,7 +3,7 @@ import { AbsoluteFill, Audio, Sequence, staticFile, useVideoConfig } from "remot
 import type { Storyboard } from "./storyboard";
 import { msToFrames } from "./components";
 import { Backdrop } from "./Backdrop";
-import { registry } from "./registry";
+import { resolveSceneComponent } from "./registry";
 import { SceneTransition, TRANSITION_OVERLAP } from "./Transition";
 import { FunSubtitleTrack } from "./FunSubtitle";
 import { TopBadge } from "./TopBadge";
@@ -16,9 +16,9 @@ export const VideoRoot: React.FC<Storyboard> = ({ video, audio, scenes, subtitle
       <Backdrop />
       <Audio src={staticFile(audio.src)} />
       {scenes.map((scene, idx) => {
-        const Comp = registry[scene.component];
-        if (!Comp) {
-          throw new Error(`Komponen belum terdaftar: ${scene.component}`);
+        const { componentId, Component } = resolveSceneComponent(scene);
+        if (!Component) {
+          throw new Error(`Komponen belum terdaftar: ${componentId}`);
         }
         const from = msToFrames(scene.startMs, fps);
         const dur = msToFrames(scene.startMs + scene.durationMs, fps) - from;
@@ -27,7 +27,7 @@ export const VideoRoot: React.FC<Storyboard> = ({ video, audio, scenes, subtitle
         if (t === "none") {
           return (
             <Sequence key={scene.id} from={from} durationInFrames={dur}>
-              <Comp {...scene.props} />
+              <Component {...scene.props} />
             </Sequence>
           );
         }
@@ -37,7 +37,7 @@ export const VideoRoot: React.FC<Storyboard> = ({ video, audio, scenes, subtitle
         return (
           <Sequence key={scene.id} from={from} durationInFrames={total}>
             <SceneTransition type={t} total={total} hasOut={!isLast}>
-              <Comp {...scene.props} />
+              <Component {...scene.props} />
             </SceneTransition>
           </Sequence>
         );

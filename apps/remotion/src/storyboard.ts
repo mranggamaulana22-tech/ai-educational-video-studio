@@ -12,7 +12,11 @@ export type Scene = {
   id: string;
   startMs: number;
   durationMs: number;
-  component: string;
+  // Kontrak v1.3 memakai componentId + componentVersion (diisi sistem/resolver).
+  // Field "component" dipertahankan opsional untuk kompatibilitas storyboard v1.1.
+  componentId?: string;
+  componentVersion?: string;
+  component?: string;
   props: Record<string, unknown>;
   transition?: "none" | "fade" | "slide" | "zoom" | "wipe";
 };

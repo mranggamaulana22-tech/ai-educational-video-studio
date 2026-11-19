@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.3",
+  "video": {
+    "title": "Demo DiagramScene v1.3",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 10000
+  },
+  "audio": {
+    "src": "audio/hari2-sdlc.wav",
+    "durationMs": 10000
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 4500,
+      "componentId": "IconHero",
+      "componentVersion": "1.0.0",
+      "props": {
+        "icon": "rocket",
+        "title": "Arsitektur SDLC",
+        "color": "teal",
+        "motion": "float"
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-002",
+      "startMs": 4500,
+      "durationMs": 5500,
+      "componentId": "DiagramScene",
+      "componentVersion": "1.0.0",
+      "props": {
+        "heading": "Alur Sistem",
+        "nodes": [
+          {
+            "id": "n1",
+            "label": "Catatan",
+            "sublabel": "Input materi",
+            "icon": "file",
+            "color": "teal"
+          },
+          {
+            "id": "n2",
+            "label": "AI Agent",
+            "sublabel": "Proses JSON",
+            "icon": "gear",
+            "color": "orange"
+          },
+          {
+            "id": "n3",
+            "label": "Video 9:16",
+            "sublabel": "Render Remotion",
+            "icon": "laptop",
+            "color": "violet"
+          }
+        ],
+        "edges": [
+          {
+            "from": "n1",
+            "to": "n2",
+            "label": "Analisis"
+          },
+          {
+            "from": "n2",
+            "to": "n3",
+            "label": "Storyboard"
+          }
+        ]
+      },
+      "transition": "slide"
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "sub-001",
+      "startMs": 0,
+      "endMs": 4500,
+      "text": "Mari lihat arsitektur SDLC."
+    },
+    {
+      "id": "sub-002",
+      "startMs": 4500,
+      "endMs": 10000,
+      "text": "Catatan diproses agen menjadi video."
+    }
+  ]
+}

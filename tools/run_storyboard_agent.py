@@ -1,4 +1,4 @@
-"""Jalankan Storyboard Agent lewat API: naskah + waktu kata -> storyboard JSON yang sudah divalidasi.
+"""Jalankan Storyboard Agent lewat API: naskah + waktu kata -> storyboard JSON v1.3 yang sudah divalidasi.
 
 Pemakaian (dari folder utama proyek):
   python tools\\run_storyboard_agent.py naskah\\NAMA.txt apps\\remotion\\public\\audio\\NAMA.words.json apps\\remotion\\src\\storyboards\\NAMA.json
@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 VALIDATOR = ROOT / "apps" / "remotion" / "scripts" / "validate-storyboard.mjs"
 PROMPT = ROOT / "prompts" / "storyboard_agent.md"
 APPLY = ROOT / "tools" / "apply_word_times.py"
+DEFAULT_COMPONENT_VERSION = "1.0.0"
 
 
 def extract_json(text):
@@ -41,6 +42,19 @@ def clean_subtitles(sb):
         t = re.sub(r"\{\{\w+:([^}]*)\}\}", r"\1", sub.get("text", ""))
         t = re.sub(r"\s+([,.!?:;])", r"\1", t)
         sub["text"] = " ".join(t.split())
+    return sb
+
+
+def resolve_storyboard_v13(sb):
+    """Resolver sistem (DL-10): pastikan schemaVersion 1.3 serta componentId & componentVersion terisi sistem."""
+    sb["schemaVersion"] = "1.3"
+    for scene in sb.get("scenes", []):
+        if not isinstance(scene, dict):
+            continue
+        comp_id = scene.get("componentId") or scene.get("component") or ""
+        scene["componentId"] = comp_id
+        scene["componentVersion"] = DEFAULT_COMPONENT_VERSION
+        scene.pop("component", None)
     return sb
 
 
@@ -82,19 +96,16 @@ def main():
             print("   ", report)
             messages += [("model", reply), ("user", report + "\nKeluarkan hanya JSON lengkap yang valid.")]
             continue
-        sb = clean_subtitles(sb)
+        sb = resolve_storyboard_v13(clean_subtitles(sb))
         out.write_text(json.dumps(sb, ensure_ascii=False, indent=2), encoding="utf-8")
         ok, report = validate(out)
         print(report)
-        long_scenes = [ln for ln in report.splitlines() if "melebihi 8000" in ln]
-        if ok and not (long_scenes and attempt < a.retries):
-            break
         if ok:
+            break
+        long_scenes = [ln for ln in report.splitlines() if "8000 ms" in ln]
+        if long_scenes:
             print("    Ada scene lebih dari 8 detik, minta AI memecahnya...")
-            fix = "Storyboard lolos validator tetapi melanggar aturan ritme:\n" + "\n".join(long_scenes)
-            fix += "\nPecah setiap scene di atas menjadi scene 3-8 detik (batas di jeda ucapan), tambahkan scene dengan komponen berbeda. Pastikan tidak ada celah waktu. Keluarkan JSON lengkap yang baru, hanya JSON."
-        else:
-            fix = "Validator menolak storyboard ini:\n" + report + "\nPerbaiki dan keluarkan JSON lengkap yang baru, hanya JSON."
+        fix = "Validator menolak storyboard ini:\n" + report + "\nPerbaiki dan keluarkan JSON lengkap yang baru (pastikan setiap scene 3000-8000 ms dan tidak ada celah waktu), hanya JSON."
         messages += [("model", reply), ("user", fix)]
     if not ok:
         print(f"\n[GAGAL] Belum lolos validator setelah {a.retries + 1} percobaan. Hasil terakhir ada di {out}.")
@@ -107,7 +118,7 @@ def main():
         return 1
     ok, report = validate(out)
     print(report)
-    print(f"\n[OK] Storyboard siap: {out}")
+    print(f"\n[OK] Storyboard v1.3 siap: {out}")
     return 0
 
 
