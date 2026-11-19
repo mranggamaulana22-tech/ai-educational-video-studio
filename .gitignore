@@ -1,9 +1,15 @@
 # rahasia
 .env
 
+# database
+*.db
+*.sqlite
+*.sqlite3
+
 # dependency
 node_modules/
 .venv/
+.venv-audio/
 __pycache__/
 *.pyc
 
@@ -13,17 +19,17 @@ build/
 out/
 output/*
 !output/.gitkeep
+apps/remotion/out/
 
 # file media berat (jangan masuk Git)
 storage/projects/*
 !storage/projects/.gitkeep
+storage/voice-samples/
 storage/library/**/*.mp3
 storage/library/**/*.wav
 storage/library/**/*.mp4
+apps/remotion/public/audio/*.wav
 
 # sistem
 .DS_Store
 Thumbs.db
-
-.venv-audio/
-.env

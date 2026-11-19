@@ -1,10 +1,16 @@
-"""Scriptwriter: catatan belajar -> naskah (.txt) siap dibacakan (dengan opsi memanggil Script Reviewer terpisah).
+"""Scriptwriter Agent (PRD 9E & DL-8): catatan belajar -> naskah (.txt) siap dibacakan,
+dengan putaran revisi maksimal 2 kali berdasarkan feedback Script Reviewer (PRD 9F).
 
 Pemakaian (dari folder utama proyek):
   python tools\\run_scriptwriter.py catatan\\NAMA.txt naskah\\NAMA.txt --day "HARI 2/15" --course "Intro to Software Engineering" --next "SDLC"
-Pilihan: --seconds 55  --provider gemini  --model NAMA  --no-review
+Pilihan:
+  --seconds 55  --provider gemini  --model NAMA
+  --format concept_breakdown --hook "Kalimat pembuka..."
+  --review-json naskah\\NAMA.review.json
+  --max-revisions 2  --no-review
 """
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -15,11 +21,27 @@ import llm  # noqa: E402
 import run_script_reviewer  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-MIN_WORDS, MAX_WORDS = run_script_reviewer.MIN_WORDS, run_script_reviewer.MAX_WORDS
-MAX_SENTENCE = run_script_reviewer.MAX_SENTENCE
-clean = run_script_reviewer.clean_script_text
-count_words = run_script_reviewer.count_words
-long_sentences = run_script_reviewer.long_sentences
+MIN_WORDS, MAX_WORDS = 90, 170
+MAX_SENTENCE = 16  # kalimat lebih panjang dari ini ditolak (aturan prompt: maks 14 kata)
+ACRONYMS = ["SDLC", "SRS", "URS", "SysRS", "UAT", "API", "UI", "UX", "SQL", "HTML", "CSS", "MVP", "PRD", "TTS", "JSON", "CLI", "SDK"]
+MAX_REVISIONS = 2
+
+
+def clean(text):
+    t = re.sub(r"[*#_`>]+", "", text)
+    t = re.sub(r"\s+", " ", t).strip()
+    for ac in ACRONYMS:  # singkatan selalu ditulis kapital agar dibaca huruf demi huruf
+        t = re.sub(r"\b" + ac + r"\b", ac, t, flags=re.I)
+    return t
+
+
+def count_words(text):
+    return len(text.split())
+
+
+def long_sentences(text):
+    parts = re.split(r"(?<=[.?!])\s+", text)
+    return [p for p in parts if count_words(p) > MAX_SENTENCE]
 
 
 def make_check():
@@ -41,16 +63,25 @@ def make_check():
     return check_script
 
 
+def _load_writer_prompt():
+    v1 = ROOT / "prompts" / "scriptwriter" / "v1.md"
+    return (v1 if v1.exists() else ROOT / "prompts" / "scriptwriter_agent.md").read_text(encoding="utf-8-sig")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("notes")
     ap.add_argument("out")
     ap.add_argument("--day")
     ap.add_argument("--course")
+    ap.add_argument("--format", dest="video_format")
+    ap.add_argument("--hook")
     ap.add_argument("--next", dest="nxt")
     ap.add_argument("--seconds", type=int, default=55)
     ap.add_argument("--provider", default="gemini", choices=list(llm.PROVIDERS))
     ap.add_argument("--model")
+    ap.add_argument("--review-json", help="Opsional: simpan JSON hasil review terakhir dari Script Reviewer")
+    ap.add_argument("--max-revisions", type=int, default=MAX_REVISIONS)
     ap.add_argument("--no-review", action="store_true")
     a = ap.parse_args()
 
@@ -58,32 +89,63 @@ def main():
     if not notes:
         print("[GAGAL] File catatan kosong.")
         return 1
+
     info = [f"Durasi target: {a.seconds} detik"]
     if a.day:
         info.append(f"Hari: {a.day}")
     if a.course:
         info.append(f"Kursus: {a.course}")
+    if a.video_format:
+        info.append(f"Format video: {a.video_format}")
+    if a.hook:
+        info.append(f"Hook rencana: {a.hook}")
     info.append(f"Topik besok: {a.nxt}" if a.nxt else "Topik besok: (tidak ada)")
     info_text = "\n".join(info)
 
-    writer = (ROOT / "prompts" / "scriptwriter_agent.md").read_text(encoding="utf-8-sig")
-    print("[1/2] Scriptwriter menulis naskah...")
-    d = agentkit.ask(a.provider, a.model, writer, f"CATATAN:\n{notes}\n\nInfo:\n{info_text}", make_check())
+    writer_prompt = _load_writer_prompt()
+    print("[1/2] Scriptwriter menulis draf naskah...")
+    d = agentkit.ask(a.provider, a.model, writer_prompt, f"CATATAN:\n{notes}\n\nInfo:\n{info_text}", make_check())
     script = clean(d["script"])
     title = d.get("title", "")
     print(f"    Judul: {title} | {count_words(script)} kata")
 
+    last_review = None
     if not a.no_review:
-        print("[2/2] Reviewer (modul terpisah) memeriksa naskah...")
-        r = run_script_reviewer.review_script(a.provider, a.model, notes, info_text, script)
-        for issue in r.get("issues") or []:
-            print("    -", issue)
-        print(f"    Hasil review: {r.get('verdict', '?')}")
-        script = r["script"]
+        max_rev = max(0, min(MAX_REVISIONS, a.max_revisions))
+        for rev_idx in range(max_rev + 1):
+            print(f"[2/2] Script Reviewer memeriksa naskah (putaran {rev_idx + 1}/{max_rev + 1})...")
+            last_review = run_script_reviewer.review_script(a.provider, a.model, notes, info_text, script)
+            verdict = last_review.get("verdict", "revise")
+            items = last_review.get("feedback_items") or []
+            for item in items:
+                print(f"    - [{item.get('severity')}] ({item.get('segment_id')}) {item.get('suggestion')}")
+            print(f"    Verdict: {verdict} | {last_review.get('summary', '')}")
+
+            if verdict == "pass" or rev_idx == max_rev:
+                break
+
+            print(f"    Scriptwriter merevisi naskah berdasarkan feedback Reviewer ({rev_idx + 1}/{max_rev})...")
+            revise_user = (
+                f"CATATAN:\n{notes}\n\nInfo:\n{info_text}\n\n"
+                f"NASKAH SEBELUMNYA:\n{script}\n\n"
+                f"FEEDBACK REVIEWER (wajib diperbaiki tanpa menambah fakta di luar catatan):\n"
+                f"{json.dumps(items, ensure_ascii=False, indent=2)}"
+            )
+            d = agentkit.ask(a.provider, a.model, writer_prompt, revise_user, make_check())
+            script = clean(d["script"])
+            if d.get("title"):
+                title = d["title"]
+            print(f"    Revisi selesai: {count_words(script)} kata")
 
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(script + "\n", encoding="utf-8")
+
+    if a.review_json and last_review is not None:
+        rp = Path(a.review_json)
+        rp.parent.mkdir(parents=True, exist_ok=True)
+        rp.write_text(json.dumps(last_review, ensure_ascii=False, indent=2), encoding="utf-8")
+
     secs = count_words(script) / 2.5
     print(f"\n[OK] Naskah {count_words(script)} kata (sekitar {secs:.0f} detik) disimpan: {out}")
     print("Baca dan edit seandainya perlu (titik persetujuan naskah), lalu lanjut ke pipeline.")

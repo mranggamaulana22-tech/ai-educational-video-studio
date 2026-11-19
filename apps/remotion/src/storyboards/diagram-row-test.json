@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.3",
+  "video": {
+    "title": "Uji Row DiagramScene",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 6000
+  },
+  "audio": {
+    "src": "audio/hari2-sdlc.wav",
+    "durationMs": 6000
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 6000,
+      "componentId": "DiagramScene",
+      "componentVersion": "1.0.0",
+      "props": {
+        "heading": "Alur Tiga Tahap (Row)",
+        "layout": "row",
+        "nodes": [
+          {
+            "id": "n1",
+            "label": "Input",
+            "sublabel": "Materi",
+            "icon": "file",
+            "color": "teal"
+          },
+          {
+            "id": "n2",
+            "label": "Proses",
+            "sublabel": "AI Agent",
+            "icon": "gear",
+            "color": "orange"
+          },
+          {
+            "id": "n3",
+            "label": "Output",
+            "sublabel": "Video",
+            "icon": "laptop",
+            "color": "violet"
+          }
+        ],
+        "edges": [
+          {
+            "from": "n1",
+            "to": "n2",
+            "label": "Step 1"
+          },
+          {
+            "from": "n2",
+            "to": "n3",
+            "label": "Step 2"
+          }
+        ]
+      },
+      "transition": "fade"
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "sub-001",
+      "startMs": 0,
+      "endMs": 6000,
+      "text": "Tampilan mendatar tiga komponen utama."
+    }
+  ]
+}

@@ -38,7 +38,7 @@ VOICES = [
     "Zubenelgenubi", "Vindemiatrix", "Sadachbia", "Sadaltager", "Sulafat",
 ]
 SAMPLE_TEXT = "Halo, aku narator videomu. Hari ini kita belajar tentang tahapan membuat software dari ide sampai siap dipakai."
-TEXT_STAGES = ("material", "analysis", "notes", "script", "review", "storyboard")
+TEXT_STAGES = ("material", "analysis", "notes", "ideas", "script", "review", "storyboard")
 
 
 class SeriesIn(BaseModel):
@@ -196,6 +196,11 @@ def put_material(video_id: int, body: TextIn, session: Session = Depends(db.get_
 @app.put("/videos/{video_id}/notes")
 def put_notes(video_id: int, body: TextIn, session: Session = Depends(db.get_session)):
     return _save_text(session, get_video(session, video_id), "notes", body.text)
+
+
+@app.put("/videos/{video_id}/ideas")
+def put_ideas(video_id: int, body: TextIn, session: Session = Depends(db.get_session)):
+    return _save_text(session, get_video(session, video_id), "ideas", body.text)
 
 
 @app.put("/videos/{video_id}/script")

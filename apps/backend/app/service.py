@@ -86,6 +86,11 @@ def can_run(session: Session, video: Video, stage: str):
     prev = stages.ORDER[idx - 1]
     prev_art = latest(session, video.id, prev)
 
+    # Kompatibilitas mundur: jika ideas belum ada, script tetap boleh memakai notes langsung.
+    if stage == "script" and not prev_art:
+        prev = "notes"
+        prev_art = latest(session, video.id, prev)
+
     # Kompatibilitas mundur: jika tahap 'review' belum ada tapi 'script' sudah disetujui langsung,
     # izinkan 'audio' memakai hasil 'script' secara langsung.
     if stage == "audio" and not prev_art:

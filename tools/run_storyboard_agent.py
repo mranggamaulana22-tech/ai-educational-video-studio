@@ -10,7 +10,6 @@ Pilihan:
 import argparse
 import copy
 import json
-import math
 import re
 import subprocess
 import sys
@@ -73,53 +72,92 @@ def _scale_cues(props, offset_ms, part_dur_ms):
     return out
 
 
+def _find_subtitle_split_ms(sb, start_ms, end_ms):
+    """Cari batas jeda subtitle terbaik di dekat titik tengah scene [start_ms, end_ms]."""
+    mid = (start_ms + end_ms) / 2
+    min_bound = start_ms + 2500
+    max_bound = end_ms - 2500
+    if min_bound >= max_bound:
+        return int(mid)
+
+    candidates = []
+    for sub in sb.get("subtitles", []):
+        for boundary in (sub.get("startMs"), sub.get("endMs")):
+            if isinstance(boundary, (int, float)) and min_bound <= boundary <= max_bound:
+                candidates.append(int(boundary))
+    if not candidates:
+        return int(mid)
+    return min(candidates, key=lambda t: abs(t - mid))
+
+
+def _snippet_from_subtitles(sb, start_ms, end_ms):
+    """Ambil 2-4 kata kunci dari subtitle pada rentang waktu potongan agar visual tidak dobel."""
+    words = []
+    for sub in sb.get("subtitles", []):
+        s0, s1 = sub.get("startMs", 0), sub.get("endMs", 0)
+        if s1 > start_ms and s0 < end_ms:
+            clean_txt = re.sub(r"\{\{\w+:([^}]*)\}\}", r"\1", sub.get("text", ""))
+            clean_txt = re.sub(r"[^\w\s-]", "", clean_txt)
+            words.extend(clean_txt.split())
+    if not words:
+        return "Poin Penting Berikutnya"
+    return " ".join(words[:4]).capitalize()
+
+
 def split_long_scenes_fallback(sb):
-    """Cadangan terakhir (DL-8): pecah paksa scene > 8000 ms menjadi potongan <= 8000 ms tanpa celah."""
+    """Cadangan terakhir (DL-8): pecah paksa scene > 8000 ms tepat di jeda subtitle tanpa teks dobel."""
     scenes = sb.get("scenes")
     if not isinstance(scenes, list):
         return sb
 
-    new_scenes = []
-    changed = False
-    for sc in scenes:
-        dur = sc.get("durationMs", 0)
-        start = sc.get("startMs", 0)
-        if not isinstance(dur, (int, float)) or dur <= MAX_SCENE_MS:
-            new_scenes.append(sc)
-            continue
+    changed = True
+    while changed:
+        changed = False
+        next_scenes = []
+        for sc in scenes:
+            dur = sc.get("durationMs", 0)
+            start = sc.get("startMs", 0)
+            if not isinstance(dur, (int, float)) or dur <= MAX_SCENE_MS:
+                next_scenes.append(sc)
+                continue
 
-        changed = True
-        parts = math.ceil(dur / MAX_SCENE_MS)
-        base_dur = int(dur // parts)
-        rem = int(dur - base_dur * parts)
-        cur_start = int(start)
-        orig_comp = sc.get("componentId") or sc.get("component") or "BigStatement"
+            changed = True
+            end = int(start + dur)
+            split_at = _find_subtitle_split_ms(sb, int(start), end)
+            dur1 = split_at - int(start)
+            dur2 = end - split_at
+            orig_comp = sc.get("componentId") or sc.get("component") or "BigStatement"
+            second_comp = "BigStatement" if orig_comp != "BigStatement" else "IconHero"
+            second_text = _snippet_from_subtitles(sb, split_at, end)
 
-        for idx in range(parts):
-            p_dur = base_dur + (rem if idx == parts - 1 else 0)
-            offset = cur_start - start
-            part = {
-                "id": f"{sc.get('id', 'scene')}-p{idx + 1}",
-                "startMs": cur_start,
-                "durationMs": p_dur,
-                "componentId": orig_comp if idx == 0 else ("IconHero" if orig_comp != "IconHero" else "BigStatement"),
+            part1 = {
+                "id": f"{sc.get('id', 'scene')}-a",
+                "startMs": int(start),
+                "durationMs": dur1,
+                "componentId": orig_comp,
                 "componentVersion": DEFAULT_COMPONENT_VERSION,
-                "props": _scale_cues(sc.get("props", {}), offset, p_dur)
-                if idx == 0
-                else (
-                    {"icon": "bulb", "title": str(sc.get("props", {}).get("heading") or sc.get("props", {}).get("title") or "Lanjutan"), "color": "orange", "motion": "float"}
-                    if orig_comp != "IconHero"
-                    else {"lines": [{"text": str(sc.get("props", {}).get("title") or "Poin Inti"), "color": "orange"}]}
-                ),
-                "transition": sc.get("transition", "fade") if idx == 0 else "slide",
+                "props": _scale_cues(sc.get("props", {}), 0, dur1),
+                "transition": sc.get("transition", "fade"),
             }
-            new_scenes.append(part)
-            cur_start += p_dur
+            part2 = {
+                "id": f"{sc.get('id', 'scene')}-b",
+                "startMs": split_at,
+                "durationMs": dur2,
+                "componentId": second_comp,
+                "componentVersion": DEFAULT_COMPONENT_VERSION,
+                "props": (
+                    {"icon": "bulb", "lines": [{"text": second_text, "color": "orange"}]}
+                    if second_comp == "BigStatement"
+                    else {"icon": "bulb", "title": second_text, "color": "orange", "motion": "float"}
+                ),
+                "transition": "slide",
+            }
+            next_scenes.extend([part1, part2])
+        scenes = next_scenes
 
-    if changed:
-        for i, s in enumerate(new_scenes, 1):
-            s["id"] = f"scene-{i:03d}"
-        sb["scenes"] = new_scenes
+    for i, s in enumerate(scenes, 1):
+        s["id"] = f"scene-{i:03d}"
+    sb["scenes"] = scenes
     return sb
 
 
