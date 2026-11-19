@@ -1,0 +1,42 @@
+{
+  "input": {
+    "material_text": "HTML = struktur halaman. CSS = tampilan. JavaScript = interaksi. Browser membaca HTML lalu membentuk DOM.",
+    "analysis_brief": {
+      "key_concepts": [
+        { "id": "c1", "name": "HTML" },
+        { "id": "c2", "name": "DOM" }
+      ],
+      "technical_terms": ["DOM"]
+    },
+    "session": null
+  },
+  "output": {
+    "title": "Dasar Web: HTML, CSS, JavaScript",
+    "sections": [
+      {
+        "id": "s1",
+        "heading": "Tiga lapisan web",
+        "body_md": "HTML menentukan struktur, CSS mengatur tampilan, dan JavaScript menangani interaksi.",
+        "concept_ids": ["c1"],
+        "key_terms": [
+          { "term": "HTML", "definition": "Bahasa penanda struktur halaman" }
+        ],
+        "examples": [],
+        "basis": ["material", "analysis"]
+      },
+      {
+        "id": "s2",
+        "heading": "DOM: halaman di mata browser",
+        "body_md": "Browser membaca teks HTML lalu membentuk struktur pohon objek yang disebut DOM.",
+        "concept_ids": ["c2"],
+        "key_terms": [
+          { "term": "DOM", "definition": "Representasi pohon halaman di dalam browser" }
+        ],
+        "examples": [],
+        "basis": ["material", "analysis"]
+      }
+    ],
+    "open_questions": ["Bagaimana JavaScript memanipulasi elemen di dalam DOM?"],
+    "omitted_concepts": []
+  }
+}

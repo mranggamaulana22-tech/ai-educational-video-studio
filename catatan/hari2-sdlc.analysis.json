@@ -1,0 +1,152 @@
+{
+  "topics": [
+    {
+      "id": "t1",
+      "title": "Phases in SDLC",
+      "subtopics": [
+        "Planning",
+        "Design",
+        "Development",
+        "Testing",
+        "Deployment",
+        "Maintenance"
+      ]
+    },
+    {
+      "id": "t2",
+      "title": "Requirements Engineering in Planning Phase",
+      "subtopics": [
+        "Identifikasi Stakeholders",
+        "Menetapkan Tujuan dan Objektivitas",
+        "Penggalian Kebutuhan",
+        "Mendokumentasikan Kebutuhan",
+        "Analisa dan Mengkonfirmasi Requirement",
+        "Menentukan Skala Prioritas"
+      ]
+    },
+    {
+      "id": "t3",
+      "title": "Output Dokumen SDLC (SRS, URS, SysRS)",
+      "subtopics": [
+        "Software Requirements Specification (SRS)",
+        "User Requirement Specification (URS)",
+        "System Requirement Specification (SysRS)"
+      ]
+    }
+  ],
+  "key_concepts": [
+    {
+      "id": "c1",
+      "topic_id": "t1",
+      "name": "SDLC Phases",
+      "summary": "Tahapan dalam SDLC meliputi Planning, Design, Development, Testing, Deployment, dan Maintenance."
+    },
+    {
+      "id": "c2",
+      "topic_id": "t2",
+      "name": "Planning and Requirements Gathering",
+      "summary": "Langkah awal SDLC untuk mencatat requirement melalui identifikasi stakeholders, penetapan goals/objectives, survei/wawancara, hingga penentuan prioritas."
+    },
+    {
+      "id": "c3",
+      "topic_id": "t3",
+      "name": "SRS (Software Requirements Specification)",
+      "summary": "Dokumen output yang merinci fungsionalitas software, standar performa, serta requirement fungsional dan non-fungsional."
+    },
+    {
+      "id": "c4",
+      "topic_id": "t3",
+      "name": "URS (User Requirement Specification)",
+      "summary": "Dokumen yang mendeskripsikan kebutuhan bisnis dan ekspektasi user melalui user stories dan dikonfirmasi lewat UAT."
+    },
+    {
+      "id": "c5",
+      "topic_id": "t3",
+      "name": "SysRS (System Requirement Specification)",
+      "summary": "Dokumen yang menjelaskan kemampuan sistem, interface, policy, regulation, personnel, performance, security, kriteria penerimaan, dan hardware expectation."
+    }
+  ],
+  "needs_expansion": [
+    {
+      "concept_id": "c1",
+      "reason": "Penjelasan detail mengenai masing-masing dari 6 fase SDLC masih sangat ringkas dan perlu diperluas."
+    },
+    {
+      "concept_id": "c3",
+      "reason": "Perlu penjelasan lebih lanjut mengenai perbedaan mendalam antara functional requirement dan non-functional requirement."
+    }
+  ],
+  "gaps": [
+    "Detail proses Design, Development, Testing, Deployment, dan Maintenance belum dijabarkan selengkap fase Planning di dalam materi."
+  ],
+  "possible_misconceptions": [
+    {
+      "concept_id": "c3",
+      "statement": "Functional requirement dan non-functional requirement adalah hal yang sama.",
+      "issue": "Functional requirement mendeskripsikan fitur yang harus dilakukan sistem, sedangkan non-functional requirement mendeskripsikan kualitas sistem seperti security dan performa."
+    }
+  ],
+  "relations": [
+    {
+      "from": "c2",
+      "to": "c1",
+      "type": "depends_on"
+    },
+    {
+      "from": "c3",
+      "to": "c2",
+      "type": "depends_on"
+    },
+    {
+      "from": "c4",
+      "to": "c3",
+      "type": "relates_to"
+    },
+    {
+      "from": "c5",
+      "to": "c3",
+      "type": "relates_to"
+    }
+  ],
+  "technical_terms": [
+    {
+      "term": "SDLC",
+      "needs_explanation": true
+    },
+    {
+      "term": "SRS",
+      "needs_explanation": true
+    },
+    {
+      "term": "URS",
+      "needs_explanation": true
+    },
+    {
+      "term": "SysRS",
+      "needs_explanation": true
+    },
+    {
+      "term": "UAT",
+      "needs_explanation": true
+    },
+    {
+      "term": "Functional requirement",
+      "needs_explanation": true
+    },
+    {
+      "term": "Non-functional requirement",
+      "needs_explanation": true
+    }
+  ],
+  "suggested_questions": [
+    "Apa saja dokumen utama yang dihasilkan pada akhir tahap Planning dalam SDLC?",
+    "Apa perbedaan antara Goals dan Objectives dalam penetapan tujuan project?",
+    "Mengapa UAT (User Acceptance Testing) penting untuk URS?"
+  ],
+  "sources_to_verify": [
+    {
+      "claim": "URS digabungkan ke dalam SRS",
+      "reason": "Perlu memverifikasi standar industri apakah URS selalu digabungkan ke dalam SRS atau berdiri sebagai dokumen terpisah."
+    }
+  ]
+}

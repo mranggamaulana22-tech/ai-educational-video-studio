@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "material_analysis.schema.json",
+  "title": "MaterialAnalysis",
+  "type": "object",
+  "required": [
+    "topics",
+    "key_concepts",
+    "needs_expansion",
+    "gaps",
+    "possible_misconceptions",
+    "relations",
+    "technical_terms",
+    "suggested_questions",
+    "sources_to_verify"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "topics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "subtopics"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^t[0-9]+$" },
+          "title": { "type": "string", "minLength": 1 },
+          "subtopics": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "key_concepts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "topic_id", "name", "summary"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^c[0-9]+$" },
+          "topic_id": { "type": "string", "pattern": "^t[0-9]+$" },
+          "name": { "type": "string", "minLength": 1 },
+          "summary": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "needs_expansion": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["concept_id", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "concept_id": { "type": "string" },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "possible_misconceptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["concept_id", "statement", "issue"],
+        "additionalProperties": false,
+        "properties": {
+          "concept_id": { "type": "string" },
+          "statement": { "type": "string", "minLength": 1 },
+          "issue": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "type": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "technical_terms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "needs_explanation"],
+        "additionalProperties": false,
+        "properties": {
+          "term": { "type": "string", "minLength": 1 },
+          "needs_explanation": { "type": "boolean" }
+        }
+      }
+    },
+    "suggested_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "sources_to_verify": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "claim": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

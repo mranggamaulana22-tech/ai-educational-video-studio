@@ -1,0 +1,145 @@
+{
+  "title": "Catatan Belajar: Tahapan SDLC dan Proses Perencanaan Kebutuhan Perangkat Lunak",
+  "sections": [
+    {
+      "id": "s1",
+      "heading": "Tahapan Utama dalam SDLC",
+      "body_md": "Software Development Life Cycle (SDLC) terdiri dari 6 tahapan utama:\n1. **Planning**: Mencatat requirement dan mengembangkan Software Requirement Specification (SRS).\n2. **Design**: Membuat dokumen arsitektur software dan desain sistem.\n3. **Development**: Membagikan task ke developer dan menulis kode sesuai product requirement.\n4. **Testing**: Menguji aplikasi untuk memastikan aman, stabil, dan sesuai requirement.\n5. **Deployment**: Menyiapkan production environment dan mendeploy aplikasi ke lingkungan produksi.\n6. **Maintenance**: Memperbaiki bug yang dilaporkan dan menjaga kelancaran serta kestabilan aplikasi.",
+      "concept_ids": [
+        "c1"
+      ],
+      "key_terms": [
+        {
+          "term": "SDLC",
+          "definition": "Software Development Life Cycle, siklus hidup pengembangan perangkat lunak."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "contoh",
+          "text": "Tahap Maintenance melibatkan perbaikan bug yang dilaporkan oleh pengguna setelah aplikasi dirilis."
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis"
+      ]
+    },
+    {
+      "id": "s2",
+      "heading": "Langkah-Langkah Perencanaan dan Penggalian Kebutuhan (Planning)",
+      "body_md": "Langkah awal dalam planning adalah mencatat requirement melalui beberapa tahapan:\n1. **Identifikasi Stakeholders**: Meliputi decision maker/PM, end-user, system administrator, engineering, marketing, sales, dan customer support.\n2. **Menetapkan Tujuan dan Objektivitas**: Membedakan antara *Goals* (tujuan jangka panjang) dan *Objectives* (dapat ditindaklanjuti dan diukur).\n3. **Penggalian Kebutuhan**: Menggunakan survei, kuesioner, dan interview.\n4. **Mendokumentasikan Kebutuhan**: Harus sejalan dengan goals serta mudah dipahami stakeholder.\n5. **Analisa dan Mengkonfirmasi Requirement**: Harus konsisten, jelas, dan lengkap.\n6. **Menentukan Skala Prioritas**: Menentukan prioritas tinggi serta fitur yang harus ada (*must-have*) atau bagus jika ada (*nice-to-have*).",
+      "concept_ids": [
+        "c2"
+      ],
+      "key_terms": [
+        {
+          "term": "Goals",
+          "definition": "Tujuan jangka panjang yang ingin dicapai."
+        },
+        {
+          "term": "Objectives",
+          "definition": "Target yang dapat ditindaklanjuti dan diukur untuk mencapai goals."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "contoh",
+          "text": "Melakukan interview dan survei kepada end-user untuk menggali kebutuhan aplikasi."
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis"
+      ]
+    },
+    {
+      "id": "s3",
+      "heading": "Dokumen SRS (Software Requirements Specification)",
+      "body_md": "Output utama dari proses planning adalah dokumen SRS yang mencakup:\n- Fungsionalitas software, standar performa, tujuan, ruang lingkup, batasan, asumsi, dan ketergantungan.\n- Kategori requirement:\n  1. **Functional requirement**: Fitur yang harus bisa dilakukan oleh sistem.\n  2. **External interface requirement**: Cara sistem berinteraksi dengan pihak/komponen eksternal.\n  3. **System feature**: Fitur utama sistem beserta detail perilakunya.\n  4. **Non-functional requirement**: Kualitas sistem seperti security, performa, usability, dan reliability.",
+      "concept_ids": [
+        "c3"
+      ],
+      "key_terms": [
+        {
+          "term": "SRS",
+          "definition": "Software Requirements Specification, dokumen spesifikasi kebutuhan perangkat lunak."
+        },
+        {
+          "term": "Functional requirement",
+          "definition": "Fitur spesifik yang harus dapat dilakukan oleh sistem."
+        },
+        {
+          "term": "Non-functional requirement",
+          "definition": "Standar kualitas sistem seperti keamanan, performa, dan kegunaan."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "contoh",
+          "text": "Menetapkan enkripsi data sebagai bagian dari non-functional requirement (security)."
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis"
+      ]
+    },
+    {
+      "id": "s4",
+      "heading": "Dokumen URS (User Requirement Specification)",
+      "body_md": "URS mendeskripsikan kebutuhan bisnis dan ekspektasi user.\n- Memuat **User Stories** yang menjawab: siapa pengguna aplikasi, fitur apa yang dibutuhkan agar dapat berfungsi, dan mengapa pengguna membutuhkan fitur tersebut.\n- Dikonfirmasi melalui **UAT (User Acceptance Testing)**, yaitu proses pengujian oleh pengguna untuk memastikan aplikasi sesuai kebutuhan.\n- URS kemudian digabungkan ke dalam dokumen SRS.",
+      "concept_ids": [
+        "c4"
+      ],
+      "key_terms": [
+        {
+          "term": "URS",
+          "definition": "User Requirement Specification, dokumen kebutuhan pengguna."
+        },
+        {
+          "term": "UAT",
+          "definition": "User Acceptance Testing, pengujian aplikasi oleh pengguna untuk memastikan kesesuaian kebutuhan."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "contoh",
+          "text": "Pengguna melakukan UAT untuk memverifikasi apakah fitur login sudah sesuai dengan ekspektasi bisnis."
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis"
+      ]
+    },
+    {
+      "id": "s5",
+      "heading": "Dokumen SysRS (System Requirement Specification)",
+      "body_md": "SysRS merinci spesifikasi sistem secara teknis dan operasional yang mencakup:\na. **System capabilities**: Kemampuan yang harus dimiliki sistem.\nb. **Interface and user characteristics**: Interaksi sistem dan karakteristik pengguna.\nc. **Policy**: Kebijakan dan aturan internal organisasi.\nd. **Regulation**: Peraturan atau standar eksternal.\ne. **Personnel**: Orang yang terlibat dalam operasi dan pemeliharaan.\nf. **Performance**: Standar kinerja sistem.\ng. **Security**: Perlindungan data dan pencegahan akses tidak sah.\nh. **System acceptance kriteria**: Kriteria kelayakan penerimaan sistem.\ni. **Hardware expectation**: Kebutuhan perangkat keras.",
+      "concept_ids": [
+        "c5"
+      ],
+      "key_terms": [
+        {
+          "term": "SysRS",
+          "definition": "System Requirement Specification, dokumen spesifikasi kebutuhan sistem."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "contoh",
+          "text": "Menentukan spesifikasi RAM dan prosesor server sebagai bagian dari hardware expectation."
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis"
+      ]
+    }
+  ],
+  "open_questions": [
+    "Bagaimana detail implementasi pada tahap Design hingga Deployment secara mendalam?"
+  ],
+  "omitted_concepts": []
+}

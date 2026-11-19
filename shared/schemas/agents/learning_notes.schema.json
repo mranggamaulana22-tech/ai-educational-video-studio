@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "learning_notes.schema.json",
+  "title": "LearningNotes",
+  "type": "object",
+  "required": ["title", "sections", "open_questions", "omitted_concepts"],
+  "additionalProperties": false,
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "heading", "body_md", "concept_ids", "key_terms", "examples", "basis"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^s[0-9]+$" },
+          "heading": { "type": "string", "minLength": 1 },
+          "body_md": { "type": "string", "minLength": 1 },
+          "concept_ids": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^c[0-9]+$" }
+          },
+          "key_terms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["term", "definition"],
+              "additionalProperties": false,
+              "properties": {
+                "term": { "type": "string", "minLength": 1 },
+                "definition": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "examples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["kind", "text"],
+              "additionalProperties": false,
+              "properties": {
+                "kind": { "type": "string", "enum": ["contoh", "analogi"] },
+                "text": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "basis": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "enum": ["material", "analysis", "session"] }
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "omitted_concepts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["concept_id", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "concept_id": { "type": "string", "pattern": "^c[0-9]+$" },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

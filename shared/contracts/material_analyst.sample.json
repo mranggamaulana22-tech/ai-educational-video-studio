@@ -1,0 +1,64 @@
+{
+  "input": {
+    "material": {
+      "id": "mat-01",
+      "title": "Catatan Coursera: Dasar Web",
+      "text": "HTML = struktur halaman. CSS = tampilan. JavaScript = interaksi. Browser membaca HTML lalu membentuk DOM."
+    },
+    "options": {
+      "external_search": false
+    }
+  },
+  "output": {
+    "topics": [
+      {
+        "id": "t1",
+        "title": "Tiga bahasa pembangun web",
+        "subtopics": ["HTML: struktur", "CSS: tampilan", "JavaScript: interaksi"]
+      }
+    ],
+    "key_concepts": [
+      {
+        "id": "c1",
+        "topic_id": "t1",
+        "name": "HTML",
+        "summary": "Bahasa penanda untuk struktur halaman"
+      },
+      {
+        "id": "c2",
+        "topic_id": "t1",
+        "name": "DOM",
+        "summary": "Representasi pohon halaman di dalam browser"
+      }
+    ],
+    "needs_expansion": [
+      {
+        "concept_id": "c2",
+        "reason": "Hanya disebut sekali, belum dijelaskan cara kerjanya"
+      }
+    ],
+    "gaps": ["Belum ada contoh kode untuk CSS"],
+    "possible_misconceptions": [
+      {
+        "concept_id": "c1",
+        "statement": "HTML dianggap sama dengan DOM",
+        "issue": "HTML adalah teks; DOM dibentuk browser dari HTML"
+      }
+    ],
+    "relations": [
+      {
+        "from": "c2",
+        "to": "c1",
+        "type": "depends_on"
+      }
+    ],
+    "technical_terms": [
+      {
+        "term": "DOM",
+        "needs_explanation": true
+      }
+    ],
+    "suggested_questions": ["Apa yang dilakukan browser setelah menerima HTML?"],
+    "sources_to_verify": []
+  }
+}
