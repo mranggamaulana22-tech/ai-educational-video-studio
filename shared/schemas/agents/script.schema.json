@@ -3,10 +3,24 @@
   "$id": "script.schema.json",
   "title": "ScriptDraft",
   "type": "object",
-  "required": ["title", "script"],
+  "required": ["title", "segments", "script"],
   "additionalProperties": false,
   "properties": {
     "title": { "type": "string", "minLength": 1 },
+    "segments": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["id", "role", "text"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "role": { "type": "string", "enum": ["hook", "body", "analogy", "closing"] },
+          "text": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
     "script": { "type": "string", "minLength": 1 }
   }
 }

@@ -4,6 +4,7 @@ Jalankan dari apps/backend:
 """
 import sys
 import tempfile
+import json
 from pathlib import Path
 
 tmp = Path(tempfile.mkdtemp())
@@ -25,6 +26,24 @@ from app.main import app  # noqa: E402
 def fake_command(stage, video, day_label="", course=""):
     out = stages.paths(video.name)[stage]
     out.parent.mkdir(parents=True, exist_ok=True)
+    if stage == "ideas":
+        out.write_text(
+            json.dumps(
+                {
+                    "series": "Seri Tes",
+                    "videos": [
+                        {
+                            "day": 1,
+                            "title": "Ide Tes",
+                            "format": "concept_breakdown",
+                            "hook": "Ini hook tes",
+                            "topics": ["Materi Utama"],
+                        }
+                    ],
+                }
+            )
+        )
+        return [sys.executable, "-c", "pass"], False, tmp
     code = f"from pathlib import Path; Path(r'{out}').write_text('hasil {stage}')"
     return [sys.executable, "-c", code], False, tmp
 
@@ -51,8 +70,17 @@ check(st["stages"]["notes"]["status"] == "draft", "notes otomatis selesai")
 check(st["waiting_approval"] == "notes", "orchestrator berhenti di titik persetujuan notes")
 check(st["stages"]["script"]["status"] == "empty", "script belum jalan sebelum notes disetujui")
 
-# 2. Approve notes -> advance otomatis menjalankan script + review lalu berhenti di gate 'script'
+# 2. Approve notes -> advance otomatis menjalankan ideas lalu berhenti di gate 'ideas'
 c.post(f"/videos/{vid}/approve/notes")
+c.post(f"/videos/{vid}/advance")
+st = c.get(f"/videos/{vid}").json()
+check(st["stages"]["ideas"]["status"] == "draft", "content planner otomatis selesai")
+check(st["stages"]["script"]["status"] == "empty", "script menunggu pemilihan ide")
+check(st["waiting_approval"] == "ideas", "orchestrator berhenti di titik persetujuan ideas")
+check(st["stages"]["audio"]["status"] == "empty", "audio belum jalan sebelum script disetujui")
+
+# 3. Pilih ide -> advance otomatis menjalankan script + review lalu berhenti di gate 'script'
+c.post(f"/videos/{vid}/select-idea", json={"index": 0})
 c.post(f"/videos/{vid}/advance")
 st = c.get(f"/videos/{vid}").json()
 check(st["stages"]["script"]["status"] == "draft", "scriptwriter otomatis selesai")
@@ -60,14 +88,14 @@ check(st["stages"]["review"]["status"] == "draft", "script_reviewer otomatis sel
 check(st["waiting_approval"] == "script", "orchestrator berhenti di titik persetujuan script (review)")
 check(st["stages"]["audio"]["status"] == "empty", "audio belum jalan sebelum script disetujui")
 
-# 3. Approve script -> advance otomatis menjalankan audio lalu berhenti di gate 'audio'
+# 4. Approve script -> advance otomatis menjalankan audio lalu berhenti di gate 'audio'
 c.post(f"/videos/{vid}/approve/script")
 c.post(f"/videos/{vid}/advance")
 st = c.get(f"/videos/{vid}").json()
 check(st["stages"]["audio"]["status"] == "draft", "audio TTS otomatis selesai")
 check(st["waiting_approval"] == "audio", "orchestrator berhenti di titik persetujuan audio")
 
-# 4. Approve audio -> advance otomatis menjalankan words + storyboard + render lalu berhenti di gate 'video'
+# 5. Approve audio -> advance otomatis menjalankan words + storyboard + render lalu berhenti di gate 'video'
 c.post(f"/videos/{vid}/approve/audio")
 c.post(f"/videos/{vid}/advance")
 st = c.get(f"/videos/{vid}").json()
@@ -76,8 +104,8 @@ check(st["stages"]["storyboard"]["status"] == "draft", "storyboard v1.3 otomatis
 check(st["stages"]["render"]["status"] == "draft", "render video otomatis selesai")
 check(st["waiting_approval"] == "video", "orchestrator berhenti di titik persetujuan akhir video")
 
-# 5. Approve video -> selesai penuh
+# 6. Approve video -> selesai penuh
 c.post(f"/videos/{vid}/approve/video")
 st = c.get(f"/videos/{vid}").json()
-check(st["waiting_approval"] is None and st["stages"]["render"]["status"] == "approved", "seluruh alur 9 tahap & 4 approval selesai")
+check(st["waiting_approval"] is None and st["stages"]["render"]["status"] == "approved", "seluruh alur 10 tahap & 5 approval selesai")
 print("\nSEMUA TES ORCHESTRATOR LOLOS")

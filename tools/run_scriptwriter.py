@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 MIN_WORDS, MAX_WORDS = 90, 170
 MAX_SENTENCE = 16  # kalimat lebih panjang dari ini ditolak (aturan prompt: maks 14 kata)
 ACRONYMS = ["SDLC", "SRS", "URS", "SysRS", "UAT", "API", "UI", "UX", "SQL", "HTML", "CSS", "MVP", "PRD", "TTS", "JSON", "CLI", "SDK"]
+VALID_ROLES = {"hook", "body", "analogy", "closing"}
 MAX_REVISIONS = 2
 
 
@@ -44,13 +45,45 @@ def long_sentences(text):
     return [p for p in parts if count_words(p) > MAX_SENTENCE]
 
 
+def normalize_segments(data):
+    raw_segments = data.get("segments")
+    if isinstance(raw_segments, list) and len(raw_segments) >= 2:
+        segments = []
+        seen = set()
+        for index, segment in enumerate(raw_segments, 1):
+            if not isinstance(segment, dict) or not isinstance(segment.get("text"), str) or not segment["text"].strip():
+                continue
+            segment_id = str(segment.get("id") or f"seg-{index}").strip()
+            if segment_id in seen:
+                continue
+            seen.add(segment_id)
+            role = segment.get("role") if segment.get("role") in VALID_ROLES else ("hook" if index == 1 else "body")
+            segments.append({"id": segment_id, "role": role, "text": clean(segment["text"])})
+        if len(segments) >= 2:
+            return segments, clean(" ".join(segment["text"] for segment in segments))
+
+    script = clean(data.get("script", ""))
+    sentences = [sentence.strip() for sentence in re.split(r"(?<=[.?!])\s+", script) if sentence.strip()]
+    segments = [
+        {
+            "id": f"seg-{index}",
+            "role": "hook" if index == 1 else ("closing" if index == len(sentences) else "body"),
+            "text": sentence,
+        }
+        for index, sentence in enumerate(sentences, 1)
+    ]
+    return segments, script
+
+
 def make_check():
     state = {"style_rejects": 0}
 
     def check_script(d):
-        if not isinstance(d, dict) or not isinstance(d.get("script"), str) or not d["script"].strip():
-            return 'JSON harus punya field "script" (teks).'
-        text = clean(d["script"])
+        if not isinstance(d, dict):
+            return "Output harus berupa objek JSON."
+        segments, text = normalize_segments(d)
+        if len(segments) < 2 or not text:
+            return 'JSON harus punya "segments" atau "script" yang valid.'
         n = count_words(text)
         if n < MIN_WORDS or n > MAX_WORDS:
             return f"Naskah {n} kata; harus {MIN_WORDS}-{MAX_WORDS} kata."
@@ -105,7 +138,7 @@ def main():
     writer_prompt = _load_writer_prompt()
     print("[1/2] Scriptwriter menulis draf naskah...")
     d = agentkit.ask(a.provider, a.model, writer_prompt, f"CATATAN:\n{notes}\n\nInfo:\n{info_text}", make_check())
-    script = clean(d["script"])
+    segments, script = normalize_segments(d)
     title = d.get("title", "")
     print(f"    Judul: {title} | {count_words(script)} kata")
 
@@ -114,7 +147,7 @@ def main():
         max_rev = max(0, min(MAX_REVISIONS, a.max_revisions))
         for rev_idx in range(max_rev + 1):
             print(f"[2/2] Script Reviewer memeriksa naskah (putaran {rev_idx + 1}/{max_rev + 1})...")
-            last_review = run_script_reviewer.review_script(a.provider, a.model, notes, info_text, script)
+            last_review = run_script_reviewer.review_script(a.provider, a.model, notes, info_text, script, segments)
             verdict = last_review.get("verdict", "revise")
             items = last_review.get("feedback_items") or []
             for item in items:
@@ -122,17 +155,20 @@ def main():
             print(f"    Verdict: {verdict} | {last_review.get('summary', '')}")
 
             if verdict == "pass" or rev_idx == max_rev:
+                last_review["review_status"] = "lolos review" if verdict == "pass" else "belum lolos review"
+                last_review["needs_human_review"] = verdict != "pass"
                 break
 
             print(f"    Scriptwriter merevisi naskah berdasarkan feedback Reviewer ({rev_idx + 1}/{max_rev})...")
             revise_user = (
                 f"CATATAN:\n{notes}\n\nInfo:\n{info_text}\n\n"
-                f"NASKAH SEBELUMNYA:\n{script}\n\n"
+                f"SEGMEN NASKAH SEBELUMNYA:\n{json.dumps(segments, ensure_ascii=False, indent=2)}\n\n"
+                f"NASKAH GABUNGAN SEBELUMNYA:\n{script}\n\n"
                 f"FEEDBACK REVIEWER (wajib diperbaiki tanpa menambah fakta di luar catatan):\n"
                 f"{json.dumps(items, ensure_ascii=False, indent=2)}"
             )
             d = agentkit.ask(a.provider, a.model, writer_prompt, revise_user, make_check())
-            script = clean(d["script"])
+            segments, script = normalize_segments(d)
             if d.get("title"):
                 title = d["title"]
             print(f"    Revisi selesai: {count_words(script)} kata")
@@ -140,6 +176,10 @@ def main():
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(script + "\n", encoding="utf-8")
+    out.with_suffix(".segments.json").write_text(
+        json.dumps({"title": title, "segments": segments, "script": script}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
 
     if a.review_json and last_review is not None:
         rp = Path(a.review_json)

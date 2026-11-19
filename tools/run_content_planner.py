@@ -193,9 +193,11 @@ def main():
     print("Perintah pipeline per video (jalankan satu per satu):")
     for v in videos:
         nxt = f' --next "{v["next"]}"' if v["next"] else ""
+        fmt = f' --format "{v["format"]}"' if v.get("format") else ""
+        hook = f' --hook "{v["hook"].replace(chr(34), "")}"' if v.get("hook") else ""
         print(
             f'  .\\.venv-audio\\Scripts\\python.exe tools\\pipeline.py {v["name"]} --notes '
-            f'--day "HARI {v["day"]}/{a.total}" --course "{course}"{nxt}'
+            f'--day "HARI {v["day"]}/{a.total}" --course "{course}"{fmt}{hook}{nxt}'
         )
     return 0
 

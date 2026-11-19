@@ -16,6 +16,7 @@ Pilihan:
   --model NAMA_MODEL      model AI untuk storyboard
   --notes                 buat naskah dari catatan\\NAMA.txt (Scriptwriter + Reviewer)
   --next "SDLC"           topik video besok (untuk teaser di naskah)
+  --format concept_breakdown --hook "Kalimat pembuka..."  format dan hook rencana video (opsional)
   --skip-tts              pakai NAMA.wav yang sudah ada (mis. rekaman sendiri)
   --skip-align            pakai NAMA.words.json yang sudah ada
   --auto                  jangan berhenti menunggu persetujuan audio
@@ -52,6 +53,8 @@ def main():
     ap.add_argument("--model")
     ap.add_argument("--notes", action="store_true")
     ap.add_argument("--next", dest="nxt")
+    ap.add_argument("--format", dest="video_format")
+    ap.add_argument("--hook")
     ap.add_argument("--skip-tts", action="store_true")
     ap.add_argument("--skip-align", action="store_true")
     ap.add_argument("--auto", action="store_true")
@@ -79,6 +82,10 @@ def main():
             cmd += ["--course", a.course]
         if a.nxt:
             cmd += ["--next", a.nxt]
+        if a.video_format:
+            cmd += ["--format", a.video_format]
+        if a.hook:
+            cmd += ["--hook", a.hook]
         run("0. Naskah (Scriptwriter + Reviewer)", cmd)
         if not a.auto:
             print(f"\nBuka dan baca naskahnya: {script}")

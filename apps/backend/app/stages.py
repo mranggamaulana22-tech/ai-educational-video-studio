@@ -13,6 +13,7 @@ ORDER = ["material", "analysis", "notes", "ideas", "script", "review", "audio", 
 # Empat titik persetujuan manual (PRD): nama titik -> tahap yang disetujui
 APPROVAL_POINTS = {
     "notes": "notes",
+    "ideas": "ideas",
     "script": "review",
     "audio": "audio",
     "video": "render",
@@ -20,7 +21,8 @@ APPROVAL_POINTS = {
 
 # Tahap yang baru boleh dijalankan setelah titik persetujuan tertentu
 REQUIRES_APPROVAL = {
-    "script": "notes",
+    "ideas": "notes",
+    "script": "ideas",
     "audio": "script",
     "words": "audio",
     "storyboard": "audio",
@@ -40,6 +42,7 @@ def paths(name):
         "notes": R / "catatan" / f"{name}.txt",
         "notes_json": R / "catatan" / f"{name}.notes.v2.json",
         "ideas": R / "rencana" / f"{name}.plan.json",
+        "selected_idea": R / "rencana" / f"{name}.selected_idea.json",
         "script": R / "naskah" / f"{name}.draft.txt",
         "review": R / "naskah" / f"{name}.txt",
         "review_json": R / "naskah" / f"{name}.review.json",
@@ -88,15 +91,10 @@ def build_command(stage, video, day_label="", course=""):
 
     if stage == "script":
         cmd = [py, "tools/run_scriptwriter.py", str(p["notes"]), str(p["script"]), "--no-review", *prov]
-        if p["ideas"].exists():
-            plan = json.loads(p["ideas"].read_text(encoding="utf-8-sig"))
-            videos = plan.get("videos", [])
-            selected = plan.get("selected")
-            idea = selected if isinstance(selected, dict) else None
-            if idea is None and isinstance(selected, int) and 0 <= selected < len(videos):
-                idea = videos[selected]
-            if idea is None and videos:
-                idea = videos[0]
+        idea_path = p["selected_idea"] if p["selected_idea"].exists() else p["ideas"]
+        if idea_path.exists():
+            plan = json.loads(idea_path.read_text(encoding="utf-8-sig"))
+            idea = plan.get("idea") if "idea" in plan else plan
             if isinstance(idea, dict):
                 if idea.get("format"):
                     cmd += ["--format", str(idea["format"])]
@@ -111,23 +109,38 @@ def build_command(stage, video, day_label="", course=""):
         return cmd, False, R
 
     if stage == "review":
-        cmd = [
+        review_cmd = [
             py,
             "tools/run_script_reviewer.py",
             str(p["notes"]),
             str(p["script"]),
-            str(p["review"]),
-            "--review-json",
             str(p["review_json"]),
+            "--segments-json",
+            str(p["script"].with_suffix(".segments.json")),
             *prov,
         ]
         if day_label:
-            cmd += ["--day", day_label]
+            review_cmd += ["--day", day_label]
         if course:
-            cmd += ["--course", course]
+            review_cmd += ["--course", course]
         if video.next_topic:
-            cmd += ["--next", video.next_topic]
-        return cmd, False, R
+            review_cmd += ["--next", video.next_topic]
+        code = (
+            "import json, pathlib, shutil, subprocess, sys; "
+            f"review_json = pathlib.Path({str(p['review_json'])!r}); "
+            f"script = pathlib.Path({str(p['script'])!r}); "
+            f"review = pathlib.Path({str(p['review'])!r}); "
+            f"cmd = {review_cmd!r}; "
+            "rc = subprocess.call(cmd); "
+            "sys.exit(rc) if rc != 0 else None; "
+            "data = json.loads(review_json.read_text(encoding='utf-8')); "
+            "data['review_status'] = 'belum lolos review' if data.get('verdict') == 'revise' else 'lolos review'; "
+            "data['needs_human_review'] = data.get('verdict') == 'revise'; "
+            "review_json.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8'); "
+            "review.parent.mkdir(parents=True, exist_ok=True); "
+            "shutil.copy2(script, review)"
+        )
+        return [py, "-c", code], False, R
 
     if stage == "audio":
         return [py, "tools/tts_gemini.py", str(p["review"]), str(p["audio"]), "--voice", video.voice], False, R

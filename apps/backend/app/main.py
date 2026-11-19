@@ -71,6 +71,10 @@ class TextIn(BaseModel):
     text: str
 
 
+class SelectIdeaIn(BaseModel):
+    index: int = 0
+
+
 def get_video(session: Session, video_id: int) -> Video:
     v = session.get(Video, video_id)
     if not v:
@@ -89,7 +93,7 @@ def video_dict(session, v: Video):
         "voice": v.voice,
         "provider": v.provider,
         "model": v.model,
-        "waiting_approval": service.waiting_approval_point(session, v),
+        **service.waiting_approval_detail(session, v),
         "stages": service.summary(session, v),
     }
 
@@ -201,6 +205,16 @@ def put_notes(video_id: int, body: TextIn, session: Session = Depends(db.get_ses
 @app.put("/videos/{video_id}/ideas")
 def put_ideas(video_id: int, body: TextIn, session: Session = Depends(db.get_session)):
     return _save_text(session, get_video(session, video_id), "ideas", body.text)
+
+
+@app.post("/videos/{video_id}/select-idea")
+def select_idea(video_id: int, body: SelectIdeaIn, session: Session = Depends(db.get_session)):
+    v = get_video(session, video_id)
+    try:
+        idea = service.select_idea(session, v, body.index)
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return {"selected": idea, "video": video_dict(session, v)}
 
 
 @app.put("/videos/{video_id}/script")

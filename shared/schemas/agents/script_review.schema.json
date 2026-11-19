@@ -3,14 +3,35 @@
   "$id": "script_review.schema.json",
   "title": "ScriptReview",
   "type": "object",
-  "required": ["verdict", "issues", "script"],
+  "required": ["verdict", "checks", "feedback_items", "summary"],
   "additionalProperties": false,
   "properties": {
-    "verdict": { "type": "string", "enum": ["ok", "revised"] },
-    "issues": {
-      "type": "array",
-      "items": { "type": "string" }
+    "verdict": { "type": "string", "enum": ["pass", "revise"] },
+    "checks": {
+      "type": "object",
+      "required": ["accuracy", "storytelling", "clarity", "consistency", "duration"],
+      "additionalProperties": true,
+      "properties": {
+        "accuracy": { "type": "boolean" },
+        "storytelling": { "type": "boolean" },
+        "clarity": { "type": "boolean" },
+        "consistency": { "type": "boolean" },
+        "duration": { "type": "boolean" }
+      }
     },
-    "script": { "type": "string", "minLength": 1 }
+    "feedback_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["segment_id", "severity", "suggestion"],
+        "additionalProperties": false,
+        "properties": {
+          "segment_id": { "type": "string", "minLength": 1 },
+          "severity": { "type": "string", "enum": ["error", "warning"] },
+          "suggestion": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "summary": { "type": "string", "minLength": 1 }
   }
 }

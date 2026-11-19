@@ -1,4 +1,5 @@
 """Logika inti: versi hasil tahap, penandaan usang, persetujuan, dan orchestrator tahap."""
+import json
 import shutil
 import subprocess
 from datetime import datetime, timezone
@@ -101,6 +102,9 @@ def can_run(session: Session, video: Video, stage: str):
         return f"Tahap sebelumnya ('{prev}') belum siap atau sudah usang."
 
     need = stages.REQUIRES_APPROVAL.get(stage)
+    if stage == "script" and not latest(session, video.id, "ideas"):
+        # Legacy: sebelum tahap ideas ada, script cukup menunggu persetujuan notes.
+        need = "notes"
     if need and not _is_approved(session, video.id, need):
         # Kompatibilitas mundur: jika notes diinput manual (PUT /notes), langsung izinkan script jalan.
         if need == "notes" and prev_art.source == "manual":
@@ -108,6 +112,45 @@ def can_run(session: Session, video: Video, stage: str):
         return f"Titik persetujuan '{need}' belum disetujui."
 
     return ""
+
+def select_idea(session: Session, video: Video, index=0):
+    """Pilih satu ide dari plan, simpan pilihannya, dan setujui titik approval ideas."""
+    plan_path = stages.paths(video.name)["ideas"]
+    if not plan_path.exists():
+        raise ValueError("Rencana ide belum tersedia.")
+    try:
+        plan = json.loads(plan_path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Rencana ide tidak valid: {exc}") from exc
+    videos = plan.get("videos") if isinstance(plan, dict) else None
+    if not isinstance(videos, list) or not videos:
+        raise ValueError("Rencana ide tidak memiliki daftar videos.")
+    if not isinstance(index, int) or index < 0 or index >= len(videos):
+        raise ValueError(f"Index ide harus antara 0 dan {len(videos) - 1}.")
+    idea = videos[index]
+    if not isinstance(idea, dict):
+        raise ValueError("Data ide yang dipilih tidak valid.")
+
+    art = latest(session, video.id, "ideas")
+    if not art:
+        raise ValueError("Artifact ideas belum terdaftar.")
+    if art.status == "stale":
+        raise ValueError("Rencana ide sudah usang. Jalankan ulang tahap ideas.")
+    selected_path = stages.paths(video.name)["selected_idea"]
+    selected_path.parent.mkdir(parents=True, exist_ok=True)
+    selected_path.write_text(
+        json.dumps({"index": index, "idea": idea}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    video.title = str(idea.get("title") or video.title)
+    if index + 1 < len(videos) and isinstance(videos[index + 1], dict):
+        video.next_topic = str(videos[index + 1].get("title") or "")
+    else:
+        video.next_topic = ""
+    art.status = "approved"
+    art.approved_at = now()
+    session.commit()
+    return idea
 
 
 def execute_run(SessionLocal, run_id: int, day_label="", course=""):
@@ -188,6 +231,21 @@ def waiting_approval_point(session: Session, video: Video):
         if art and art.status == "draft":
             return point
     return None
+
+
+def waiting_approval_detail(session: Session, video: Video):
+    point = waiting_approval_point(session, video)
+    reason = ""
+    if point == "script":
+        review_path = stages.paths(video.name)["review_json"]
+        if review_path.exists():
+            try:
+                review = json.loads(review_path.read_text(encoding="utf-8-sig"))
+            except (OSError, json.JSONDecodeError):
+                review = {}
+            if review.get("verdict") == "revise":
+                reason = "belum lolos review"
+    return {"waiting_approval": point, "waiting_approval_reason": reason}
 
 
 def summary(session: Session, video: Video):
