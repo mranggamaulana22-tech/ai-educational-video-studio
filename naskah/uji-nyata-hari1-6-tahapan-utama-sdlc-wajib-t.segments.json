@@ -1,0 +1,51 @@
+{
+  "title": "Enam Tahapan SDLC",
+  "segments": [
+    {
+      "id": "seg-1",
+      "role": "hook",
+      "text": "Pernah tahu bagaimana aplikasi dibuat dari awal sampai rilis?"
+    },
+    {
+      "id": "seg-2",
+      "role": "body",
+      "text": "Semua proses pembuatan aplikasi ini dinamakan SDLC atau Software Development Life Cycle."
+    },
+    {
+      "id": "seg-3",
+      "role": "body",
+      "text": "Tahap pertama adalah planning untuk mencatat requirement dan menyusun dokumen SRS."
+    },
+    {
+      "id": "seg-4",
+      "role": "body",
+      "text": "Lalu kita lanjut ke tahap design untuk merancang arsitektur sistem dan software."
+    },
+    {
+      "id": "seg-5",
+      "role": "body",
+      "text": "Setelah itu masuk tahap development saat para developer mulai menulis kode program."
+    },
+    {
+      "id": "seg-6",
+      "role": "body",
+      "text": "Berikutnya ada tahap testing guna menguji kestabilan serta keamanan aplikasi kita."
+    },
+    {
+      "id": "seg-7",
+      "role": "body",
+      "text": "Langkah kelima adalah deployment untuk merilis aplikasi ke dalam lingkungan produksi."
+    },
+    {
+      "id": "seg-8",
+      "role": "body",
+      "text": "Terakhir ada tahap maintenance untuk memperbaiki bug dan menjaga kestabilan sistem."
+    },
+    {
+      "id": "seg-9",
+      "role": "closing",
+      "text": "Besok kita bahas dokumen SRS, URS, dan SysRS ya, jangan lupa follow akun ini."
+    }
+  ],
+  "script": "Pernah tahu bagaimana aplikasi dibuat dari awal sampai rilis? Semua proses pembuatan aplikasi ini dinamakan SDLC atau Software Development Life Cycle. Tahap pertama adalah planning untuk mencatat requirement dan menyusun dokumen SRS. Lalu kita lanjut ke tahap design untuk merancang arsitektur sistem dan software. Setelah itu masuk tahap development saat para developer mulai menulis kode program. Berikutnya ada tahap testing guna menguji kestabilan serta keamanan aplikasi kita. Langkah kelima adalah deployment untuk merilis aplikasi ke dalam lingkungan produksi. Terakhir ada tahap maintenance untuk memperbaiki bug dan menjaga kestabilan sistem. Besok kita bahas dokumen SRS, URS, dan SysRS ya, jangan lupa follow akun ini."
+}

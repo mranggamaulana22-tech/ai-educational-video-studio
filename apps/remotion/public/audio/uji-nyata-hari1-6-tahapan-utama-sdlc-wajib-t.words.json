@@ -1,0 +1,604 @@
+{
+ "audio": "uji-nyata-hari1-6-tahapan-utama-sdlc-wajib-t.wav",
+ "durationMs": 51240,
+ "model": "small",
+ "silences": [
+  [
+   0,
+   290
+  ],
+  [
+   3920,
+   4400
+  ],
+  [
+   8480,
+   8810
+  ],
+  [
+   11160,
+   11900
+  ],
+  [
+   13600,
+   13840
+  ],
+  [
+   17290,
+   17970
+  ],
+  [
+   19790,
+   20050
+  ],
+  [
+   22570,
+   23270
+  ],
+  [
+   25230,
+   25450
+  ],
+  [
+   27960,
+   28430
+  ],
+  [
+   30230,
+   30530
+  ],
+  [
+   33720,
+   34460
+  ],
+  [
+   36240,
+   36510
+  ],
+  [
+   39090,
+   39560
+  ],
+  [
+   41520,
+   41790
+  ],
+  [
+   42910,
+   43100
+  ],
+  [
+   44660,
+   45110
+  ],
+  [
+   47430,
+   47630
+  ],
+  [
+   49210,
+   49550
+  ],
+  [
+   50940,
+   51240
+  ]
+ ],
+ "words": [
+  {
+   "text": "Pernah",
+   "startMs": 290,
+   "endMs": 540
+  },
+  {
+   "text": "tahu",
+   "startMs": 540,
+   "endMs": 880
+  },
+  {
+   "text": "bagaimana",
+   "startMs": 880,
+   "endMs": 1580
+  },
+  {
+   "text": "aplikasi",
+   "startMs": 1580,
+   "endMs": 2120
+  },
+  {
+   "text": "dibuat",
+   "startMs": 2120,
+   "endMs": 2540
+  },
+  {
+   "text": "dari",
+   "startMs": 2540,
+   "endMs": 2740
+  },
+  {
+   "text": "awal",
+   "startMs": 2740,
+   "endMs": 3100
+  },
+  {
+   "text": "sampai",
+   "startMs": 3100,
+   "endMs": 3380
+  },
+  {
+   "text": "rilis.",
+   "startMs": 3380,
+   "endMs": 3880
+  },
+  {
+   "text": "Semua",
+   "startMs": 4400,
+   "endMs": 4920
+  },
+  {
+   "text": "proses",
+   "startMs": 4920,
+   "endMs": 5240
+  },
+  {
+   "text": "pembuatan",
+   "startMs": 5240,
+   "endMs": 5660
+  },
+  {
+   "text": "aplikasi",
+   "startMs": 5660,
+   "endMs": 6220
+  },
+  {
+   "text": "ini",
+   "startMs": 6220,
+   "endMs": 6560
+  },
+  {
+   "text": "dinamakan",
+   "startMs": 6560,
+   "endMs": 7400
+  },
+  {
+   "text": "SDLC",
+   "startMs": 7400,
+   "endMs": 8480
+  },
+  {
+   "text": "atau",
+   "startMs": 8810,
+   "endMs": 9080
+  },
+  {
+   "text": "Software",
+   "startMs": 9080,
+   "endMs": 9700
+  },
+  {
+   "text": "Development",
+   "startMs": 9700,
+   "endMs": 10300
+  },
+  {
+   "text": "Life",
+   "startMs": 10300,
+   "endMs": 10600
+  },
+  {
+   "text": "Cycle.",
+   "startMs": 10600,
+   "endMs": 11100
+  },
+  {
+   "text": "Tahap",
+   "startMs": 11900,
+   "endMs": 12080
+  },
+  {
+   "text": "pertama",
+   "startMs": 12080,
+   "endMs": 12480
+  },
+  {
+   "text": "adalah",
+   "startMs": 12480,
+   "endMs": 13000
+  },
+  {
+   "text": "planning",
+   "startMs": 13000,
+   "endMs": 13600
+  },
+  {
+   "text": "untuk",
+   "startMs": 13840,
+   "endMs": 14100
+  },
+  {
+   "text": "mencatat",
+   "startMs": 14100,
+   "endMs": 14580
+  },
+  {
+   "text": "requirement",
+   "startMs": 14580,
+   "endMs": 14940
+  },
+  {
+   "text": "dan",
+   "startMs": 14940,
+   "endMs": 15660
+  },
+  {
+   "text": "menyusun",
+   "startMs": 15660,
+   "endMs": 16100
+  },
+  {
+   "text": "dokumen",
+   "startMs": 16100,
+   "endMs": 16540
+  },
+  {
+   "text": "SRS.",
+   "startMs": 16540,
+   "endMs": 17260
+  },
+  {
+   "text": "Lalu",
+   "startMs": 17970,
+   "endMs": 18320
+  },
+  {
+   "text": "kita",
+   "startMs": 18320,
+   "endMs": 18560
+  },
+  {
+   "text": "lanjut",
+   "startMs": 18560,
+   "endMs": 18880
+  },
+  {
+   "text": "ke",
+   "startMs": 18880,
+   "endMs": 19080
+  },
+  {
+   "text": "tahap",
+   "startMs": 19080,
+   "endMs": 19280
+  },
+  {
+   "text": "desain",
+   "startMs": 19280,
+   "endMs": 19790
+  },
+  {
+   "text": "untuk",
+   "startMs": 20050,
+   "endMs": 20360
+  },
+  {
+   "text": "merancang",
+   "startMs": 20360,
+   "endMs": 20840
+  },
+  {
+   "text": "architektur",
+   "startMs": 20840,
+   "endMs": 21440
+  },
+  {
+   "text": "sistem",
+   "startMs": 21440,
+   "endMs": 21780
+  },
+  {
+   "text": "dan",
+   "startMs": 21780,
+   "endMs": 22020
+  },
+  {
+   "text": "software.",
+   "startMs": 22020,
+   "endMs": 22380
+  },
+  {
+   "text": "Setelah",
+   "startMs": 23270,
+   "endMs": 23580
+  },
+  {
+   "text": "itu",
+   "startMs": 23580,
+   "endMs": 23860
+  },
+  {
+   "text": "masuk",
+   "startMs": 23860,
+   "endMs": 24220
+  },
+  {
+   "text": "tahap",
+   "startMs": 24220,
+   "endMs": 24600
+  },
+  {
+   "text": "development",
+   "startMs": 24600,
+   "endMs": 25230
+  },
+  {
+   "text": "saat",
+   "startMs": 25450,
+   "endMs": 25640
+  },
+  {
+   "text": "para",
+   "startMs": 25640,
+   "endMs": 25900
+  },
+  {
+   "text": "developer",
+   "startMs": 25900,
+   "endMs": 26360
+  },
+  {
+   "text": "mulai",
+   "startMs": 26360,
+   "endMs": 26920
+  },
+  {
+   "text": "menulis",
+   "startMs": 26920,
+   "endMs": 27260
+  },
+  {
+   "text": "kode",
+   "startMs": 27260,
+   "endMs": 27420
+  },
+  {
+   "text": "program.",
+   "startMs": 27420,
+   "endMs": 27960
+  },
+  {
+   "text": "Berikutnya",
+   "startMs": 28430,
+   "endMs": 29240
+  },
+  {
+   "text": "ada",
+   "startMs": 29240,
+   "endMs": 29480
+  },
+  {
+   "text": "tahap",
+   "startMs": 29480,
+   "endMs": 29760
+  },
+  {
+   "text": "testing,",
+   "startMs": 29760,
+   "endMs": 30100
+  },
+  {
+   "text": "guna",
+   "startMs": 30530,
+   "endMs": 30940
+  },
+  {
+   "text": "menguji",
+   "startMs": 30940,
+   "endMs": 31360
+  },
+  {
+   "text": "kestabilan",
+   "startMs": 31360,
+   "endMs": 32060
+  },
+  {
+   "text": "serta",
+   "startMs": 32060,
+   "endMs": 32480
+  },
+  {
+   "text": "keamanan",
+   "startMs": 32480,
+   "endMs": 32940
+  },
+  {
+   "text": "aplikasi",
+   "startMs": 32940,
+   "endMs": 33340
+  },
+  {
+   "text": "kita.",
+   "startMs": 33340,
+   "endMs": 33620
+  },
+  {
+   "text": "Langkah",
+   "startMs": 34460,
+   "endMs": 34720
+  },
+  {
+   "text": "kelima",
+   "startMs": 34720,
+   "endMs": 35220
+  },
+  {
+   "text": "adalah",
+   "startMs": 35220,
+   "endMs": 35540
+  },
+  {
+   "text": "deployment",
+   "startMs": 35540,
+   "endMs": 36240
+  },
+  {
+   "text": "untuk",
+   "startMs": 36510,
+   "endMs": 36760
+  },
+  {
+   "text": "merilis",
+   "startMs": 36760,
+   "endMs": 37200
+  },
+  {
+   "text": "aplikasi",
+   "startMs": 37200,
+   "endMs": 37780
+  },
+  {
+   "text": "ke",
+   "startMs": 37780,
+   "endMs": 37880
+  },
+  {
+   "text": "dalam",
+   "startMs": 37880,
+   "endMs": 38100
+  },
+  {
+   "text": "lingkungan",
+   "startMs": 38100,
+   "endMs": 38540
+  },
+  {
+   "text": "produksi.",
+   "startMs": 38540,
+   "endMs": 39020
+  },
+  {
+   "text": "Terakhir",
+   "startMs": 39720,
+   "endMs": 40320
+  },
+  {
+   "text": "ada",
+   "startMs": 40320,
+   "endMs": 40560
+  },
+  {
+   "text": "tahap",
+   "startMs": 40560,
+   "endMs": 40900
+  },
+  {
+   "text": "maintenance",
+   "startMs": 40900,
+   "endMs": 41520
+  },
+  {
+   "text": "untuk",
+   "startMs": 41790,
+   "endMs": 42040
+  },
+  {
+   "text": "memperbaiki",
+   "startMs": 42040,
+   "endMs": 42560
+  },
+  {
+   "text": "bug",
+   "startMs": 42560,
+   "endMs": 42910
+  },
+  {
+   "text": "dan",
+   "startMs": 43100,
+   "endMs": 43260
+  },
+  {
+   "text": "menjaga",
+   "startMs": 43260,
+   "endMs": 43660
+  },
+  {
+   "text": "kestabilan",
+   "startMs": 43660,
+   "endMs": 44240
+  },
+  {
+   "text": "sistem.",
+   "startMs": 44240,
+   "endMs": 44500
+  },
+  {
+   "text": "Besok",
+   "startMs": 45240,
+   "endMs": 45780
+  },
+  {
+   "text": "kita",
+   "startMs": 45780,
+   "endMs": 45980
+  },
+  {
+   "text": "bahas",
+   "startMs": 45980,
+   "endMs": 46320
+  },
+  {
+   "text": "dokumen",
+   "startMs": 46320,
+   "endMs": 46700
+  },
+  {
+   "text": "SRS,",
+   "startMs": 46700,
+   "endMs": 47420
+  },
+  {
+   "text": "URS,",
+   "startMs": 47630,
+   "endMs": 48180
+  },
+  {
+   "text": "dan",
+   "startMs": 48180,
+   "endMs": 48420
+  },
+  {
+   "text": "CISRS",
+   "startMs": 48420,
+   "endMs": 48880
+  },
+  {
+   "text": "ya,",
+   "startMs": 48880,
+   "endMs": 49160
+  },
+  {
+   "text": "jangan",
+   "startMs": 49580,
+   "endMs": 49740
+  },
+  {
+   "text": "lupa",
+   "startMs": 49740,
+   "endMs": 50040
+  },
+  {
+   "text": "follow",
+   "startMs": 50040,
+   "endMs": 50320
+  },
+  {
+   "text": "akun",
+   "startMs": 50320,
+   "endMs": 50660
+  },
+  {
+   "text": "ini.",
+   "startMs": 50660,
+   "endMs": 50860
+  }
+ ]
+}

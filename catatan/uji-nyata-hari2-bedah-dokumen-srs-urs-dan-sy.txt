@@ -1,0 +1,50 @@
+Kursus: Catatan Belajar: Tahapan SDLC dan Proses Perencanaan Kebutuhan Perangkat Lunak
+Modul: 
+
+Topik: Langkah-Langkah Perencanaan dan Penggalian Kebutuhan (Planning)
+Langkah awal dalam planning adalah mencatat requirement melalui beberapa tahapan:
+1. **Identifikasi Stakeholders**: Meliputi decision maker/PM, end-user, system administrator, engineering, marketing, sales, dan customer support.
+2. **Menetapkan Tujuan dan Objektivitas**: Membedakan antara *Goals* (tujuan jangka panjang) dan *Objectives* (dapat ditindaklanjuti dan diukur).
+3. **Penggalian Kebutuhan**: Menggunakan survei, kuesioner, dan interview.
+4. **Mendokumentasikan Kebutuhan**: Harus sejalan dengan goals serta mudah dipahami stakeholder.
+5. **Analisa dan Mengkonfirmasi Requirement**: Harus konsisten, jelas, dan lengkap.
+6. **Menentukan Skala Prioritas**: Menentukan prioritas tinggi serta fitur yang harus ada (*must-have*) atau bagus jika ada (*nice-to-have*).
+- Istilah Goals: Tujuan jangka panjang yang ingin dicapai.
+- Istilah Objectives: Target yang dapat ditindaklanjuti dan diukur untuk mencapai goals.
+- Contoh: Melakukan interview dan survei kepada end-user untuk menggali kebutuhan aplikasi.
+
+Topik: Dokumen SRS (Software Requirements Specification)
+Output utama dari proses planning adalah dokumen SRS yang mencakup:
+- Fungsionalitas software, standar performa, tujuan, ruang lingkup, batasan, asumsi, dan ketergantungan.
+- Kategori requirement:
+  1. **Functional requirement**: Fitur yang harus bisa dilakukan oleh sistem.
+  2. **External interface requirement**: Cara sistem berinteraksi dengan pihak/komponen eksternal.
+  3. **System feature**: Fitur utama sistem beserta detail perilakunya.
+  4. **Non-functional requirement**: Kualitas sistem seperti security, performa, usability, dan reliability.
+- Istilah SRS: Software Requirements Specification, dokumen spesifikasi kebutuhan perangkat lunak.
+- Istilah Functional requirement: Fitur spesifik yang harus dapat dilakukan oleh sistem.
+- Istilah Non-functional requirement: Standar kualitas sistem seperti keamanan, performa, dan kegunaan.
+- Contoh: Menetapkan enkripsi data sebagai bagian dari non-functional requirement (security).
+
+Topik: Dokumen URS (User Requirement Specification)
+URS mendeskripsikan kebutuhan bisnis dan ekspektasi user.
+- Memuat **User Stories** yang menjawab: siapa pengguna aplikasi, fitur apa yang dibutuhkan agar dapat berfungsi, dan mengapa pengguna membutuhkan fitur tersebut.
+- Dikonfirmasi melalui **UAT (User Acceptance Testing)**, yaitu proses pengujian oleh pengguna untuk memastikan aplikasi sesuai kebutuhan.
+- URS kemudian digabungkan ke dalam dokumen SRS.
+- Istilah URS: User Requirement Specification, dokumen kebutuhan pengguna.
+- Istilah UAT: User Acceptance Testing, pengujian aplikasi oleh pengguna untuk memastikan kesesuaian kebutuhan.
+- Contoh: Pengguna melakukan UAT untuk memverifikasi apakah fitur login sudah sesuai dengan ekspektasi bisnis.
+
+Topik: Dokumen SysRS (System Requirement Specification)
+SysRS merinci spesifikasi sistem secara teknis dan operasional yang mencakup:
+a. **System capabilities**: Kemampuan yang harus dimiliki sistem.
+b. **Interface and user characteristics**: Interaksi sistem dan karakteristik pengguna.
+c. **Policy**: Kebijakan dan aturan internal organisasi.
+d. **Regulation**: Peraturan atau standar eksternal.
+e. **Personnel**: Orang yang terlibat dalam operasi dan pemeliharaan.
+f. **Performance**: Standar kinerja sistem.
+g. **Security**: Perlindungan data dan pencegahan akses tidak sah.
+h. **System acceptance kriteria**: Kriteria kelayakan penerimaan sistem.
+i. **Hardware expectation**: Kebutuhan perangkat keras.
+- Istilah SysRS: System Requirement Specification, dokumen spesifikasi kebutuhan sistem.
+- Contoh: Menentukan spesifikasi RAM dan prosesor server sebagai bagian dari hardware expectation.

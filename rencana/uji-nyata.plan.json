@@ -1,0 +1,43 @@
+{
+  "series": "Tahapan SDLC dan Perencanaan Kebutuhan",
+  "videos": [
+    {
+      "day": 1,
+      "title": "6 Tahapan Utama SDLC Wajib Tahu",
+      "format": "step_by_step",
+      "hook": "Pernah tahu bagaimana aplikasi dibuat dari awal sampai rilis?",
+      "angle": "Menjelaskan siklus hidup pengembangan perangkat lunak dari planning hingga maintenance secara runtut.",
+      "topics": [
+        "Tahapan Utama dalam SDLC"
+      ],
+      "section_ids": [
+        "s1"
+      ],
+      "why": "Memperkenalkan konsep dasar SDLC sebagai fondasi awal sebelum masuk ke detail perencanaan.",
+      "name": "uji-nyata-hari1-6-tahapan-utama-sdlc-wajib-t",
+      "next": "Bedah Dokumen SRS, URS, dan SysRS"
+    },
+    {
+      "day": 2,
+      "title": "Bedah Dokumen SRS, URS, dan SysRS",
+      "format": "concept_breakdown",
+      "hook": "Bingung bedanya dokumen SRS, URS, dan SysRS dalam project IT?",
+      "angle": "Membedah tiga dokumen penting dalam tahap planning untuk memastikan kebutuhan sistem terpenuhi.",
+      "topics": [
+        "Langkah-Langkah Perencanaan dan Penggalian Kebutuhan (Planning)",
+        "Dokumen SRS (Software Requirements Specification)",
+        "Dokumen URS (User Requirement Specification)",
+        "Dokumen SysRS (System Requirement Specification)"
+      ],
+      "section_ids": [
+        "s2",
+        "s3",
+        "s4",
+        "s5"
+      ],
+      "why": "Menggabungkan seluruh dokumen dan tahapan planning agar penonton memahami output teknis dan bisnis secara komprehensif.",
+      "name": "uji-nyata-hari2-bedah-dokumen-srs-urs-dan-sy",
+      "next": ""
+    }
+  ]
+}

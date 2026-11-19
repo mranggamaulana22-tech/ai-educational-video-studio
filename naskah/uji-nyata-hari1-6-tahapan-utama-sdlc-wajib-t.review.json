@@ -1,0 +1,14 @@
+{
+  "verdict": "pass",
+  "checks": {
+    "accuracy": true,
+    "storytelling": true,
+    "clarity": true,
+    "consistency": true,
+    "duration": true
+  },
+  "feedback_items": [],
+  "summary": "Naskah sangat akurat sesuai catatan belajar, alur cerita runtut, memenuhi standar kejelasan dan konsistensi, serta panjang kata sesuai target.",
+  "review_status": "lolos review",
+  "needs_human_review": false
+}
