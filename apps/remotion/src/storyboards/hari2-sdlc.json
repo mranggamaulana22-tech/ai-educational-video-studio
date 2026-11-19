@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.1",
+  "schemaVersion": "1.3",
   "video": {
     "title": "Tahap Planning dalam SDLC",
     "width": 1080,
@@ -7,8 +7,8 @@
     "fps": 30,
     "durationMs": 46600,
     "badge": {
-      "day": "HARI 2/15",
-      "course": "Intro to Software Engineering"
+      "day": "Hari 2",
+      "course": "SDLC"
     }
   },
   "audio": {
@@ -20,7 +20,7 @@
       "id": "scene-001",
       "startMs": 0,
       "durationMs": 5610,
-      "component": "IconHero",
+      "componentId": "IconHero",
       "props": {
         "icon": "rocket",
         "title": "Bikin Aplikasi Dari Nol",
@@ -28,159 +28,187 @@
         "color": "teal",
         "motion": "float"
       },
-      "transition": "fade"
+      "transition": "fade",
+      "componentVersion": "1.0.0"
     },
     {
       "id": "scene-002",
       "startMs": 5610,
       "durationMs": 3870,
-      "component": "BigStatement",
+      "componentId": "BigStatement",
       "props": {
-        "kicker": "FOKUS",
-        "icon": "target",
+        "kicker": "SDLC PHASE",
+        "icon": "book",
         "iconColor": "orange",
         "lines": [
           {
-            "text": "Tahap Planning",
+            "text": "Semua dimulai dari planning",
             "color": "teal"
-          },
-          {
-            "text": "Dalam SDLC",
-            "color": "orange"
           }
         ]
       },
-      "transition": "slide"
+      "transition": "slide",
+      "componentVersion": "1.0.0"
     },
     {
       "id": "scene-003",
       "startMs": 9480,
       "durationMs": 7770,
-      "component": "IconHero",
+      "componentId": "IconGrid",
       "props": {
-        "icon": "bulb",
-        "title": "Ibarat Bangun Rumah",
-        "subtitle": "Bikin denah dan diskusi kebutuhan",
-        "color": "violet",
-        "motion": "wiggle"
+        "heading": "Denah & Kebutuhan",
+        "items": [
+          {
+            "icon": "people",
+            "label": "Bangun Rumah",
+            "color": "teal"
+          },
+          {
+            "icon": "chat",
+            "label": "Ngobrol User",
+            "color": "orange"
+          }
+        ]
       },
-      "transition": "zoom"
+      "transition": "zoom",
+      "componentVersion": "1.0.0"
     },
     {
       "id": "scene-004",
       "startMs": 17250,
-      "durationMs": 5830,
-      "component": "CardList",
+      "durationMs": 6330,
+      "componentId": "CardList",
       "props": {
-        "heading": "Catat Kebutuhan",
+        "heading": "Target Aplikasi",
         "items": [
           {
-            "text": "User & Tim Marketing",
-            "icon": "people",
+            "text": "Catat kebutuhan user",
+            "icon": "check",
             "color": "teal"
           },
           {
-            "text": "Tujuan Aplikasi",
+            "text": "Dari user ke marketing",
             "icon": "target",
             "color": "orange"
           }
         ]
       },
-      "transition": "wipe"
+      "transition": "wipe",
+      "componentVersion": "1.0.0"
     },
     {
       "id": "scene-005",
-      "startMs": 23080,
-      "durationMs": 4160,
-      "component": "FlowSteps",
+      "startMs": 23580,
+      "durationMs": 3560,
+      "componentId": "BigStatement",
       "props": {
-        "heading": "Tetapkan Tujuan",
-        "steps": [
+        "kicker": "TUJUAN",
+        "icon": "bulb",
+        "iconColor": "teal",
+        "lines": [
           {
-            "label": "Tujuan Jelas",
-            "icon": "target",
-            "color": "teal"
-          },
-          {
-            "label": "Arah Tepat",
-            "icon": "arrow",
+            "text": "Tentukan tujuan aplikasi",
             "color": "orange"
           }
         ]
       },
-      "transition": "fade"
+      "transition": "slide",
+      "componentVersion": "1.0.0"
     },
     {
       "id": "scene-006",
-      "startMs": 27240,
-      "durationMs": 5630,
-      "component": "IconHero",
+      "startMs": 27140,
+      "durationMs": 5730,
+      "componentId": "FlowSteps",
       "props": {
-        "icon": "chat",
-        "title": "Survei & Interview",
-        "subtitle": "Gali semua kebutuhan",
-        "color": "violet",
-        "motion": "pulse"
+        "heading": "Pengumpulan Data",
+        "steps": [
+          {
+            "label": "Survei",
+            "icon": "folder",
+            "color": "teal"
+          },
+          {
+            "label": "Interview",
+            "icon": "chat",
+            "color": "orange"
+          }
+        ]
       },
-      "transition": "slide"
+      "transition": "zoom",
+      "componentVersion": "1.0.0"
     },
     {
       "id": "scene-007",
       "startMs": 32870,
       "durationMs": 4880,
-      "component": "IconGrid",
+      "componentId": "IconGrid",
       "props": {
-        "heading": "Dokumen Penting",
+        "heading": "Dokumen Utama",
         "items": [
           {
             "icon": "file",
-            "label": "SRS & URS",
+            "label": "SRS",
             "color": "teal"
           },
           {
-            "icon": "code",
-            "label": "Panduan Developer",
+            "icon": "server",
+            "label": "URS",
             "color": "orange"
           }
         ]
       },
-      "transition": "zoom"
+      "transition": "wipe",
+      "componentVersion": "1.0.0"
     },
     {
       "id": "scene-008",
       "startMs": 37750,
-      "durationMs": 3390,
-      "component": "BigStatement",
+      "durationMs": 3380,
+      "componentId": "BigStatement",
       "props": {
         "kicker": "PANDUAN",
-        "icon": "check",
-        "iconColor": "green",
+        "icon": "code",
+        "iconColor": "teal",
         "lines": [
           {
-            "text": "Acuan Utama",
+            "text": "Panduan utama developer",
             "color": "teal"
-          },
-          {
-            "text": "Para Developer",
-            "color": "orange"
           }
         ]
       },
-      "transition": "wipe"
+      "transition": "slide",
+      "componentVersion": "1.0.0"
     },
     {
       "id": "scene-009",
-      "startMs": 41140,
-      "durationMs": 5460,
-      "component": "CtaCard",
+      "startMs": 41130,
+      "durationMs": 3410,
+      "componentId": "IconHero",
       "props": {
-        "title": "Besok Desain Arsitektur",
-        "subtitle": "Jangan lupa follow biar gak ketinggalan ya",
-        "button": "Follow Sekarang",
-        "color": "teal",
-        "icon": "arrow"
+        "icon": "gear",
+        "title": "Desain Arsitektur",
+        "subtitle": "Besok kita bahas!",
+        "color": "orange",
+        "motion": "spin"
       },
-      "transition": "fade"
+      "transition": "zoom",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-010",
+      "startMs": 44540,
+      "durationMs": 2060,
+      "componentId": "CtaCard",
+      "props": {
+        "title": "Jangan Lupa Follow",
+        "subtitle": "Biar gak ketinggalan",
+        "button": "Follow",
+        "color": "teal",
+        "icon": "star"
+      },
+      "transition": "fade",
+      "componentVersion": "1.0.0"
     }
   ],
   "subtitles": [

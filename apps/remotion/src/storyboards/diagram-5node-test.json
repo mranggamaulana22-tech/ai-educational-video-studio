@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.3",
+  "video": {
+    "title": "Uji 5 Node DiagramScene",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 8000
+  },
+  "audio": {
+    "src": "audio/hari2-sdlc.wav",
+    "durationMs": 8000
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 8000,
+      "componentId": "DiagramScene",
+      "componentVersion": "1.0.0",
+      "props": {
+        "heading": "Arsitektur 5 Modul Utama",
+        "layout": "grid",
+        "nodes": [
+          {
+            "id": "n1",
+            "label": "Material Analyst",
+            "sublabel": "Ekstrak konsep & gap",
+            "icon": "book",
+            "color": "teal"
+          },
+          {
+            "id": "n2",
+            "label": "Learning Notes",
+            "sublabel": "Catatan terstruktur",
+            "icon": "file",
+            "color": "orange"
+          },
+          {
+            "id": "n3",
+            "label": "Content Planner",
+            "sublabel": "Format & hook video",
+            "icon": "bulb",
+            "color": "violet"
+          },
+          {
+            "id": "n4",
+            "label": "Script & Review",
+            "sublabel": "Naskah siap TTS",
+            "icon": "chat",
+            "color": "green"
+          },
+          {
+            "id": "n5",
+            "label": "Remotion Studio",
+            "sublabel": "Render video 9:16",
+            "icon": "laptop",
+            "color": "yellow"
+          }
+        ],
+        "edges": [
+          {
+            "from": "n1",
+            "to": "n2",
+            "label": "JSON"
+          },
+          {
+            "from": "n2",
+            "to": "n3",
+            "label": "Topik"
+          },
+          {
+            "from": "n3",
+            "to": "n4",
+            "label": "Rencana"
+          },
+          {
+            "from": "n4",
+            "to": "n5",
+            "label": "Audio"
+          }
+        ]
+      },
+      "transition": "fade"
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "sub-001",
+      "startMs": 0,
+      "endMs": 8000,
+      "text": "Lima modul saling terhubung membentuk satu studio otomatis."
+    }
+  ]
+}

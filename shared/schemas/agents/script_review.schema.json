@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "script_review.schema.json",
+  "title": "ScriptReview",
+  "type": "object",
+  "required": ["verdict", "issues", "script"],
+  "additionalProperties": false,
+  "properties": {
+    "verdict": { "type": "string", "enum": ["ok", "revised"] },
+    "issues": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "script": { "type": "string", "minLength": 1 }
+  }
+}

@@ -8,7 +8,9 @@ Pilihan:
   --retries 2   (berapa kali minta AI memperbaiki bila ditolak validator)
 """
 import argparse
+import copy
 import json
+import math
 import re
 import subprocess
 import sys
@@ -23,6 +25,7 @@ VALIDATOR = ROOT / "apps" / "remotion" / "scripts" / "validate-storyboard.mjs"
 PROMPT = ROOT / "prompts" / "storyboard_agent.md"
 APPLY = ROOT / "tools" / "apply_word_times.py"
 DEFAULT_COMPONENT_VERSION = "1.0.0"
+MAX_SCENE_MS = 8000
 
 
 def extract_json(text):
@@ -58,6 +61,68 @@ def resolve_storyboard_v13(sb):
     return sb
 
 
+def _scale_cues(props, offset_ms, part_dur_ms):
+    out = copy.deepcopy(props) if isinstance(props, dict) else {}
+    for k in ("cuesMs", "revealMs", "uploadMs", "teamMs", "downloadMs"):
+        if isinstance(out.get(k), list):
+            shifted = [max(0, min(part_dur_ms - 100, int(t - offset_ms))) for t in out[k]]
+            out[k] = shifted
+    for k in ("headlineMs", "lampOnMs", "rewindMs", "laptopMs", "cloudMs"):
+        if isinstance(out.get(k), (int, float)):
+            out[k] = max(0, min(part_dur_ms - 100, int(out[k] - offset_ms)))
+    return out
+
+
+def split_long_scenes_fallback(sb):
+    """Cadangan terakhir (DL-8): pecah paksa scene > 8000 ms menjadi potongan <= 8000 ms tanpa celah."""
+    scenes = sb.get("scenes")
+    if not isinstance(scenes, list):
+        return sb
+
+    new_scenes = []
+    changed = False
+    for sc in scenes:
+        dur = sc.get("durationMs", 0)
+        start = sc.get("startMs", 0)
+        if not isinstance(dur, (int, float)) or dur <= MAX_SCENE_MS:
+            new_scenes.append(sc)
+            continue
+
+        changed = True
+        parts = math.ceil(dur / MAX_SCENE_MS)
+        base_dur = int(dur // parts)
+        rem = int(dur - base_dur * parts)
+        cur_start = int(start)
+        orig_comp = sc.get("componentId") or sc.get("component") or "BigStatement"
+
+        for idx in range(parts):
+            p_dur = base_dur + (rem if idx == parts - 1 else 0)
+            offset = cur_start - start
+            part = {
+                "id": f"{sc.get('id', 'scene')}-p{idx + 1}",
+                "startMs": cur_start,
+                "durationMs": p_dur,
+                "componentId": orig_comp if idx == 0 else ("IconHero" if orig_comp != "IconHero" else "BigStatement"),
+                "componentVersion": DEFAULT_COMPONENT_VERSION,
+                "props": _scale_cues(sc.get("props", {}), offset, p_dur)
+                if idx == 0
+                else (
+                    {"icon": "bulb", "title": str(sc.get("props", {}).get("heading") or sc.get("props", {}).get("title") or "Lanjutan"), "color": "orange", "motion": "float"}
+                    if orig_comp != "IconHero"
+                    else {"lines": [{"text": str(sc.get("props", {}).get("title") or "Poin Inti"), "color": "orange"}]}
+                ),
+                "transition": sc.get("transition", "fade") if idx == 0 else "slide",
+            }
+            new_scenes.append(part)
+            cur_start += p_dur
+
+    if changed:
+        for i, s in enumerate(new_scenes, 1):
+            s["id"] = f"scene-{i:03d}"
+        sb["scenes"] = new_scenes
+    return sb
+
+
 def validate(path):
     r = subprocess.run(["node", str(VALIDATOR), str(path)], capture_output=True, text=True, encoding="utf-8")
     return r.returncode == 0, (r.stdout + r.stderr).strip()
@@ -86,6 +151,7 @@ def main():
     out.parent.mkdir(parents=True, exist_ok=True)
     messages = [("user", user)]
     ok, report = False, ""
+    last_sb = None
     for attempt in range(a.retries + 1):
         print(f"[{attempt + 1}/{a.retries + 1}] Minta {a.provider} membuat storyboard...")
         reply = llm.generate_json(a.provider, system, messages, a.model)
@@ -97,6 +163,7 @@ def main():
             messages += [("model", reply), ("user", report + "\nKeluarkan hanya JSON lengkap yang valid.")]
             continue
         sb = resolve_storyboard_v13(clean_subtitles(sb))
+        last_sb = sb
         out.write_text(json.dumps(sb, ensure_ascii=False, indent=2), encoding="utf-8")
         ok, report = validate(out)
         print(report)
@@ -107,6 +174,14 @@ def main():
             print("    Ada scene lebih dari 8 detik, minta AI memecahnya...")
         fix = "Validator menolak storyboard ini:\n" + report + "\nPerbaiki dan keluarkan JSON lengkap yang baru (pastikan setiap scene 3000-8000 ms dan tidak ada celah waktu), hanya JSON."
         messages += [("model", reply), ("user", fix)]
+
+    if not ok and last_sb is not None:
+        print("\n[CADANGAN] Menjalankan pemecah scene panjang otomatis...")
+        sb = resolve_storyboard_v13(split_long_scenes_fallback(last_sb))
+        out.write_text(json.dumps(sb, ensure_ascii=False, indent=2), encoding="utf-8")
+        ok, report = validate(out)
+        print(report)
+
     if not ok:
         print(f"\n[GAGAL] Belum lolos validator setelah {a.retries + 1} percobaan. Hasil terakhir ada di {out}.")
         return 1

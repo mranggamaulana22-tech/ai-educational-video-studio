@@ -1,0 +1,54 @@
+{
+  "input": {
+    "notes": {
+      "title": "Dasar Web: HTML, CSS, JavaScript",
+      "sections": [
+        {
+          "id": "s1",
+          "heading": "Tiga lapisan web",
+          "body_md": "HTML menentukan struktur, CSS mengatur tampilan, dan JavaScript menangani interaksi.",
+          "concept_ids": ["c1"],
+          "key_terms": [{ "term": "HTML", "definition": "Bahasa penanda struktur halaman" }],
+          "examples": [],
+          "basis": ["material", "analysis"]
+        },
+        {
+          "id": "s2",
+          "heading": "DOM: halaman di mata browser",
+          "body_md": "Browser membaca teks HTML lalu membentuk struktur pohon objek yang disebut DOM.",
+          "concept_ids": ["c2"],
+          "key_terms": [{ "term": "DOM", "definition": "Representasi pohon halaman di dalam browser" }],
+          "examples": [],
+          "basis": ["material", "analysis"]
+        }
+      ]
+    },
+    "start_day": 1,
+    "max_videos": 2
+  },
+  "output": {
+    "series": "Dasar Web: HTML, CSS, JavaScript",
+    "videos": [
+      {
+        "day": 1,
+        "title": "Tiga Bahasa Utama Pembangun Website",
+        "format": "concept_breakdown",
+        "hook": "Website modern sebenarnya cuma berdiri di atas tiga bahasa utama.",
+        "angle": "Membedah peran struktur, tampilan, dan interaksi pada halaman web.",
+        "topics": ["Tiga lapisan web"],
+        "section_ids": ["s1"],
+        "why": "Konsep fondasi sebelum masuk ke cara kerja browser."
+      },
+      {
+        "day": 2,
+        "title": "HTML Bukan DOM, Ini Bedanya",
+        "format": "myth_vs_fact",
+        "hook": "Banyak pemula mengira HTML dan DOM itu benda yang sama.",
+        "angle": "Meluruskan perbedaan kode teks HTML dengan pohon objek DOM di browser.",
+        "topics": ["DOM: halaman di mata browser"],
+        "section_ids": ["s2"],
+        "why": "Melanjutkan alur dari penulisan HTML ke cara browser merendernya."
+      }
+    ]
+  }
+}

@@ -19,6 +19,8 @@ const COLORS: Record<ColorName, { bg: string; fg: string }> = {
 const col = (c?: string) => COLORS[(c as ColorName) ?? "teal"] ?? COLORS.teal;
 const cueAt = (cues: number[] | undefined, i: number, gap = 750) => cues?.[i] ?? 250 + i * gap;
 
+export type DiagramLayout = "column" | "row" | "grid";
+
 export type DiagramNode = {
   id: string;
   label: string;
@@ -33,86 +35,134 @@ export type DiagramEdge = {
   label?: string;
 };
 
-// Tata letak koordinat otomatis dalam kanvas 920 x 620 untuk 2..5 node.
-function computePositions(count: number): { x: number; y: number; w: number; h: number }[] {
+type Box = { x: number; y: number; w: number; h: number };
+
+// Kanvas 920 x 840 dipusatkan secara vertikal di zona aman layar 1080x1920.
+function computePositions(count: number, layout?: DiagramLayout): Box[] {
+  const mode: DiagramLayout = layout ?? (count <= 3 ? "column" : "grid");
+
+  if (mode === "row") {
+    const gap = 28;
+    const totalW = 920;
+    const w = Math.floor((totalW - gap * (count - 1)) / count);
+    const h = count <= 3 ? 260 : 230;
+    return Array.from({ length: count }, (_, i) => ({
+      x: w / 2 + i * (w + gap),
+      y: 420,
+      w,
+      h,
+    }));
+  }
+
+  if (mode === "column") {
+    if (count === 2) {
+      return [
+        { x: 460, y: 210, w: 680, h: 170 },
+        { x: 460, y: 630, w: 680, h: 170 },
+      ];
+    }
+    if (count === 3) {
+      return [
+        { x: 460, y: 120, w: 680, h: 150 },
+        { x: 460, y: 420, w: 680, h: 150 },
+        { x: 460, y: 720, w: 680, h: 150 },
+      ];
+    }
+    if (count === 4) {
+      return [
+        { x: 460, y: 95, w: 680, h: 132 },
+        { x: 460, y: 312, w: 680, h: 132 },
+        { x: 460, y: 528, w: 680, h: 132 },
+        { x: 460, y: 745, w: 680, h: 132 },
+      ];
+    }
+    return [
+      { x: 460, y: 75, w: 680, h: 112 },
+      { x: 460, y: 248, w: 680, h: 112 },
+      { x: 460, y: 420, w: 680, h: 112 },
+      { x: 460, y: 592, w: 680, h: 112 },
+      { x: 460, y: 765, w: 680, h: 112 },
+    ];
+  }
+
+  // Mode "grid" (2 kolom rapi dengan jarak cukup untuk panah & label)
   if (count === 2) {
     return [
-      { x: 460, y: 155, w: 660, h: 150 },
-      { x: 460, y: 465, w: 660, h: 150 },
+      { x: 235, y: 420, w: 410, h: 200 },
+      { x: 685, y: 420, w: 410, h: 200 },
     ];
   }
   if (count === 3) {
     return [
-      { x: 460, y: 110, w: 640, h: 130 },
-      { x: 460, y: 315, w: 640, h: 130 },
-      { x: 460, y: 520, w: 640, h: 130 },
+      { x: 235, y: 210, w: 410, h: 175 },
+      { x: 685, y: 210, w: 410, h: 175 },
+      { x: 460, y: 630, w: 460, h: 175 },
     ];
   }
   if (count === 4) {
     return [
-      { x: 235, y: 165, w: 400, h: 150 },
-      { x: 685, y: 165, w: 400, h: 150 },
-      { x: 235, y: 465, w: 400, h: 150 },
-      { x: 685, y: 465, w: 400, h: 150 },
+      { x: 235, y: 210, w: 410, h: 175 },
+      { x: 685, y: 210, w: 410, h: 175 },
+      { x: 235, y: 630, w: 410, h: 175 },
+      { x: 685, y: 630, w: 410, h: 175 },
     ];
   }
-  // 5 node: 2 atas, 1 tengah, 2 bawah
   return [
-    { x: 235, y: 115, w: 390, h: 126 },
-    { x: 685, y: 115, w: 390, h: 126 },
-    { x: 460, y: 315, w: 440, h: 126 },
-    { x: 235, y: 515, w: 390, h: 126 },
-    { x: 685, y: 515, w: 390, h: 126 },
+    { x: 235, y: 120, w: 410, h: 150 },
+    { x: 685, y: 120, w: 410, h: 150 },
+    { x: 460, y: 420, w: 460, h: 150 },
+    { x: 235, y: 720, w: 410, h: 150 },
+    { x: 685, y: 720, w: 410, h: 150 },
   ];
 }
 
-function edgeEndpoints(
-  a: { x: number; y: number; w: number; h: number },
-  b: { x: number; y: number; w: number; h: number },
-) {
+function edgeEndpoints(a: Box, b: Box) {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const absX = Math.abs(dx);
   const absY = Math.abs(dy);
 
   if (absY >= absX) {
-    const sy = dy >= 0 ? a.y + a.h / 2 : a.y - a.h / 2;
-    const ey = dy >= 0 ? b.y - b.h / 2 - 8 : b.y + b.h / 2 + 8;
-    return { x1: a.x, y1: sy, x2: b.x, y2: ey };
+    const sy = dy >= 0 ? a.y + a.h / 2 + 4 : a.y - a.h / 2 - 4;
+    const ey = dy >= 0 ? b.y - b.h / 2 - 14 : b.y + b.h / 2 + 14;
+    return { x1: a.x, y1: sy, x2: b.x, y2: ey, vertical: true };
   }
-  const sx = dx >= 0 ? a.x + a.w / 2 : a.x - a.w / 2;
-  const ex = dx >= 0 ? b.x - b.w / 2 - 8 : b.x + b.w / 2 + 8;
-  return { x1: sx, y1: a.y, x2: ex, y2: b.y };
+  const sx = dx >= 0 ? a.x + a.w / 2 + 4 : a.x - a.w / 2 - 4;
+  const ex = dx >= 0 ? b.x - b.w / 2 - 14 : b.x + b.w / 2 + 14;
+  return { x1: sx, y1: a.y, x2: ex, y2: b.y, vertical: false };
 }
 
 export const DiagramScene: React.FC<{
   heading?: string;
+  layout?: DiagramLayout;
   nodes: DiagramNode[];
   edges?: DiagramEdge[];
   cuesMs?: number[];
-}> = ({ heading, nodes, edges = [], cuesMs }) => {
+}> = ({ heading, layout, nodes, edges = [], cuesMs }) => {
   const pop = usePop();
   const safeNodes = nodes.slice(0, 5);
-  const boxes = computePositions(safeNodes.length);
+  const boxes = computePositions(safeNodes.length, layout);
   const indexById = new Map<string, number>();
   safeNodes.forEach((n, idx) => indexById.set(n.id, idx));
 
   const headingP = pop(cueAt(cuesMs, 0, 250));
   const nodeOffset = heading ? 1 : 0;
+  const isCompact = safeNodes.length >= 4 || layout === "row";
 
   return (
     <AbsoluteFill>
       <div
         style={{
           position: "absolute",
-          top: 320,
+          top: 250,
+          bottom: 340,
           left: theme.safe.side,
           right: theme.safe.side,
-          height: 780,
           display: "flex",
           flexDirection: "column",
+          justifyContent: "center",
           alignItems: "center",
-          gap: 18,
+          gap: 24,
         }}
       >
         {heading ? (
@@ -132,24 +182,24 @@ export const DiagramScene: React.FC<{
           </div>
         ) : null}
 
-        <div style={{ position: "relative", width: 920, height: 630 }}>
+        <div style={{ position: "relative", width: 920, height: 840 }}>
           {/* Lapisan panah SVG */}
           <svg
             width={920}
-            height={630}
-            viewBox="0 0 920 630"
+            height={840}
+            viewBox="0 0 920 840"
             style={{ position: "absolute", inset: 0, overflow: "visible" }}
           >
             <defs>
               <marker
                 id="diag-arrow"
-                markerWidth="12"
-                markerHeight="12"
-                refX="9"
-                refY="6"
+                markerWidth="14"
+                markerHeight="14"
+                refX="10"
+                refY="7"
                 orient="auto"
               >
-                <path d="M 1 1 L 11 6 L 1 11 z" fill={INK} />
+                <path d="M 1 1 L 13 7 L 1 13 z" fill={INK} />
               </marker>
             </defs>
 
@@ -161,8 +211,12 @@ export const DiagramScene: React.FC<{
               const triggerIdx = Math.max(fromIdx, toIdx) + nodeOffset;
               const p = pop(cueAt(cuesMs, triggerIdx, 700) + 180);
               const pts = edgeEndpoints(boxes[fromIdx], boxes[toIdx]);
-              const midX = (pts.x1 + pts.x2) / 2;
-              const midY = (pts.y1 + pts.y2) / 2;
+              // Letakkan titik tengah agak ke pangkal (42%) dan geser ke samping agar kepala panah tidak tertutup label.
+              const anchorX = pts.x1 + (pts.x2 - pts.x1) * 0.42;
+              const anchorY = pts.y1 + (pts.y2 - pts.y1) * 0.42;
+              const labelW = edge.label ? Math.max(150, edge.label.length * 14 + 36) : 0;
+              const labelX = pts.vertical ? Math.min(920 - labelW / 2, anchorX + labelW / 2 + 22) : anchorX;
+              const labelY = pts.vertical ? anchorY : anchorY - 40;
 
               return (
                 <g key={`${edge.from}-${edge.to}-${idx}`} style={{ opacity: fade(p) }}>
@@ -174,14 +228,14 @@ export const DiagramScene: React.FC<{
                     stroke={INK}
                     strokeWidth={7}
                     strokeLinecap="round"
-                    markerEnd={p > 0.75 ? "url(#diag-arrow)" : undefined}
+                    markerEnd={p > 0.7 ? "url(#diag-arrow)" : undefined}
                   />
                   {edge.label ? (
-                    <g transform={`translate(${midX}, ${midY})`}>
+                    <g transform={`translate(${labelX}, ${labelY})`}>
                       <rect
-                        x={-96}
+                        x={-labelW / 2}
                         y={-22}
-                        width={192}
+                        width={labelW}
                         height={44}
                         rx={14}
                         fill={theme.colors.card}
@@ -211,6 +265,8 @@ export const DiagramScene: React.FC<{
             const box = boxes[i];
             const p = pop(cueAt(cuesMs, i + nodeOffset, 700));
             const c = col(node.color ?? (["teal", "orange", "violet", "green", "yellow"] as const)[i % 5]);
+            const isRow = layout === "row";
+
             return (
               <div
                 key={node.id}
@@ -227,31 +283,47 @@ export const DiagramScene: React.FC<{
                   border: `7px solid ${INK}`,
                   borderRadius: 30,
                   boxShadow: `0 8px 0 ${INK}`,
-                  padding: "12px 24px",
+                  padding: "12px 20px",
                   display: "flex",
+                  flexDirection: isRow ? "column" : "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 18,
+                  gap: isRow ? 8 : 16,
                   boxSizing: "border-box",
+                  overflow: "hidden",
                 }}
               >
                 {node.icon ? (
-                  <FunIcon
-                    name={node.icon}
-                    size={safeNodes.length >= 4 ? 64 : 76}
-                    color={node.color === "yellow" ? "violet" : "yellow"}
-                    motion={i % 2 === 0 ? "float" : "wiggle"}
-                    phase={i * 0.6}
-                  />
+                  <div style={{ flex: "0 0 auto" }}>
+                    <FunIcon
+                      name={node.icon}
+                      size={isCompact ? 56 : 74}
+                      color={node.color === "yellow" ? "violet" : "yellow"}
+                      motion={i % 2 === 0 ? "float" : "wiggle"}
+                      phase={i * 0.6}
+                    />
+                  </div>
                 ) : null}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: node.icon ? "flex-start" : "center" }}>
+                <div
+                  style={{
+                    minWidth: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: node.icon && !isRow ? "flex-start" : "center",
+                  }}
+                >
                   <div
                     style={{
                       fontFamily: FONT,
                       fontWeight: 700,
-                      fontSize: safeNodes.length >= 4 ? 36 : 44,
-                      lineHeight: 1.1,
-                      textAlign: node.icon ? "left" : "center",
+                      fontSize: isCompact ? 32 : 42,
+                      lineHeight: 1.12,
+                      textAlign: node.icon && !isRow ? "left" : "center",
+                      wordBreak: "break-word",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
                     }}
                   >
                     {node.label}
@@ -262,10 +334,15 @@ export const DiagramScene: React.FC<{
                         marginTop: 4,
                         fontFamily: FONT,
                         fontWeight: 600,
-                        fontSize: safeNodes.length >= 4 ? 24 : 28,
+                        fontSize: isCompact ? 22 : 27,
                         opacity: 0.92,
                         lineHeight: 1.15,
-                        textAlign: node.icon ? "left" : "center",
+                        textAlign: node.icon && !isRow ? "left" : "center",
+                        wordBreak: "break-word",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
                       }}
                     >
                       {node.sublabel}

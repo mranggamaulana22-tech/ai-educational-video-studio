@@ -102,7 +102,7 @@ const COMPONENTS = {
   CtaCard: { title: "string", subtitle: "string?", button: "string?", color: "string?", icon: "funIcon?", cuesMs: "number[]?" },
   IconHero: { icon: "funIcon", title: "string", subtitle: "string?", color: "string?", motion: "motion?", cuesMs: "number[]?" },
   IconGrid: { heading: "string?", items: "iconLabel", cuesMs: "number[]?" },
-  DiagramScene: { heading: "string?", nodes: "diagramNodes", edges: "diagramEdges?", cuesMs: "number[]?" },
+  DiagramScene: { heading: "string?", layout: "diagramLayout?", nodes: "diagramNodes", edges: "diagramEdges?", cuesMs: "number[]?" },
 };
 
 const GENERIC_SCENES = ["BigStatement", "CompareCards", "FlowSteps", "CardList", "CtaCard", "IconHero", "IconGrid", "DiagramScene"];
@@ -186,6 +186,11 @@ function checkValue(value, spec, where) {
       break;
     case "motion":
       if (!["float", "wiggle", "pulse", "spin", "none"].includes(value)) err(`${where}: motion harus float, wiggle, pulse, spin, atau none`);
+      break;
+    case "diagramLayout":
+      if (!["column", "row", "grid"].includes(value)) {
+        err(`${where}: layout harus column, row, atau grid`);
+      }
       break;
     case "iconLabel":
       if (!Array.isArray(value) || value.length < 2 || value.length > 4 || !value.every((x) => x && isStr(x.label) && FUN_ICONS.includes(x.icon) && okColor(x.color))) {

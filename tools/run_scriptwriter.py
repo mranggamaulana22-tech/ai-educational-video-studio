@@ -1,67 +1,25 @@
-"""Scriptwriter + Reviewer: catatan belajar -> naskah (.txt) siap dibacakan.
+"""Scriptwriter: catatan belajar -> naskah (.txt) siap dibacakan (dengan opsi memanggil Script Reviewer terpisah).
 
 Pemakaian (dari folder utama proyek):
   python tools\\run_scriptwriter.py catatan\\NAMA.txt naskah\\NAMA.txt --day "HARI 2/15" --course "Intro to Software Engineering" --next "SDLC"
 Pilihan: --seconds 55  --provider gemini  --model NAMA  --no-review
 """
 import argparse
-import json
 import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
+import agentkit  # noqa: E402
 import llm  # noqa: E402
+import run_script_reviewer  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-MIN_WORDS, MAX_WORDS = 90, 170
-MAX_SENTENCE = 16  # kalimat lebih panjang dari ini ditolak (aturan prompt: maks 14 kata)
-ACRONYMS = ["SDLC", "SRS", "URS", "SysRS", "UAT", "API", "UI", "UX", "SQL", "HTML", "CSS", "MVP", "PRD", "TTS", "JSON", "CLI", "SDK"]
-
-
-def parse(reply):
-    t = reply.strip()
-    m = re.search(r"```(?:json)?\s*(.*?)```", t, re.S)
-    if m:
-        t = m.group(1).strip()
-    a, b = t.find("{"), t.rfind("}")
-    if a >= 0 and b > a:
-        t = t[a : b + 1]
-    return json.loads(t)
-
-
-def clean(text):
-    t = re.sub(r"[*#_`>]+", "", text)
-    t = re.sub(r"\s+", " ", t).strip()
-    for ac in ACRONYMS:  # singkatan selalu ditulis kapital agar dibaca huruf demi huruf
-        t = re.sub(r"\b" + ac + r"\b", ac, t, flags=re.I)
-    return t
-
-
-def long_sentences(text):
-    parts = re.split(r"(?<=[.?!])\s+", text)
-    return [p for p in parts if count_words(p) > MAX_SENTENCE]
-
-
-def count_words(text):
-    return len(text.split())
-
-
-def ask(provider, model, system, user, check, tries=3):
-    """Panggil AI; jawaban diperiksa oleh check(data) -> pesan masalah atau ''."""
-    messages = [("user", user)]
-    for i in range(tries):
-        reply = llm.generate_json(provider, system, messages, model)
-        try:
-            data = parse(reply)
-            problem = check(data)
-        except (json.JSONDecodeError, TypeError) as e:
-            data, problem = None, f"Jawaban bukan JSON valid ({e}). Keluarkan hanya JSON."
-        if not problem:
-            return data
-        print(f"    Ditolak: {problem}")
-        messages += [("model", reply), ("user", problem + " Perbaiki dan keluarkan JSON lengkap yang baru, hanya JSON.")]
-    raise SystemExit("[GAGAL] AI tidak menghasilkan naskah yang memenuhi aturan setelah beberapa percobaan.")
+MIN_WORDS, MAX_WORDS = run_script_reviewer.MIN_WORDS, run_script_reviewer.MAX_WORDS
+MAX_SENTENCE = run_script_reviewer.MAX_SENTENCE
+clean = run_script_reviewer.clean_script_text
+count_words = run_script_reviewer.count_words
+long_sentences = run_script_reviewer.long_sentences
 
 
 def make_check():
@@ -77,7 +35,7 @@ def make_check():
         longs = long_sentences(text)
         if longs and state["style_rejects"] < 2:  # soal gaya: maks 2 kali minta ulang, lalu diterima
             state["style_rejects"] += 1
-            return f"Ada {len(longs)} kalimat lebih dari {MAX_SENTENCE} kata, mis.: \"{longs[0]}\". Pecah jadi kalimat pendek (maks 14 kata)."
+            return f'Ada {len(longs)} kalimat lebih dari {MAX_SENTENCE} kata, mis.: "{longs[0]}". Pecah jadi kalimat pendek (maks 14 kata).'
         return ""
 
     return check_script
@@ -110,22 +68,18 @@ def main():
 
     writer = (ROOT / "prompts" / "scriptwriter_agent.md").read_text(encoding="utf-8-sig")
     print("[1/2] Scriptwriter menulis naskah...")
-    d = ask(a.provider, a.model, writer, f"CATATAN:\n{notes}\n\nInfo:\n{info_text}", make_check())
+    d = agentkit.ask(a.provider, a.model, writer, f"CATATAN:\n{notes}\n\nInfo:\n{info_text}", make_check())
     script = clean(d["script"])
     title = d.get("title", "")
     print(f"    Judul: {title} | {count_words(script)} kata")
 
     if not a.no_review:
-        reviewer = (ROOT / "prompts" / "script_reviewer.md").read_text(encoding="utf-8-sig")
-        print("[2/2] Reviewer memeriksa naskah...")
-        r = ask(
-            a.provider, a.model, reviewer,
-            f"CATATAN:\n{notes}\n\nInfo:\n{info_text}\n\nNASKAH:\n{script}", make_check(),
-        )
-        for issue in r.get("issues", []) or []:
+        print("[2/2] Reviewer (modul terpisah) memeriksa naskah...")
+        r = run_script_reviewer.review_script(a.provider, a.model, notes, info_text, script)
+        for issue in r.get("issues") or []:
             print("    -", issue)
         print(f"    Hasil review: {r.get('verdict', '?')}")
-        script = clean(r["script"])
+        script = r["script"]
 
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)

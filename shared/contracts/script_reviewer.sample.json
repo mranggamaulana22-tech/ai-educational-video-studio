@@ -1,0 +1,12 @@
+{
+  "input": {
+    "notes": "Topik: Tiga lapisan web\nHTML menentukan struktur, CSS mengatur tampilan, dan JavaScript menangani interaksi.",
+    "info": "Durasi target: 55 detik\nHari: HARI 1/15\nKursus: Dasar Web\nTopik besok: DOM",
+    "script": "Pernah penasaran bagaimana sebuah website bisa tampil rapi sekaligus interaktif saat diklik? Rahasianya ada pada tiga bahasa utama yang bekerja sama di balik layar. Pertama ada HTML yang bertugas menyusun kerangka dan struktur dasar seluruh isi halaman web. Tanpa HTML, browser tidak tahu mana judul, mana paragraf, dan mana tombol. Kedua ada CSS yang mengatur warna, ukuran huruf, dan tata letak agar tampilan halaman enak dilihat. Ibarat rumah, HTML adalah pondasi temboknya, sedangkan CSS adalah cat dan dekorasinya. Ketiga ada JavaScript yang membuat halaman hidup dan merespons setiap klik pengguna secara langsung. Ketiga teknologi ini saling melengkapi setiap kali kamu membuka situs di internet. Besok kita akan bongkar bagaimana browser membaca kode HTML menjadi struktur DOM. Simpan video ini supaya catatan belajarmu makin lengkap!"
+  },
+  "output": {
+    "verdict": "ok",
+    "issues": [],
+    "script": "Pernah penasaran bagaimana sebuah website bisa tampil rapi sekaligus interaktif saat diklik? Rahasianya ada pada tiga bahasa utama yang bekerja sama di balik layar. Pertama ada HTML yang bertugas menyusun kerangka dan struktur dasar seluruh isi halaman web. Tanpa HTML, browser tidak tahu mana judul, mana paragraf, dan mana tombol. Kedua ada CSS yang mengatur warna, ukuran huruf, dan tata letak agar tampilan halaman enak dilihat. Ibarat rumah, HTML adalah pondasi temboknya, sedangkan CSS adalah cat dan dekorasinya. Ketiga ada JavaScript yang membuat halaman hidup dan merespons setiap klik pengguna secara langsung. Ketiga teknologi ini saling melengkapi setiap kali kamu membuka situs di internet. Besok kita akan bongkar bagaimana browser membaca kode HTML menjadi struktur DOM. Simpan video ini supaya catatan belajarmu makin lengkap!"
+  }
+}
