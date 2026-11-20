@@ -1,0 +1,13 @@
+Kursus: Catatan Belajar: Tahapan SDLC dan Pengelolaan Requirement
+Modul: 
+
+Topik: Dokumentasi Spesifikasi: SRS, URS, dan SysRS
+Hasil akhir dari tahap planning adalah dokumen spesifikasi penting:
+- **Software Requirements Specification (SRS)**: Menjelaskan fungsionalitas software, standar performa, ruang lingkup, functional requirement, non-functional requirement, dan external interface requirement.
+- **User Requirement Specification (URS)**: Mendeskripsikan kebutuhan bisnis dan ekspektasi user melalui User Stories, yang dikonfirmasi lewat User Acceptance Testing (UAT).
+- **System Requirement Specification (SysRS)**: Menjelaskan kemampuan sistem (system capabilities), interface, policy, regulation, personnel, performance, security, system acceptance criteria, dan hardware expectation.
+- Istilah SRS: Software Requirements Specification, dokumen spesifikasi kebutuhan perangkat lunak.
+- Istilah URS: User Requirement Specification, dokumen kebutuhan pengguna dan bisnis.
+- Istilah SysRS: System Requirement Specification, dokumen spesifikasi kapabilitas dan aturan sistem.
+- Istilah UAT: User Acceptance Testing, pengujian aplikasi oleh pengguna untuk memastikan kesesuaian kebutuhan.
+- Contoh: Non-functional requirement mencakup aspek kualitas sistem seperti security, performa, usability, dan reliability.

@@ -47,6 +47,22 @@ v = c.post("/videos", json={"name": "tes-video", "day": 3, "series_id": s["id"],
 vid = v["id"]
 check(v["stages"]["notes"]["status"] == "empty", "video baru: semua tahap kosong")
 
+upload = c.post(
+    f"/videos/{vid}/material/upload",
+    files={"file": ("materi.txt", b"Materi berhasil diunggah", "text/plain")},
+)
+check(upload.status_code == 200, "upload material .txt berhasil")
+check(upload.json()["stage"] == "material", "upload menyimpan artifact tahap material")
+check(
+    c.get(f"/videos/{vid}/text/material").json()["text"].strip() == "Materi berhasil diunggah",
+    "teks hasil upload dapat dibaca kembali",
+)
+unsupported = c.post(
+    f"/videos/{vid}/material/upload",
+    files={"file": ("materi.jpg", b"bukan dokumen", "image/jpeg")},
+)
+check(unsupported.status_code == 400, "format upload tidak didukung ditolak")
+
 r = c.post(f"/videos/{vid}/run/script")
 check(r.status_code == 409, "script tidak bisa jalan sebelum catatan ada")
 c.put(f"/videos/{vid}/notes", json={"text": "catatan belajar"})
@@ -87,5 +103,8 @@ stages.paths("lama")["script"].write_text("naskah lama")
 v2 = c.post("/videos", json={"name": "lama"}).json()
 res = c.post(f"/videos/{v2['id']}/scan").json()
 check(res["registered"] == ["script"], "scan mendaftarkan file yang sudah ada")
-check(len(c.get(f"/videos/{vid}/artifacts").json()) == 4, "riwayat versi tersimpan (notes v1, script v1+v2, audio v1)")
+check(
+    len(c.get(f"/videos/{vid}/artifacts").json()) == 5,
+    "riwayat versi tersimpan (material v1, notes v1, script v1+v2, audio v1)",
+)
 print("\nSEMUA TES LOLOS")

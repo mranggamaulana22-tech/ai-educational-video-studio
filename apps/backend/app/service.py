@@ -196,6 +196,8 @@ def advance_workflow(SessionLocal, video_id: int, day_label="", course=""):
                     break
             if not next_stage:
                 break
+            if next_stage == "notes" and not stages.paths(video.name)["session"].exists():
+                break
             run = Run(video_id=video.id, stage=next_stage)
             session.add(run)
             session.commit()

@@ -1,0 +1,105 @@
+{
+  "video_id": 1,
+  "ended": true,
+  "summary": "Pengguna telah tuntas dan memahami seluruh materi SDLC, requirement, serta dokumen spesifikasinya.",
+  "concepts": [
+    {
+      "id": "c1",
+      "name": "SDLC Phases",
+      "status": "paham",
+      "is_thin": false,
+      "analogies": [
+        "Membangun gedung pencakar langit untuk menggambarkan tahapan SDLC dari planning hingga maintenance.",
+        "Membangun aplikasi e-commerce dari planning hingga maintenance di dunia nyata."
+      ],
+      "unverified_notes": []
+    },
+    {
+      "id": "c2",
+      "name": "Planning and Requirements",
+      "status": "paham",
+      "is_thin": false,
+      "analogies": [],
+      "unverified_notes": []
+    },
+    {
+      "id": "c3",
+      "name": "SRS, URS, dan SysRS",
+      "status": "paham",
+      "is_thin": true,
+      "analogies": [
+        "Fitur login aplikasi untuk membedakan functional dan non-functional requirement",
+        "Buku petunjuk dan cetak biru detail sebelum pabrik merakit mobil baru untuk menggambarkan dokumen SRS, URS, dan SysRS.",
+        "Buku petunjuk dan cetak biru detail sebelum pabrik merakit mobil baru"
+      ],
+      "unverified_notes": []
+    }
+  ],
+  "messages": [
+    {
+      "role": "tutor",
+      "text": "Halo! Mari kita mulai pembelajaran kita tentang Software Development Life Cycle (SDLC) dan pengelolaan requirement. Peta konsep kita hari ini mencakup tiga bagian utama: Tahapan SDLC (Planning, Design, Development, Testing, Deployment, Maintenance), proses Planning & Requirements (identifikasi stakeholder hingga pembuatan dokumen), serta dokumen spesifikasi (SRS, URS, dan SysRS) di mana perbedaan antara Functional dan Non-functional requirement menjadi fokus yang perlu kita perhatikan.\n\nSebagai Software Engineer, mari kita lihat tahap pertama yaitu Planning dan dokumen SRS, khususnya perbedaan Functional dan Non-functional requirement. Bayangkan kamu sedang membangun aplikasi ojek online:\n- **Functional Requirement** adalah fitur yang bisa dilakukan sistem, misalnya: \"Pengguna dapat menekan tombol 'Pesan' untuk mencari driver terdekat.\"\n- **Non-functional Requirement** bukan tentang fiturnya, melainkan kualitas atau performanya, misalnya: \"Tombol 'Pesan' harus merespons dalam waktu maksimal 2 detik, dan data lokasi harus terenkripsi dengan aman.\"\n\nMenurutmu, apakah batasan kecepatan aplikasi (harus cepat dan tidak lag) termasuk ke dalam Functional atau Non-functional requirement?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "user",
+      "text": "Contohnya di kerjaan nyata?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "tutor",
+      "text": "Tentu, mari kita lihat contoh nyata di dunia Software Engineering. Bayangkan timmu sedang membuat fitur login di aplikasi perusahaan.\n\n- **Functional Requirement**: Sistem harus menyediakan form input email dan password, tombol 'Login', serta fitur 'Lupa Password'. Ini adalah fitur yang berinteraksi langsung agar user bisa masuk.\n- **Non-functional Requirement**: Sistem harus memastikan password di-hash dengan enkripsi yang kuat sebelum disimpan ke database, dan halaman login harus bisa diakses (load) dalam waktu kurang dari 1 detik meskipun diakses oleh 10.000 pengguna sekaligus. Ini adalah kualitas sistem (keamanan dan performa), bukan fitur baru.\n\nJadi, kecepatan akses dan keamanan data tadi masuk ke dalam kategori requirement yang mana?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "user",
+      "text": "oh paham",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "tutor",
+      "text": "Bagus sekali kalau sudah paham! Sekarang kita bisa melangkah ke konsep berikutnya dalam peta konsep kita, yaitu tahapan secara keseluruhan dalam Software Development Life Cycle (SDLC) yang terdiri dari Planning, Design, Development, Testing, Deployment, dan Maintenance.\n\nSebagai analogi seorang Software Engineer, SDLC ini mirip seperti proses membangun sebuah gedung pencakar langit. \n- **Planning**: Arsitek dan manajer proyek mencatat semua kebutuhan klien (mau berapa lantai, fungsi gedungnya untuk apa).\n- **Design**: Membuat blueprint atau cetak biru rancangan arsitektur gedung.\n- **Development**: Para tukang mulai membangun struktur fisik berdasarkan cetak biru.\n- **Testing**: Tim inspeksi memeriksa kekuatan struktur dan kelayakan huni gedung.\n- **Deployment**: Gedung resmi dibuka dan diserahkan kepada pemilik serta siap digunakan.\n- **Maintenance**: Perawatan berkala seperti perbaikan pipa bocor atau pengecatan ulang.\n\nMenurutmu, di antara tahapan SDLC tersebut, pada tahap apa kira-kira aplikasi mulai dicoba untuk memastikan tidak ada bug atau error sebelum diserahkan ke pengguna?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "user",
+      "text": "Contohnya di kerjaan nyata?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "tutor",
+      "text": "Di dunia kerja Software Engineering, analogi pembangunan gedung tadi sangat mirip dengan keseharian kita. Bayangkan kamu ditugaskan membuat aplikasi e-commerce:\n- **Planning**: Kamu rapat dengan tim bisnis untuk mencatat requirement (misal: ada keranjang belanja dan sistem pembayaran).\n- **Design**: Kamu membuat rancangan database dan arsitektur kodenya.\n- **Development**: Kamu dan tim mulai menulis kode program React dan Node.js.\n- **Testing**: Sebelum aplikasi di-release ke publik, QA (Quality Assurance) atau kamu sendiri mencoba melakukan simulasi checkout untuk memastikan tidak ada error atau uang yang terpotong dua kali.\n- **Deployment**: Kamu merilis aplikasi ke server production (AWS/GCP) agar bisa diakses jutaan pembeli.\n- **Maintenance**: Ketika ada laporan error \"gagal checkout\" dari pengguna, kamu langsung memperbaiki kodenya.\n\nNah, berdasarkan alur tadi, pada tahap apa aplikasi yang kamu buat akan diuji coba untuk memastikan semuanya aman dan stabil sebelum dirilis?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "user",
+      "text": "oke paham",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "tutor",
+      "text": "Mantap! Karena kamu sudah paham alur SDLC, mari kita masuk ke bagian krusial terakhir dalam tahap Planning, yaitu pembuatan dokumen spesifikasi seperti **SRS (Software Requirements Specification)**, **URS (User Requirements Specification)**, dan **SysRS (System Requirements Specification)**.\n\nSebagai Software Engineer, bayangkan dokumen-dokumen ini seperti buku petunjuk dan cetak biru detail sebelum sebuah pabrik merakit mobil baru:\n- **URS (User Requirements Specification)** berfokus pada kacamata bisnis dan pengguna. Contohnya: \"Pengguna ingin bisa melacak posisi kurir secara real-time di peta.\" Ini divalidasi lewat **UAT (User Acceptance Testing)** di mana user langsung mencoba apakah fitur ini sudah sesuai kebutuhan mereka.\n- **SRS (Software Requirements Specification)** adalah gabungan dari URS yang diterjemahkan ke bahasa teknis fungsional dan non-fungsional software.\n- **SysRS (System Requirements Specification)** merinci kemampuan sistem secara mendalam, termasuk aturan keamanan, regulasi, performa, hingga ekspektasi hardware yang dibutuhkan server.\n\nMenurutmu, siapa pihak yang biasanya melakukan pengujian UAT (User Acceptance Testing) untuk memastikan aplikasi sudah sesuai dengan ekspektasi bisnis?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "user",
+      "text": "stekholder/s",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "tutor",
+      "text": "Tepat sekali! UAT biasanya dilakukan oleh stakeholder, pengguna, atau perwakilan pengguna untuk memastikan aplikasi sudah sesuai dengan kebutuhan bisnis sebelum benar-benar dirilis ke publik.\n\nDengan ini, kita telah menyelesaikan pembahasan peta konsep kita: mulai dari tahapan SDLC, pembedaan Functional dan Non-functional requirement, hingga dokumen spesifikasi seperti SRS, URS, dan SysRS beserta proses UAT.\n\nApakah ada bagian dari materi SDLC dan requirement ini yang masih membuatmu penasaran?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "user",
+      "text": "udah paham",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "tutor",
+      "text": "Hebat! Kamu sudah berhasil memahami seluruh rangkaian materi dari tahapan SDLC, perbedaan functional dan non-functional requirement, hingga dokumen spesifikasi serta UAT dengan sangat baik. Jika nanti butuh diskusi materi lain, tanyakan saja ya!",
+      "verifikasi_tags": []
+    }
+  ]
+}

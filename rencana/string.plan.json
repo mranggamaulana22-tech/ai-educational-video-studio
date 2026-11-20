@@ -1,0 +1,53 @@
+{
+  "series": "Belajar SDLC dan Requirements",
+  "videos": [
+    {
+      "day": 1,
+      "title": "Mengenal 6 Tahapan Utama SDLC",
+      "format": "step_by_step",
+      "hook": "Pernah tahu bagaimana aplikasi besar dibuat dari nol?",
+      "angle": "Menjelaskan siklus hidup pengembangan perangkat lunak secara runut dari awal hingga akhir.",
+      "topics": [
+        "Tahapan dalam SDLC (Software Development Life Cycle)"
+      ],
+      "section_ids": [
+        "s1"
+      ],
+      "why": "Sebagai pengantar dasar konsep SDLC sebelum membahas detail spesifik.",
+      "name": "string-hari1-mengenal-6-tahapan-utama-sdl",
+      "next": "Rahasia Sukses Tahap Planning Aplikasi"
+    },
+    {
+      "day": 2,
+      "title": "Rahasia Sukses Tahap Planning Aplikasi",
+      "format": "concept_breakdown",
+      "hook": "Kenapa banyak aplikasi gagal sebelum sempat diluncurkan?",
+      "angle": "Membedah cara sistematis mengumpulkan dan mengelola kebutuhan di tahap awal SDLC.",
+      "topics": [
+        "Tahap Planning dan Pengelolaan Requirements"
+      ],
+      "section_ids": [
+        "s2"
+      ],
+      "why": "Melanjutkan tahapan SDLC secara mendalam pada bagian planning dan requirements.",
+      "name": "string-hari2-rahasia-sukses-tahap-plannin",
+      "next": "Beda SRS, URS, dan SysRS Wajib Tahu"
+    },
+    {
+      "day": 3,
+      "title": "Beda SRS, URS, dan SysRS Wajib Tahu",
+      "format": "comparison",
+      "hook": "Bingung membedakan dokumen spesifikasi proyek software?",
+      "angle": "Membandingkan tiga dokumen utama keluaran planning untuk memahami fungsi masing-masing.",
+      "topics": [
+        "Dokumen Spesifikasi: SRS, URS, dan SysRS"
+      ],
+      "section_ids": [
+        "s3"
+      ],
+      "why": "Menuntaskan materi dokumen spesifikasi sebagai output penting dari tahap perencanaan.",
+      "name": "string-hari3-beda-srs-urs-dan-sysrs-wajib",
+      "next": ""
+    }
+  ]
+}

@@ -39,6 +39,7 @@ def paths(name):
     return {
         "material": R / "catatan" / f"{name}.material.txt",
         "analysis": R / "catatan" / f"{name}.analysis.json",
+        "session": R / "catatan" / f"{name}.session.json",
         "notes": R / "catatan" / f"{name}.txt",
         "notes_json": R / "catatan" / f"{name}.notes.v2.json",
         "ideas": R / "rencana" / f"{name}.plan.json",
@@ -68,9 +69,10 @@ def build_command(stage, video, day_label="", course=""):
     if stage == "notes":
         # Menghasilkan p["notes_json"] (.notes.v2.json) sekaligus p["notes_json"].with_suffix(".md"),
         # lalu menyalin ringkasan .md ke p["notes"] (.txt) agar siap dipakai Scriptwriter.
+        sess_arg = ["--session", str(p["session"])] if p["session"].exists() else []
         code = (
             "import shutil, subprocess, sys; "
-            f"rc = subprocess.call({[py, 'tools/run_learning_notes.py', str(p['material']), str(p['analysis']), str(p['notes_json']), *prov]!r}); "
+            f"rc = subprocess.call({[py, 'tools/run_learning_notes.py', str(p['material']), str(p['analysis']), str(p['notes_json']), *prov, *sess_arg]!r}); "
             "sys.exit(rc) if rc != 0 else None; "
             f"shutil.copy2({str(p['notes_json'].with_suffix('.md'))!r}, {str(p['notes'])!r})"
         )

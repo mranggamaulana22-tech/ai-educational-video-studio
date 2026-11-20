@@ -1,0 +1,13 @@
+Kursus: Catatan Belajar: Software Development Life Cycle (SDLC) dan Requirements
+Modul: 
+
+Topik: Tahap Planning dan Pengelolaan Requirements
+Tahap awal SDLC berfokus pada pengumpulan kebutuhan perangkat lunak melalui beberapa langkah sistematis:
+- **Identifikasi Stakeholders**: Melibatkan decision maker/PM, end-user, system administrator, engineering, marketing, sales, dan customer support.
+- **Menetapkan Tujuan**: Menentukan *Goals* (tujuan jangka panjang) dan *Objectives* (tindakan terukur untuk mencapai target).
+- **Penggalian Kebutuhan**: Menggunakan survei, kuesioner, dan interview.
+- **Analisis & Konfirmasi**: Memastikan requirement konsisten, jelas, lengkap, serta ditentukan skala prioritasnya (high priority, nice to have).
+- **Dokumentasi**: Menuliskan requirement agar sejalan dengan goals dan mudah dipahami stakeholder.
+- Istilah Goals: Tujuan jangka panjang yang ingin dicapai.
+- Istilah Objectives: Target spesifik yang dapat ditindaklanjuti dan diukur.
+- Contoh: Melakukan interview dan kuisioner kepada end-user dan stakeholder lain untuk merumuskan fitur yang dibutuhkan sistem.

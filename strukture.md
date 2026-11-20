@@ -1,332 +1,309 @@
 # Struktur proyek AI Educational Video Studio
 
-Dokumen ini mencatat struktur file proyek yang sedang ada di workspace.
-File source, konfigurasi, prompt, naskah, storyboard, dan aset audio dicatat
-sampai tingkat terdalam. Dependency, cache, hasil build, hasil render, dan
-konfigurasi lokal yang dapat dibuat ulang tidak dirinci.
+Dokumen ini mencatat struktur source, konfigurasi, prompt, kontrak, schema,
+tes, naskah, storyboard, dan aset placeholder yang ada di workspace.
+Dependency terpasang, cache, virtualenv, database lokal, media besar, hasil
+render, dan hasil build tidak dirinci karena dapat dibuat ulang atau terlalu
+besar untuk dokumentasi struktur.
 
 ## Tree lengkap
 
 ```text
 ai-educational-video-studio/
-├── .env.example                          # Template variabel lingkungan
-├── .gitignore                             # Aturan file yang diabaikan Git
-├── README.md                              # Ringkasan tujuan dan status proyek
-├── strukture.md                           # Dokumentasi struktur repository ini
+├── .env.example                         # Template variabel lingkungan
+├── .gitignore                            # Aturan file yang diabaikan Git
+├── README.md                             # Ringkasan tujuan dan cara kerja proyek
+├── strukture.md                          # Dokumentasi struktur repository
 │
 ├── apps/
 │   ├── backend/
-│   │   ├── .gitkeep                       # Placeholder direktori backend
-│   │   ├── README.md                      # Instruksi backend
-│   │   ├── requirements.txt               # Dependency Python backend
-│   │   ├── video_studio.db                # Database SQLite aplikasi
+│   │   ├── README.md                     # Instruksi menjalankan backend
+│   │   ├── requirements.txt              # Dependency Python backend
 │   │   ├── app/
 │   │   │   ├── __init__.py
-│   │   │   ├── config.py                  # Konfigurasi aplikasi
-│   │   │   ├── db.py                      # Koneksi dan setup database
-│   │   │   ├── main.py                    # Entry point API
-│   │   │   ├── models.py                  # Model database
-│   │   │   ├── service.py                 # Service dan logika bisnis
-│   │   │   └── stages.py                  # Tahapan pipeline produksi
+│   │   │   ├── config.py                 # Root proyek, storage, dan Remotion
+│   │   │   ├── db.py                     # Engine, Base, dan session SQLAlchemy
+│   │   │   ├── main.py                   # Endpoint FastAPI dan response video
+│   │   │   ├── models.py                 # Model Series, Video, Artifact, Run
+│   │   │   ├── service.py                # Approval, artifact, dan orchestrator
+│   │   │   └── stages.py                 # Urutan tahap dan command tiap tahap
 │   │   └── tests/
-│   │       └── smoke_test.py              # Smoke test backend
+│   │       ├── smoke_test.py             # Tes API dan workflow dasar
+│   │       └── orchestrator_test.py      # Tes workflow 10 tahap dan approval
 │   │
 │   ├── frontend/
-│   │   ├── .gitignore                     # Ignore dependency dan hasil build
-│   │   ├── .gitkeep                       # Placeholder direktori frontend
-│   │   ├── README.md                      # Instruksi frontend
-│   │   ├── index.html                     # HTML entry point Vite
-│   │   ├── package.json                   # Dependency dan script frontend
-│   │   ├── package-lock.json              # Lockfile dependency npm
-│   │   ├── vite.config.js                 # Konfigurasi Vite
+│   │   ├── README.md                     # Instruksi aplikasi frontend
+│   │   ├── index.html                    # HTML entry point Vite
+│   │   ├── package.json                  # Dependency dan script frontend
+│   │   ├── package-lock.json             # Lockfile npm
+│   │   ├── vite.config.js                # Konfigurasi Vite
 │   │   └── src/
-│   │       ├── App.jsx                    # Komponen aplikasi utama
-│   │       ├── api.js                    # Client API backend
+│   │       ├── App.jsx                   # UI utama studio
+│   │       ├── api.js                    # Client request ke backend
 │   │       ├── main.jsx                  # Entry point React
 │   │       └── styles.css                # Style aplikasi
 │   │
 │   └── remotion/
-│       ├── .gitignore                    # Ignore dependency dan hasil render
-│       ├── .prettierrc                   # Konfigurasi format kode
+│       ├── README.md                     # Instruksi Remotion dan rendering
 │       ├── eslint.config.mjs             # Konfigurasi ESLint
-│       ├── package.json                  # Dependency dan script aplikasi video
-│       ├── package-lock.json             # Lockfile dependency npm
-│       ├── README.md                     # Instruksi menjalankan Remotion
-│       ├── remotion.config.ts            # Konfigurasi CLI dan render Remotion
+│       ├── package.json                  # Dependency dan script Remotion
+│       ├── package-lock.json             # Lockfile npm
+│       ├── remotion.config.ts            # Konfigurasi CLI Remotion
 │       ├── tsconfig.json                 # Konfigurasi TypeScript
-│       │
 │       ├── public/
-│       │   └── audio/
-│       │       ├── engineer-vs-developer.wav       # Audio runtime
-│       │       ├── engineer-vs-developer.words.json # Timing kata audio
-│       │       ├── hari2-sdlc.wav                   # Audio runtime
-│       │       ├── hari2-sdlc.words.json             # Timing kata audio
-│       │       ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.wav
-│       │       ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.words.json
-│       │       ├── tes-tts.wav                       # Audio uji TTS
-│       │       ├── tes1.wav                          # Audio runtime storyboard tes1
-│       │       ├── tes1.words.json                   # Timing kata audio
-│       │       ├── voiceover-v1.wav                  # Audio runtime versi v1
-│       │       └── voiceover-v2.wav                  # Audio runtime versi v2
-│       │
+│       │   └── audio/                    # Audio dan timing kata runtime
 │       ├── scripts/
-│       │   └── validate-storyboard.mjs    # Validator storyboard dan timeline
-│       │
+│       │   └── validate-storyboard.mjs   # Validator schema dan timeline
 │       └── src/
-│           ├── Backdrop.tsx               # Background dan dekorasi visual
-│           ├── Composition.tsx            # Renderer storyboard
-│           ├── FunIcons.tsx               # Ikon dan animasi ikon bergaya fun
-│           ├── FunScenes.tsx               # Scene visual bergaya fun
-│           ├── FunScenes2.tsx              # Variasi scene visual bergaya fun
-│           ├── FunSubtitle.tsx             # Subtitle dengan gaya visual fun
-│           ├── GenericScenes.tsx           # Scene umum berbasis props
-│           ├── GitScenes.tsx               # Scene khusus alur Git/GitHub
-│           ├── Icons.tsx                   # Definisi dan renderer ikon
-│           ├── JobScene.tsx                # Scene perbandingan pekerjaan
-│           ├── Kinetic.tsx                 # Subtitle dan animasi kinetic
-│           ├── RestaurantScene.tsx         # Scene analogi restoran
-│           ├── Root.tsx                    # Registrasi composition Remotion
-│           ├── TopBadge.tsx                # Badge informasi bagian atas video
-│           ├── Transition.tsx              # Transisi antar-scene
-│           ├── components.tsx              # Komponen scene dasar dan utilitas
-│           ├── fx.ts                       # Helper efek visual dan animasi
-│           ├── index.ts                    # Entry point Remotion
-│           ├── registry.ts                 # Registry komponen scene
-│           ├── storyboard.ts               # Tipe data storyboard TypeScript
-│           ├── theme.ts                    # Token warna, font, dan motion
-│           │
+│           ├── Backdrop.tsx              # Background dan dekorasi
+│           ├── Composition.tsx           # Renderer utama storyboard
+│           ├── DiagramScene.tsx          # Scene diagram column/row/grid
+│           ├── FunIcons.tsx              # Ikon animasi gaya fun
+│           ├── FunScenes.tsx              # Scene gaya fun
+│           ├── FunScenes2.tsx             # Variasi scene gaya fun
+│           ├── FunSubtitle.tsx            # Subtitle gaya fun
+│           ├── GenericScenes.tsx          # BigStatement, cards, flow, CTA, icon
+│           ├── GitScenes.tsx              # Scene file, commit, cloud, summary
+│           ├── Icons.tsx                  # Definisi dan renderer ikon
+│           ├── JobScene.tsx               # Scene perbandingan pekerjaan
+│           ├── Kinetic.tsx                # Subtitle dan animasi kinetic
+│           ├── RestaurantScene.tsx        # Scene analogi restoran
+│           ├── Root.tsx                   # Registrasi composition
+│           ├── TopBadge.tsx               # Badge informasi video
+│           ├── Transition.tsx             # Transisi antar-scene
+│           ├── components.tsx             # Komponen dasar dan utilitas scene
+│           ├── fx.ts                      # Helper efek visual
+│           ├── index.ts                   # Entry point Remotion
+│           ├── registry.ts                # Registry componentId storyboard
+│           ├── storyboard.ts              # Tipe data storyboard
+│           ├── theme.ts                   # Token warna, font, dan motion
 │           └── storyboards/
-│               ├── agent-auto.json         # Storyboard hasil alur agent otomatis
-│               ├── agent-test.json         # Storyboard uji agent
-│               ├── engineer-vs-developer.json # Perbandingan engineer/developer
-│               ├── generic-demo.json      # Demo scene umum
-│               ├── git-github-v2.json     # Storyboard Git/GitHub tema v2
-│               ├── git-github.json        # Storyboard Git/GitHub dasar
-│               ├── git-scenes-demo.json   # Demo scene file, commit, dan cloud
-│               ├── hari2-sdlc.json        # Storyboard alur SDLC
-│               ├── html-css-js.json       # Pengantar HTML, CSS, dan JavaScript
-│               ├── icon-demo.json         # Demo komponen dan variasi ikon
-│               ├── kinetic-demo.json      # Demo subtitle kinetic
-│               ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.json
-│               ├── tes1.json              # Storyboard uji pertama
-│               └── transition-demo.json   # Demo variasi transisi
+│               └── *.json                 # Storyboard demo, tes, dan produksi
 │
 ├── catatan/
-│   ├── hari2-sdlc.txt                     # Catatan materi SDLC
-│   ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.txt
-│   ├── sdlc-hari4-siapa-saja-stakeholders-dala.txt
-│   ├── sdlc-hari5-cara-menggali-dan-menyusun-r.txt
-│   ├── sdlc-hari6-membongkar-isi-dokumen-srs.txt
-│   ├── sdlc-hari7-perbedaan-urs-dan-sysrs-waji.txt
-│   ├── sdlc.notes.json                    # Catatan terstruktur
-│   └── sdlc.notes.md                      # Ringkasan catatan SDLC
+│   ├── *.txt                              # Materi mentah atau catatan per video
+│   ├── *.analysis.json                    # Hasil Material Analyst
+│   ├── *.notes.v2.json                    # Learning Notes terstruktur
+│   └── *.notes.md                         # Ringkasan Learning Notes
 │
 ├── docs/
-│   ├── COMPONENTS.md                      # Katalog komponen dan props storyboard
+│   ├── COMPONENTS.md                      # Katalog componentId dan props
 │   └── CONTEXT.md                         # Konteks produk dan keputusan teknis
 │
 ├── naskah/
-│   ├── engineer-vs-developer.txt          # Naskah perbandingan engineer/developer
-│   ├── hari2-sdlc.txt                     # Naskah materi SDLC
-│   ├── sdlc-hari3-kenalan-dengan-6-tahapan-sdl.txt
-│   └── tes1.txt                           # Naskah uji
+│   ├── *.txt                              # Naskah final atau draft TTS
+│   ├── *.review.json                      # Hasil Script Reviewer
+│   └── *.segments.json                    # Segmen naskah ber-ID dan role
 │
 ├── output/
 │   └── .gitkeep                           # Placeholder output video final
 │
 ├── prompts/
-│   ├── .gitkeep                           # Placeholder prompt tingkat root
-│   ├── content_planner.md                 # Prompt perencana konten
-│   ├── learning_agent.md                  # Prompt learning agent
+│   ├── content_planner.md                 # Prompt Content Planner legacy
+│   ├── content_planner/
+│   │   └── v1.md                          # Prompt Content Planner aktif
+│   ├── learning_agent.md                  # Prompt Learning Agent
+│   ├── learning_notes/
+│   │   └── v1.md                          # Prompt Learning Notes aktif
+│   ├── material_analyst/
+│   │   └── v1.md                          # Prompt Material Analyst aktif
 │   ├── prompts/
 │   │   ├── CARA_PAKAI.md                  # Cara menggunakan prompt
-│   │   └── storyboard_agent.md            # Prompt storyboard agent versi nested
-│   ├── script_reviewer.md                 # Prompt peninjau naskah
-│   ├── scriptwriter_agent.md              # Prompt penulis naskah
-│   └── storyboard_agent.md                # Prompt pembuat storyboard
+│   │   └── storyboard_agent.md            # Prompt storyboard nested/legacy
+│   ├── script_reviewer.md                 # Prompt Reviewer legacy
+│   ├── script_reviewer/
+│   │   └── v1.md                          # Prompt Reviewer 5 kategori PRD
+│   ├── scriptwriter_agent.md              # Prompt Scriptwriter legacy
+│   ├── scriptwriter/
+│   │   └── v1.md                          # Prompt Scriptwriter bersegmen
+│   └── storyboard_agent.md                # Prompt Storyboard Agent aktif
 │
 ├── rencana/
-│   └── sdlc.plan.json                     # Rencana konten SDLC
+│   └── *.plan.json                        # Rencana video dari Content Planner
 │
 ├── scripts/
 │   └── .gitkeep                           # Placeholder script lintas aplikasi
 │
 ├── shared/
 │   ├── contracts/
-│   │   └── .gitkeep                       # Placeholder kontrak antar aplikasi
+│   │   ├── content_planner.sample.json    # Fixture input/output Content Planner
+│   │   ├── learning_notes.sample.json    # Fixture Learning Notes
+│   │   ├── material_analyst.sample.json  # Fixture Material Analyst
+│   │   └── script_reviewer.sample.json   # Fixture Reviewer 5 kategori
 │   └── schemas/
-│       └── .gitkeep                       # Placeholder schema bersama
+│       └── agents/
+│           ├── content_plan.schema.json   # Schema rencana konten
+│           ├── learning_notes.schema.json # Schema catatan belajar
+│           ├── material_analysis.schema.json # Schema analisis materi
+│           ├── script.schema.json         # Schema naskah dan segments
+│           └── script_review.schema.json  # Schema hasil review
 │
 ├── storage/
 │   ├── library/
-│   │   ├── backgrounds/
-│   │   │   └── .gitkeep                   # Library background visual
-│   │   ├── characters/
-│   │   │   └── .gitkeep                   # Library karakter
-│   │   ├── fonts/
-│   │   │   └── .gitkeep                   # Library font
-│   │   ├── icons/
-│   │   │   └── .gitkeep                   # Library ikon
-│   │   ├── music/
-│   │   │   └── .gitkeep                   # Library musik
-│   │   └── sound-effects/
-│   │       └── .gitkeep                   # Library sound effect
-│   │
-│   ├── projects/
-│   │   ├── .gitkeep                       # Placeholder aset proyek
-│   │   ├── git-github/
-│   │   │   └── audio/
-│   │   │       └── voiceover-v2.wav       # Audio sumber proyek Git/GitHub
-│   │   └── html-css-js/
-│   │       └── audio/
-│   │           └── voiceover-v1.wav       # Audio sumber proyek HTML/CSS/JS
-│
-│   └── voice-samples/
-│       ├── Kore.txt                       # Metadata/sample voice
-│       └── Kore.wav                       # Audio sample voice
+│   │   ├── backgrounds/.gitkeep            # Placeholder background
+│   │   ├── characters/.gitkeep             # Placeholder karakter
+│   │   ├── fonts/.gitkeep                  # Placeholder font
+│   │   ├── icons/.gitkeep                  # Placeholder ikon
+│   │   ├── music/.gitkeep                  # Placeholder musik
+│   │   └── sound-effects/.gitkeep          # Placeholder sound effect
+│   └── projects/
+│       └── .gitkeep                        # Placeholder aset per proyek
 │
 └── tools/
-    ├── agentkit.py                        # Helper agent
-    ├── align_audio.py                     # Menyelaraskan audio dan timing
-    ├── apply_word_times.py                # Menerapkan timing per kata
-    ├── llm.py                             # Helper komunikasi dengan LLM
-    ├── make_agent_input.py                # Membuat input untuk agent
-    ├── naskah-tes.txt                     # Naskah input uji tool
-    ├── pipeline.py                        # Orkestrasi pipeline produksi
-    ├── run_content_planner.py             # Menjalankan content planner agent
-    ├── run_learning_agent.py              # Menjalankan learning agent
-    ├── run_scriptwriter.py                # Menjalankan scriptwriter agent
-    ├── run_storyboard_agent.py            # Menjalankan storyboard agent
-    ├── setup_db.py                        # Menyiapkan database aplikasi
-    └── tts_gemini.py                      # Menghasilkan audio dengan Gemini TTS
+    ├── agentkit.py                         # Helper pemanggilan agent
+    ├── align_audio.py                      # Alignment audio dan timing kata
+    ├── apply_word_times.py                 # Menerapkan timing kata ke subtitle
+    ├── llm.py                              # Provider dan komunikasi LLM
+    ├── make_agent_input.py                 # Membuat input untuk agent
+    ├── naskah-tes.txt                      # Input naskah untuk pengujian
+    ├── pipeline.py                         # Pipeline manual naskah sampai render
+    ├── run_content_planner.py              # Menjalankan Content Planner
+    ├── run_learning_agent.py               # Menjalankan Learning Agent
+    ├── run_learning_notes.py               # Menghasilkan Learning Notes
+    ├── run_material_analyst.py             # Menganalisis materi
+    ├── run_script_reviewer.py              # Memeriksa naskah terstruktur
+    ├── run_scriptwriter.py                 # Menghasilkan naskah bersegmen
+    ├── run_storyboard_agent.py             # Menghasilkan storyboard tervalidasi
+    ├── setup_db.py                         # Menyiapkan database
+    └── tts_gemini.py                       # Menghasilkan audio Gemini TTS
 ```
 
-## Rincian aplikasi Remotion
+## Rincian aplikasi backend
 
-`apps/remotion/` adalah aplikasi renderer video. Storyboard JSON menjadi
-input utama, sedangkan komponen React/Remotion yang terdaftar di
-`src/registry.ts` menjadi renderer yang boleh digunakan storyboard.
+`apps/backend/` menyediakan API FastAPI, penyimpanan artifact, approval gate,
+dan orchestrator workflow. Tahap produksi yang didukung:
 
-### File konfigurasi
+```text
+material -> analysis -> notes -> ideas -> script
+         -> review -> audio -> words -> storyboard -> render
+```
+
+### Modul backend
 
 | File | Fungsi |
 | --- | --- |
-| `package.json` | Dependency Remotion, React, TypeScript, ESLint, dan script proyek. |
-| `package-lock.json` | Mengunci versi dependency agar instalasi konsisten. |
-| `remotion.config.ts` | Konfigurasi CLI dan render Remotion. |
-| `tsconfig.json` | Aturan compiler TypeScript. |
-| `eslint.config.mjs` | Aturan pemeriksaan kualitas kode. |
-| `.prettierrc` | Aturan format kode. |
-| `.gitignore` | Daftar dependency dan artefak Remotion yang diabaikan Git. |
+| `app/config.py` | Root repository, lokasi storage, dan lokasi Remotion. |
+| `app/db.py` | Engine SQLAlchemy, declarative Base, dan dependency session. |
+| `app/models.py` | Model `Series`, `Video`, `Artifact`, dan `Run`. |
+| `app/stages.py` | ORDER tahap, approval point, lokasi file, dan command subprocess. |
+| `app/service.py` | Registrasi artifact, stale propagation, approval, select idea, dan advance workflow. |
+| `app/main.py` | Endpoint video, text stage, run/advance, approval, artifacts, dan status waiting. |
+| `tests/smoke_test.py` | Memastikan API dasar, approval, stale artifact, dan log gagal bekerja. |
+| `tests/orchestrator_test.py` | Menguji Content Planner, pemilihan ide, Scriptwriter, Reviewer, audio, storyboard, dan render. |
+
+### Endpoint workflow utama
+
+| Endpoint | Kegunaan |
+| --- | --- |
+| `PUT /videos/{id}/material` | Menyimpan materi manual. |
+| `PUT /videos/{id}/notes` | Menyimpan catatan manual. |
+| `PUT /videos/{id}/ideas` | Menyimpan plan/ide manual. |
+| `POST /videos/{id}/select-idea` | Memilih ide berdasarkan index dan menyetujui tahap ideas. |
+| `PUT /videos/{id}/script` | Menyimpan atau mengedit naskah manual. |
+| `POST /videos/{id}/run/{stage}` | Menjalankan satu tahap. |
+| `POST /videos/{id}/advance` | Menjalankan tahap otomatis berikutnya sampai approval gate. |
+| `POST /videos/{id}/approve/{point}` | Menyetujui notes, ideas, script, audio, atau video. |
+| `GET /videos/{id}` | Mengambil status seluruh tahap dan detail waiting approval. |
+
+### Approval dan kompatibilitas
+
+- `notes` harus disetujui sebelum Content Planner berjalan.
+- `ideas` harus dipilih/disetujui sebelum Scriptwriter berjalan.
+- `review` menjadi approval point untuk script.
+- `audio` menjadi approval point sebelum alignment dan storyboard.
+- `render` menjadi approval point akhir.
+- Workflow lama tetap mendukung `notes -> script` bila artifact `ideas` belum ada.
+- Workflow lama tetap mendukung `script -> audio` bila artifact `review` belum ada.
+- Review yang masih `revise` menghasilkan alasan `belum lolos review`.
+
+## Rincian aplikasi frontend
+
+`apps/frontend/` adalah UI React berbasis Vite untuk mengelola video, status
+tahap, approval, dan pemanggilan API backend.
+
+| File | Fungsi |
+| --- | --- |
+| `src/App.jsx` | Layout dan state utama studio. |
+| `src/api.js` | Fungsi request ke endpoint backend. |
+| `src/main.jsx` | Mount aplikasi React. |
+| `src/styles.css` | Layout, warna, panel, tombol, dan state UI. |
+| `vite.config.js` | Konfigurasi dev server dan proxy/build Vite. |
+
+## Rincian aplikasi Remotion
+
+`apps/remotion/` mengubah storyboard JSON menjadi video vertikal. Component
+scene tersedia melalui `src/registry.ts`; validator harus dijalankan sebelum
+render.
 
 ### Alur rendering
 
 1. `src/index.ts` mendaftarkan entry point Remotion.
-2. `src/Root.tsx` mendaftarkan composition video.
-3. `src/Composition.tsx` membaca `Storyboard`, memilih komponen dari registry,
-   mengubah milidetik menjadi frame, lalu merender scene dan audio.
-4. `src/storyboard.ts` menyediakan tipe data TypeScript untuk storyboard.
-5. `src/storyboards/*.json` menyediakan data scene, audio, subtitle, dan
-   metadata video.
-6. `scripts/validate-storyboard.mjs` memeriksa struktur, durasi, urutan scene,
-   props komponen, transition, dan batas waktu animasi sebelum render.
+2. `src/Root.tsx` mendaftarkan composition.
+3. `src/Composition.tsx` membaca storyboard, audio, subtitle, scene, dan transition.
+4. `src/registry.ts` memetakan `componentId` ke React component.
+5. `scripts/validate-storyboard.mjs` memeriksa schema, props, timeline, durasi, dan cue.
+6. CLI Remotion merender output ke direktori build/render yang tidak dirinci di dokumen ini.
 
-### Komponen visual
+### Komponen scene penting
 
 | File | Isi |
 | --- | --- |
-| `components.tsx` | Scene dasar dan helper konversi waktu. |
-| `GenericScenes.tsx` | Scene umum seperti statement, cards, flow, CTA, dan icon. |
-| `FunScenes.tsx` / `FunScenes2.tsx` | Scene animasi dengan gaya visual fun. |
-| `FunIcons.tsx` | Ikon animasi untuk scene bergaya fun. |
-| `FunSubtitle.tsx` | Renderer subtitle bergaya fun. |
-| `GitScenes.tsx` | Scene file, commit, sinkronisasi cloud, dan ringkasan ikon. |
-| `JobScene.tsx` | Scene perbandingan peran pekerjaan. |
-| `RestaurantScene.tsx` | Scene analogi restoran. |
-| `Icons.tsx` | Definisi nama ikon, komponen ikon, dan showcase. |
-| `Backdrop.tsx` | Background dan dekorasi tema. |
-| `Kinetic.tsx` | Animasi subtitle kinetic. |
-| `TopBadge.tsx` | Badge top-level pada tampilan video. |
-| `Transition.tsx` | Implementasi transisi antar-scene. |
-| `fx.ts` | Helper efek visual. |
-| `theme.ts` | Token warna, tipografi, ukuran, dan gerak. |
-| `registry.ts` | Pemetaan nama komponen storyboard ke renderer. |
+| `GenericScenes.tsx` | BigStatement, CompareCards, FlowSteps, CardList, CTA, IconHero, IconGrid, DiagramScene. |
+| `DiagramScene.tsx` | Diagram node/edge dengan layout `column`, `row`, atau `grid`. |
+| `FunScenes.tsx` / `FunScenes2.tsx` | Scene animasi bertema fun. |
+| `FunIcons.tsx` / `Icons.tsx` | Registry visual dan renderer ikon. |
+| `GitScenes.tsx` | File, commit, timeline, cloud sync, dan ringkasan ikon. |
+| `Backdrop.tsx` / `TopBadge.tsx` | Background dan informasi bagian atas video. |
+| `FunSubtitle.tsx` / `Kinetic.tsx` | Rendering subtitle dengan animasi. |
+| `Transition.tsx` | Transisi antar scene. |
+| `theme.ts` / `fx.ts` | Token visual dan helper efek. |
 
-## Tools pipeline
+## Rincian tools pipeline
 
-Folder `tools/` berisi utilitas Python untuk mengubah naskah menjadi input
-agent, menjalankan agent penulis dan storyboard, menghasilkan TTS, serta
-menyelaraskan audio dengan timing subtitle.
+### Pipeline produksi
 
-1. `make_agent_input.py` menyiapkan input terstruktur untuk agent.
-2. `run_scriptwriter.py` menjalankan proses pembuatan naskah.
-3. `run_storyboard_agent.py` menghasilkan storyboard JSON.
-4. `tts_gemini.py` menghasilkan audio voiceover.
-5. `align_audio.py` dan `apply_word_times.py` memproses timing audio/kata.
-6. `pipeline.py` mengorkestrasi tahapan pipeline.
-7. `llm.py` menyediakan helper komunikasi dengan model bahasa.
+1. **Material Analyst** membaca materi mentah dan menghasilkan analisis.
+2. **Learning Notes** mengubah analisis menjadi catatan terstruktur.
+3. **Content Planner** membuat daftar ide video, format, hook, dan topik berikutnya.
+4. **Scriptwriter** membuat `script` dan `segments`, lalu menyimpan teks TTS.
+5. **Script Reviewer** menilai lima kategori dan menghasilkan `.review.json`.
+6. **TTS** menghasilkan audio narasi.
+7. **Audio Aligner** menghasilkan timing setiap kata.
+8. **Storyboard Agent** membuat JSON storyboard dan menjalankan validator.
+9. **Remotion** merender storyboard menjadi video.
 
-## Format storyboard
+### Tool utama
 
-Setiap file storyboard berada di `apps/remotion/src/storyboards/` dan
-mengikuti bentuk umum berikut:
+| Tool | Tanggung jawab |
+| --- | --- |
+| `run_material_analyst.py` | Memanggil Material Analyst dan menyimpan analisis JSON. |
+| `run_learning_notes.py` | Menghasilkan notes JSON/Markdown dan catatan teks. |
+| `run_content_planner.py` | Membuat plan video dan command pipeline per ide. |
+| `run_scriptwriter.py` | Membuat naskah 90-170 kata, segments, dan status review. |
+| `run_script_reviewer.py` | Memvalidasi review 5 kategori tanpa menulis ulang naskah. |
+| `tts_gemini.py` | Mengubah naskah menjadi WAV. |
+| `align_audio.py` | Menghasilkan timing kata dari audio. |
+| `run_storyboard_agent.py` | Menghasilkan storyboard, memperbaiki validasi, dan fallback split scene. |
+| `pipeline.py` | Menjalankan naskah, audio, alignment, storyboard, dan render secara manual. |
 
-```json
-{
-  "schemaVersion": "1.1",
-  "video": {
-    "title": "Judul video",
-    "width": 1080,
-    "height": 1920,
-    "fps": 30,
-    "durationMs": 30000,
-    "theme": "classic"
-  },
-  "audio": {
-    "src": "audio/voiceover-v1.wav",
-    "durationMs": 30000
-  },
-  "scenes": [],
-  "subtitles": []
-}
-```
+## Kontrak dan schema bersama
 
-Ketentuan penting:
+Direktori `shared/` menyimpan format pertukaran data antar-agent:
 
-- Semua waktu menggunakan milidetik (`Ms`), bukan frame.
-- `Scene.transition` boleh bernilai `none`, `fade`, `slide`, `zoom`, atau
-  `wipe`.
-- `Scene.component` harus tersedia di registry `src/registry.ts`.
-- `Scene.props` harus sesuai spesifikasi komponen pada validator.
-- Total `startMs + durationMs` seluruh scene harus mengikuti durasi video.
-- `audio.src` dibaca relatif terhadap `apps/remotion/public/`.
+- `content_plan.schema.json`: daftar video, format, hook, topik, dan metadata.
+- `material_analysis.schema.json`: hasil analisis materi.
+- `learning_notes.schema.json`: catatan belajar terstruktur.
+- `script.schema.json`: judul, segments ber-role, dan script gabungan.
+- `script_review.schema.json`: verdict, lima checks, feedback per segment, dan summary.
+- `shared/contracts/*.sample.json`: fixture untuk self-test agent.
 
-## Pemetaan aset audio
+## File yang sengaja tidak dirinci
 
-Audio sumber proyek disimpan di `storage/projects/`, sedangkan audio yang
-dibaca Remotion harus tersedia di `apps/remotion/public/audio/`.
+Dokumen ini tidak menguraikan isi atau daftar lengkap:
 
-| Proyek | Sumber | File runtime | Nilai `audio.src` |
-| --- | --- | --- | --- |
-| `html-css-js` | `storage/projects/html-css-js/audio/voiceover-v1.wav` | `apps/remotion/public/audio/voiceover-v1.wav` | `audio/voiceover-v1.wav` |
-| `git-github` | `storage/projects/git-github/audio/voiceover-v2.wav` | `apps/remotion/public/audio/voiceover-v2.wav` | `audio/voiceover-v2.wav` |
-| `hari2-sdlc` | — | `apps/remotion/public/audio/hari2-sdlc.wav` | `audio/hari2-sdlc.wav` |
-| `sdlc-hari3` | — | `apps/remotion/public/audio/sdlc-hari3-kenalan-dengan-6-tahapan-sdl.wav` | `audio/sdlc-hari3-kenalan-dengan-6-tahapan-sdl.wav` |
-
-## Folder yang sengaja tidak dirinci
-
-Folder/file berikut tidak dimasukkan ke tree utama karena bukan source yang
-perlu dicatat satu per satu:
-
-- `node_modules/`: dependency hasil `npm install`.
-- `.venv*/`: virtualenv Python dan package hasil instalasi.
-- `.git/`: metadata internal Git.
-- `apps/remotion/out/`: video, gambar, dan hasil render sementara.
-- `dist/`, `build/`, `coverage/`, `__pycache__/`, dan cache tooling: artefak
-  generated.
-- `.env`: konfigurasi lokal/rahasia; hanya `.env.example` yang dicatat.
-- Lockfile `package-lock.json` tetap dicatat karena merupakan file konfigurasi
-  yang dilacak Git, bukan isi folder dependency.
-
-Placeholder `.gitkeep` tetap dicatat karena menjaga folder kosong agar tetap
-tersedia di repository.
+- `node_modules/`, `.venv/`, dan `.venv-audio/`.
+- Database lokal `*.db`, `*.sqlite`, dan `*.sqlite3`.
+- Audio/video besar seperti `*.wav`, `*.mp3`, `*.mp4`.
+- Cache Python `__pycache__/` dan `*.pyc`.
+- Hasil build/render seperti `dist/`, `build/`, `out/`, dan `output/*`.
+- Isi `.env` dan credential/provider lokal.

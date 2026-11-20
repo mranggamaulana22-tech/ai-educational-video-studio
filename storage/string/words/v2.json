@@ -1,0 +1,543 @@
+{
+ "audio": "string.wav",
+ "durationMs": 51760,
+ "model": "small",
+ "silences": [
+  [
+   0,
+   310
+  ],
+  [
+   3670,
+   3920
+  ],
+  [
+   8040,
+   8390
+  ],
+  [
+   8420,
+   8780
+  ],
+  [
+   9900,
+   10080
+  ],
+  [
+   10730,
+   10930
+  ],
+  [
+   13200,
+   13430
+  ],
+  [
+   13530,
+   13870
+  ],
+  [
+   19660,
+   19860
+  ],
+  [
+   19960,
+   20410
+  ],
+  [
+   22250,
+   22450
+  ],
+  [
+   24930,
+   25250
+  ],
+  [
+   27870,
+   28100
+  ],
+  [
+   31580,
+   32310
+  ],
+  [
+   33990,
+   34390
+  ],
+  [
+   36930,
+   37350
+  ],
+  [
+   40220,
+   40510
+  ],
+  [
+   41110,
+   41360
+  ],
+  [
+   43510,
+   44300
+  ],
+  [
+   47580,
+   48120
+  ],
+  [
+   51430,
+   51760
+  ]
+ ],
+ "words": [
+  {
+   "text": "Bingung",
+   "startMs": 310,
+   "endMs": 800
+  },
+  {
+   "text": "membedakan",
+   "startMs": 800,
+   "endMs": 1320
+  },
+  {
+   "text": "dokumen",
+   "startMs": 1320,
+   "endMs": 1720
+  },
+  {
+   "text": "spesifikasi",
+   "startMs": 1720,
+   "endMs": 2380
+  },
+  {
+   "text": "proyek",
+   "startMs": 2380,
+   "endMs": 2740
+  },
+  {
+   "text": "software,",
+   "startMs": 2740,
+   "endMs": 3520
+  },
+  {
+   "text": "mari",
+   "startMs": 3520,
+   "endMs": 4100
+  },
+  {
+   "text": "kita",
+   "startMs": 4100,
+   "endMs": 4320
+  },
+  {
+   "text": "bandingkan",
+   "startMs": 4320,
+   "endMs": 4880
+  },
+  {
+   "text": "3",
+   "startMs": 4880,
+   "endMs": 5300
+  },
+  {
+   "text": "dokumen",
+   "startMs": 5300,
+   "endMs": 5740
+  },
+  {
+   "text": "penting",
+   "startMs": 5740,
+   "endMs": 6160
+  },
+  {
+   "text": "dari",
+   "startMs": 6160,
+   "endMs": 6420
+  },
+  {
+   "text": "tahap",
+   "startMs": 6420,
+   "endMs": 6820
+  },
+  {
+   "text": "planning",
+   "startMs": 6820,
+   "endMs": 7160
+  },
+  {
+   "text": "SDLC.",
+   "startMs": 7160,
+   "endMs": 7940
+  },
+  {
+   "text": "Pertama,",
+   "startMs": 8780,
+   "endMs": 9470
+  },
+  {
+   "text": "ada",
+   "startMs": 9470,
+   "endMs": 9900
+  },
+  {
+   "text": "URS",
+   "startMs": 10080,
+   "endMs": 10730
+  },
+  {
+   "text": "atau",
+   "startMs": 10930,
+   "endMs": 11120
+  },
+  {
+   "text": "User",
+   "startMs": 11120,
+   "endMs": 11680
+  },
+  {
+   "text": "Requirement",
+   "startMs": 11680,
+   "endMs": 12320
+  },
+  {
+   "text": "Specification.",
+   "startMs": 12320,
+   "endMs": 13140
+  },
+  {
+   "text": "Dokumen",
+   "startMs": 13870,
+   "endMs": 14160
+  },
+  {
+   "text": "ini",
+   "startMs": 14160,
+   "endMs": 14460
+  },
+  {
+   "text": "fokus",
+   "startMs": 14460,
+   "endMs": 14980
+  },
+  {
+   "text": "mendeskripsikan",
+   "startMs": 14980,
+   "endMs": 15760
+  },
+  {
+   "text": "kebutuhan",
+   "startMs": 15760,
+   "endMs": 16240
+  },
+  {
+   "text": "bisnis",
+   "startMs": 16240,
+   "endMs": 16720
+  },
+  {
+   "text": "dan",
+   "startMs": 16720,
+   "endMs": 17120
+  },
+  {
+   "text": "ekspektasi",
+   "startMs": 17120,
+   "endMs": 17760
+  },
+  {
+   "text": "user",
+   "startMs": 17760,
+   "endMs": 18060
+  },
+  {
+   "text": "lewat",
+   "startMs": 18060,
+   "endMs": 18720
+  },
+  {
+   "text": "user",
+   "startMs": 18720,
+   "endMs": 19060
+  },
+  {
+   "text": "stories.",
+   "startMs": 19060,
+   "endMs": 19480
+  },
+  {
+   "text": "Kedua,",
+   "startMs": 20410,
+   "endMs": 20960
+  },
+  {
+   "text": "ada",
+   "startMs": 20960,
+   "endMs": 21280
+  },
+  {
+   "text": "SRS",
+   "startMs": 21280,
+   "endMs": 22250
+  },
+  {
+   "text": "atau",
+   "startMs": 22450,
+   "endMs": 22600
+  },
+  {
+   "text": "Software",
+   "startMs": 22600,
+   "endMs": 23220
+  },
+  {
+   "text": "Requirement",
+   "startMs": 23220,
+   "endMs": 23800
+  },
+  {
+   "text": "Specification.",
+   "startMs": 23800,
+   "endMs": 24930
+  },
+  {
+   "text": "Dokumen",
+   "startMs": 25250,
+   "endMs": 25560
+  },
+  {
+   "text": "ini",
+   "startMs": 25560,
+   "endMs": 25860
+  },
+  {
+   "text": "merinci",
+   "startMs": 25860,
+   "endMs": 26360
+  },
+  {
+   "text": "fungsionalitas",
+   "startMs": 26360,
+   "endMs": 27200
+  },
+  {
+   "text": "software,",
+   "startMs": 27200,
+   "endMs": 27870
+  },
+  {
+   "text": "batasan,",
+   "startMs": 27870,
+   "endMs": 28820
+  },
+  {
+   "text": "serta",
+   "startMs": 28820,
+   "endMs": 29260
+  },
+  {
+   "text": "requirement",
+   "startMs": 29260,
+   "endMs": 29500
+  },
+  {
+   "text": "functional",
+   "startMs": 29500,
+   "endMs": 30240
+  },
+  {
+   "text": "dan",
+   "startMs": 30240,
+   "endMs": 30720
+  },
+  {
+   "text": "non",
+   "startMs": 30720,
+   "endMs": 30940
+  },
+  {
+   "text": "-functional.",
+   "startMs": 30940,
+   "endMs": 31580
+  },
+  {
+   "text": "Ketiga,",
+   "startMs": 32310,
+   "endMs": 32920
+  },
+  {
+   "text": "ada",
+   "startMs": 32920,
+   "endMs": 33140
+  },
+  {
+   "text": "SSR",
+   "startMs": 33140,
+   "endMs": 33990
+  },
+  {
+   "text": "atau",
+   "startMs": 34390,
+   "endMs": 34580
+  },
+  {
+   "text": "System",
+   "startMs": 34580,
+   "endMs": 35060
+  },
+  {
+   "text": "Requirement",
+   "startMs": 35060,
+   "endMs": 35760
+  },
+  {
+   "text": "Specification.",
+   "startMs": 35760,
+   "endMs": 36620
+  },
+  {
+   "text": "Dokumen",
+   "startMs": 37350,
+   "endMs": 37640
+  },
+  {
+   "text": "ini",
+   "startMs": 37640,
+   "endMs": 37960
+  },
+  {
+   "text": "menjelaskan",
+   "startMs": 37960,
+   "endMs": 38620
+  },
+  {
+   "text": "kapabilitas",
+   "startMs": 38620,
+   "endMs": 39300
+  },
+  {
+   "text": "teknis",
+   "startMs": 39300,
+   "endMs": 39740
+  },
+  {
+   "text": "sistem,",
+   "startMs": 39740,
+   "endMs": 40080
+  },
+  {
+   "text": "hardware,",
+   "startMs": 40520,
+   "endMs": 40960
+  },
+  {
+   "text": "hingga",
+   "startMs": 41360,
+   "endMs": 41660
+  },
+  {
+   "text": "standar",
+   "startMs": 41660,
+   "endMs": 42100
+  },
+  {
+   "text": "keamanan",
+   "startMs": 42100,
+   "endMs": 42700
+  },
+  {
+   "text": "dan",
+   "startMs": 42700,
+   "endMs": 42900
+  },
+  {
+   "text": "regulasi.",
+   "startMs": 42900,
+   "endMs": 43420
+  },
+  {
+   "text": "Ketiga",
+   "startMs": 44300,
+   "endMs": 44560
+  },
+  {
+   "text": "dokumen",
+   "startMs": 44560,
+   "endMs": 44860
+  },
+  {
+   "text": "ini",
+   "startMs": 44860,
+   "endMs": 45160
+  },
+  {
+   "text": "jadi",
+   "startMs": 45160,
+   "endMs": 45400
+  },
+  {
+   "text": "fondasi",
+   "startMs": 45400,
+   "endMs": 46000
+  },
+  {
+   "text": "suksesnya",
+   "startMs": 46000,
+   "endMs": 46580
+  },
+  {
+   "text": "pengembangan",
+   "startMs": 46580,
+   "endMs": 47000
+  },
+  {
+   "text": "aplikasi.",
+   "startMs": 47000,
+   "endMs": 47520
+  },
+  {
+   "text": "Jangan",
+   "startMs": 48120,
+   "endMs": 48300
+  },
+  {
+   "text": "lupa",
+   "startMs": 48300,
+   "endMs": 48500
+  },
+  {
+   "text": "follow",
+   "startMs": 48500,
+   "endMs": 48840
+  },
+  {
+   "text": "untuk",
+   "startMs": 48840,
+   "endMs": 49200
+  },
+  {
+   "text": "tips",
+   "startMs": 49200,
+   "endMs": 49500
+  },
+  {
+   "text": "belajar",
+   "startMs": 49500,
+   "endMs": 49920
+  },
+  {
+   "text": "software",
+   "startMs": 49920,
+   "endMs": 50200
+  },
+  {
+   "text": "engineering",
+   "startMs": 50200,
+   "endMs": 50780
+  },
+  {
+   "text": "berikutnya.",
+   "startMs": 50780,
+   "endMs": 51360
+  }
+ ]
+}

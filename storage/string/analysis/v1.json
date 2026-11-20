@@ -1,0 +1,102 @@
+{
+  "topics": [
+    {
+      "id": "t1",
+      "title": "Phases in SDLC",
+      "subtopics": [
+        "Planing",
+        "Design",
+        "Development",
+        "Testing",
+        "Deployment",
+        "Maintenance"
+      ]
+    },
+    {
+      "id": "t2",
+      "title": "Step 1 Planing dan Requirement",
+      "subtopics": [
+        "Identifikasi Stakeholders",
+        "Goals dan Objectives",
+        "Penggalian Kebutuhan",
+        "Dokumentasi Kebutuhan (SRS, URS, SysRS)"
+      ]
+    }
+  ],
+  "key_concepts": [
+    {
+      "id": "c1",
+      "topic_id": "t1",
+      "name": "SDLC Phases",
+      "summary": "Tahapan dalam SDLC meliputi Planning, Design, Development, Testing, Deployment, dan Maintenance untuk membangun perangkat lunak."
+    },
+    {
+      "id": "c2",
+      "topic_id": "t2",
+      "name": "Planning and Requirements",
+      "summary": "Tahap awal SDLC yang berfokus pada pencatatan requirement, identifikasi stakeholders, penetapan goals, dan pembuatan dokumen SRS."
+    },
+    {
+      "id": "c3",
+      "topic_id": "t2",
+      "name": "SRS, URS, dan SysRS",
+      "summary": "Dokumen spesifikasi yang merinci kebutuhan software (SRS), kebutuhan pengguna dan bisnis (URS), serta spesifikasi sistem (SysRS)."
+    }
+  ],
+  "needs_expansion": [
+    {
+      "concept_id": "c3",
+      "reason": "Perlu penjelasan lebih mendalam mengenai perbedaan konkret antara Functional requirement dan Non-functional requirement."
+    }
+  ],
+  "gaps": [
+    "Detail metodologi pengembangan (seperti Agile atau Waterfall) tidak disebutkan secara mendalam di materi."
+  ],
+  "possible_misconceptions": [
+    {
+      "concept_id": "c3",
+      "statement": "Non-functional requirement sama dengan fitur utama aplikasi.",
+      "issue": "Non-functional requirement menjelaskan bagaimana kualitas sistem dipenuhi (seperti security dan performa), bukan fitur apa yang disediakan."
+    }
+  ],
+  "relations": [
+    {
+      "from": "c3",
+      "to": "c2",
+      "type": "depends_on"
+    },
+    {
+      "from": "c2",
+      "to": "c1",
+      "type": "depends_on"
+    }
+  ],
+  "technical_terms": [
+    {
+      "term": "SDLC",
+      "needs_explanation": true
+    },
+    {
+      "term": "SRS",
+      "needs_explanation": true
+    },
+    {
+      "term": "URS",
+      "needs_explanation": true
+    },
+    {
+      "term": "SysRS",
+      "needs_explanation": true
+    },
+    {
+      "term": "UAT",
+      "needs_explanation": true
+    }
+  ],
+  "suggested_questions": [
+    "Apa saja tahapan yang ada di dalam SDLC?",
+    "Apa perbedaan antara Functional requirement dan Non-functional requirement?",
+    "Apa output utama dari tahap Planning dalam SDLC?"
+  ],
+  "sources_to_verify": []
+}

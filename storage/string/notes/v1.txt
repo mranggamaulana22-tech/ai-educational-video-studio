@@ -1,0 +1,42 @@
+# Catatan Belajar: Tahapan SDLC dan Pengelolaan Requirement
+
+## 1. Tahapan Utama dalam SDLC (`s1`)
+Software Development Life Cycle (SDLC) terdiri dari enam tahapan utama mulai dari perencanaan hingga pemeliharaan:
+1. **Planning**: Mencatat requirement dan mengembangkan Software Requirement Specification (SRS).
+2. **Design**: Menyusun dokumen arsitektur software dan desain sistem.
+3. **Development**: Membagikan task ke developer dan menulis kode sesuai produk requirement.
+4. **Testing**: Menguji aplikasi untuk memastikan keamanan, kestabilan, dan kesesuaian dengan requirement.
+5. **Deployment**: Menyiapkan production environment dan mendeploy aplikasi ke lingkungan produksi.
+6. **Maintenance**: Memperbaiki bug dan melakukan pemeliharaan kode agar aplikasi tetap lancar dan stabil.
+
+- **SDLC**: Software Development Life Cycle, siklus hidup pengembangan perangkat lunak.
+- *Contoh*: Tahap testing memastikan aplikasi aman dan stabil sebelum masuk ke tahap deployment.
+_Basis: material, analysis_
+
+## 2. Tahap Planning dan Pengumpulan Requirement (`s2`)
+Tahap pertama SDLC adalah perencanaan yang dimulai dengan pencatatan requirement. Langkah-langkahnya meliputi:
+- **Identifikasi Stakeholders**: Melibatkan decision maker/PM, end user, system administrator, engineering, marketing, sales, dan customer support.
+- **Menetapkan Tujuan**: Menentukan Goals (jangka panjang) dan Objectives (terukur dan dapat ditindaklanjuti).
+- **Penggalian Kebutuhan**: Menggunakan survei, kuesioner, dan interview.
+- **Analisis dan Skala Prioritas**: Memastikan requirement konsisten, jelas, lengkap, serta menentukan prioritas (must-have vs nice-to-have).
+
+- **Goals**: Tujuan jangka panjang yang ingin dicapai oleh proyek.
+- **Objectives**: Target spesifik yang dapat ditindaklanjuti dan diukur.
+- *Analogi*: Pengumpulan kebutuhan melalui survei dan interview kepada stakeholders mirip seperti menyusun blueprint sebelum membangun rumah.
+_Basis: material, analysis_
+
+## 3. Dokumentasi Spesifikasi: SRS, URS, dan SysRS (`s3`)
+Hasil akhir dari tahap planning adalah dokumen spesifikasi penting:
+- **Software Requirements Specification (SRS)**: Menjelaskan fungsionalitas software, standar performa, ruang lingkup, functional requirement, non-functional requirement, dan external interface requirement.
+- **User Requirement Specification (URS)**: Mendeskripsikan kebutuhan bisnis dan ekspektasi user melalui User Stories, yang dikonfirmasi lewat User Acceptance Testing (UAT).
+- **System Requirement Specification (SysRS)**: Menjelaskan kemampuan sistem (system capabilities), interface, policy, regulation, personnel, performance, security, system acceptance criteria, dan hardware expectation.
+
+- **SRS**: Software Requirements Specification, dokumen spesifikasi kebutuhan perangkat lunak.
+- **URS**: User Requirement Specification, dokumen kebutuhan pengguna dan bisnis.
+- **SysRS**: System Requirement Specification, dokumen spesifikasi kapabilitas dan aturan sistem.
+- **UAT**: User Acceptance Testing, pengujian aplikasi oleh pengguna untuk memastikan kesesuaian kebutuhan.
+- *Contoh*: Non-functional requirement mencakup aspek kualitas sistem seperti security, performa, usability, dan reliability.
+_Basis: material, analysis_
+
+## Pertanyaan Terbuka
+- Bagaimana penerapan metodologi Agile atau Waterfall dalam mengelola perubahan requirement pada tahapan SDLC ini?

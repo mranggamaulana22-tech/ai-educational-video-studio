@@ -1,0 +1,30 @@
+{
+  "verdict": "revise",
+  "checks": {
+    "accuracy": true,
+    "storytelling": true,
+    "clarity": false,
+    "consistency": false,
+    "duration": false
+  },
+  "feedback_items": [
+    {
+      "segment_id": "seg-2",
+      "severity": "error",
+      "suggestion": "Pecah kalimat yang terlalu panjang dan kurangi kata-kata agar satu ide per kalimat serta tidak melebihi 14 kata per kalimat."
+    },
+    {
+      "segment_id": "seg-2",
+      "severity": "error",
+      "suggestion": "Perbaiki penulisan singkatan 'non fungsional' menjadi 'non-fungsional' atau sesuaikan dengan standar kapitalisasi jika diperlukan."
+    },
+    {
+      "segment_id": "global",
+      "severity": "warning",
+      "suggestion": "Panjang total naskah saat ini 97 kata, sesuaikan rentang kata agar mendekati target durasi jika diperlukan."
+    }
+  ],
+  "summary": "Naskah sudah akurat dan sesuai catatan, namun ada beberapa kalimat di segmen 2 yang terlalu panjang (>14 kata) dan perlu disederhanakan.",
+  "review_status": "belum lolos review",
+  "needs_human_review": true
+}

@@ -1,0 +1,19 @@
+{
+  "index": 2,
+  "idea": {
+    "day": 3,
+    "title": "Beda SRS, URS, dan SysRS Wajib Tahu",
+    "format": "comparison",
+    "hook": "Bingung membedakan dokumen spesifikasi proyek software?",
+    "angle": "Membandingkan tiga dokumen utama keluaran planning untuk memahami fungsi masing-masing.",
+    "topics": [
+      "Dokumen Spesifikasi: SRS, URS, dan SysRS"
+    ],
+    "section_ids": [
+      "s3"
+    ],
+    "why": "Menuntaskan materi dokumen spesifikasi sebagai output penting dari tahap perencanaan.",
+    "name": "string-hari3-beda-srs-urs-dan-sysrs-wajib",
+    "next": ""
+  }
+}

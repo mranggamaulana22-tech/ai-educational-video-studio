@@ -117,6 +117,7 @@ def main():
     ap.add_argument("material", nargs="?")
     ap.add_argument("analysis", nargs="?")
     ap.add_argument("out", nargs="?")
+    ap.add_argument("--session", help="Path opsional ke file .session.json hasil diskusi Tutor")
     ap.add_argument("--provider", default="gemini", choices=list(llm.PROVIDERS))
     ap.add_argument("--model")
     ap.add_argument("--self-test", action="store_true")
@@ -137,6 +138,10 @@ def main():
     analysis_data = json.loads(Path(a.analysis).read_text(encoding="utf-8-sig"))
     expected_ids = [c["id"] for c in analysis_data.get("key_concepts", []) if isinstance(c, dict) and "id" in c]
 
+    session_data = None
+    if a.session and Path(a.session).exists():
+        session_data = json.loads(Path(a.session).read_text(encoding="utf-8-sig"))
+
     system = (agentkit.ROOT / "prompts" / "learning_notes" / "v1.md").read_text(encoding="utf-8-sig")
     payload = {
         "material_text": text,
@@ -145,7 +150,7 @@ def main():
             "technical_terms": [t.get("term") for t in analysis_data.get("technical_terms", [])],
             "gaps": analysis_data.get("gaps", []),
         },
-        "session": None,
+        "session": session_data,
     }
     user = json.dumps(payload, ensure_ascii=False, indent=2)
 

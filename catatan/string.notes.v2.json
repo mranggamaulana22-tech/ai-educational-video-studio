@@ -1,0 +1,106 @@
+{
+  "title": "Catatan Belajar: Software Development Life Cycle (SDLC) dan Requirements",
+  "sections": [
+    {
+      "id": "s1",
+      "heading": "Tahapan dalam SDLC (Software Development Life Cycle)",
+      "body_md": "SDLC adalah siklus hidup pengembangan perangkat lunak yang terdiri dari enam tahapan utama:\n1. **Planning**: Mencatat requirement dan menyusun Software Requirements Specification (SRS).\n2. **Design**: Membuat dokumen arsitektur perangkat lunak dan desain sistem.\n3. **Development**: Membagikan tugas ke developer dan menulis kode sesuai produk requirement.\n4. **Testing**: Menguji aplikasi untuk memastikan keamanan, kestabilan, dan kesesuaian dengan requirement.\n5. **Deployment**: Menyiapkan production environment dan mendeploy aplikasi ke lingkungan produksi.\n6. **Maintenance**: Memperbaiki bug yang dilaporkan pengguna serta menjaga kestabilan kode aplikasi.",
+      "concept_ids": [
+        "c1"
+      ],
+      "key_terms": [
+        {
+          "term": "SDLC",
+          "definition": "Software Development Life Cycle, siklus hidup pengembangan perangkat lunak dari perencanaan hingga pemeliharaan."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "analogi",
+          "text": "Membangun gedung pencakar langit, mulai dari arsitek merencanakan kebutuhan, membuat cetak biru, membangun struktur, inspeksi kekuatan, hingga perawatan berkala."
+        },
+        {
+          "kind": "contoh",
+          "text": "Membangun aplikasi e-commerce dari tahap planning, design arsitektur, coding, testing oleh QA, deployment ke server cloud, hingga maintenance saat ada error."
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis",
+        "session"
+      ]
+    },
+    {
+      "id": "s2",
+      "heading": "Tahap Planning dan Pengelolaan Requirements",
+      "body_md": "Tahap awal SDLC berfokus pada pengumpulan kebutuhan perangkat lunak melalui beberapa langkah sistematis:\n- **Identifikasi Stakeholders**: Melibatkan decision maker/PM, end-user, system administrator, engineering, marketing, sales, dan customer support.\n- **Menetapkan Tujuan**: Menentukan *Goals* (tujuan jangka panjang) dan *Objectives* (tindakan terukur untuk mencapai target).\n- **Penggalian Kebutuhan**: Menggunakan survei, kuesioner, dan interview.\n- **Analisis & Konfirmasi**: Memastikan requirement konsisten, jelas, lengkap, serta ditentukan skala prioritasnya (high priority, nice to have).\n- **Dokumentasi**: Menuliskan requirement agar sejalan dengan goals dan mudah dipahami stakeholder.",
+      "concept_ids": [
+        "c2"
+      ],
+      "key_terms": [
+        {
+          "term": "Goals",
+          "definition": "Tujuan jangka panjang yang ingin dicapai."
+        },
+        {
+          "term": "Objectives",
+          "definition": "Target spesifik yang dapat ditindaklanjuti dan diukur."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "contoh",
+          "text": "Melakukan interview dan kuisioner kepada end-user dan stakeholder lain untuk merumuskan fitur yang dibutuhkan sistem."
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis",
+        "session"
+      ]
+    },
+    {
+      "id": "s3",
+      "heading": "Dokumen Spesifikasi: SRS, URS, dan SysRS",
+      "body_md": "Output dari tahap planning mencakup dokumen spesifikasi penting:\n1. **SRS (Software Requirements Specification)**: Berisi fungsionalitas software, standar performa, tujuan, ruang lingkup, batasan, serta kategori requirement:\n   - *Functional Requirement*: Fitur utama yang harus bisa dilakukan sistem.\n   - *Non-functional Requirement*: Kualitas sistem seperti keamanan, performa, usability, dan reliability.\n   - *External Interface Requirement & System Feature*\n2. **URS (User Requirements Specification)**: Mendeskripsikan kebutuhan bisnis dan ekspektasi user melalui *User Stories*. Dikonfirmasi melalui **UAT (User Acceptance Testing)** oleh pengguna atau perwakilan pengguna.\n3. **SysRS (System Requirements Specification)**: Menjelaskan kemampuan sistem (System capabilities), interface, policy, regulation, personnel, performance, security, system acceptance criteria, dan hardware expectation.",
+      "concept_ids": [
+        "c3"
+      ],
+      "key_terms": [
+        {
+          "term": "SRS",
+          "definition": "Software Requirements Specification, dokumen spesifikasi kebutuhan perangkat lunak."
+        },
+        {
+          "term": "URS",
+          "definition": "User Requirements Specification, dokumen yang mendeskripsikan kebutuhan bisnis dan ekspektasi user."
+        },
+        {
+          "term": "SysRS",
+          "definition": "System Requirements Specification, dokumen yang merinci kapabilitas, aturan, dan standar teknis sistem."
+        },
+        {
+          "term": "UAT",
+          "definition": "User Acceptance Testing, pengujian yang dilakukan oleh pengguna untuk memastikan aplikasi sesuai kebutuhan."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "analogi",
+          "text": "Buku petunjuk dan cetak biru detail sebelum sebuah pabrik merakit mobil baru."
+        },
+        {
+          "kind": "contoh",
+          "text": "Functional requirement pada ojek online: tombol 'Pesan' mencari driver. Non-functional requirement: tombol harus merespons di bawah 2 detik dengan data terenkripsi."
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis",
+        "session"
+      ]
+    }
+  ],
+  "open_questions": [],
+  "omitted_concepts": []
+}

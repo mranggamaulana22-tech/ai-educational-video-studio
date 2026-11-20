@@ -1,10 +1,12 @@
 """API backend AI Educational Video Studio. Jalankan:  uvicorn app.main:app --reload  (dari apps/backend)"""
 from contextlib import asynccontextmanager
+import io
+import json
 from pathlib import Path
 import subprocess
 import sys
 
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
+from fastapi import BackgroundTasks, Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -13,6 +15,10 @@ from sqlalchemy.orm import Session
 
 from . import config, db, service, stages
 from .models import Artifact, Run, Series, Video
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
+import agentkit  # noqa: E402
+import llm  # noqa: E402
 
 
 @asynccontextmanager
@@ -75,6 +81,10 @@ class SelectIdeaIn(BaseModel):
     index: int = 0
 
 
+class TutorTurnIn(BaseModel):
+    message: str
+
+
 def get_video(session: Session, video_id: int) -> Video:
     v = session.get(Video, video_id)
     if not v:
@@ -101,6 +111,195 @@ def video_dict(session, v: Video):
 def labels(session, v: Video):
     s = session.get(Series, v.series_id) if v.series_id else None
     return (f"HARI {v.day}/{s.total_days}" if s else f"HARI {v.day}"), (s.course if s else "")
+
+
+def _read_tutor_sources(video: Video):
+    p = stages.paths(video.name)
+    if not p["material"].exists():
+        raise HTTPException(409, "Materi belum tersedia.")
+    if not p["analysis"].exists():
+        raise HTTPException(409, "Analisis materi belum tersedia.")
+    material = agentkit.read_text(str(p["material"]))
+    analysis = json.loads(p["analysis"].read_text(encoding="utf-8-sig"))
+    return p, material, analysis
+
+
+def _thin_concept_ids(analysis: dict):
+    ids = set()
+    for item in analysis.get("needs_expansion", []) or []:
+        if isinstance(item, dict) and item.get("concept_id"):
+            ids.add(str(item["concept_id"]))
+    for item in analysis.get("gaps", []) or []:
+        text = str(item).lower()
+        for concept in analysis.get("key_concepts", []) or []:
+            if concept.get("name", "").lower() and concept["name"].lower() in text:
+                ids.add(str(concept["id"]))
+    return ids
+
+
+def _initial_tutor_session(analysis: dict):
+    thin_ids = _thin_concept_ids(analysis)
+    concepts = []
+    for concept in analysis.get("key_concepts", []) or []:
+        if not isinstance(concept, dict):
+            continue
+        cid = str(concept.get("id", "")).strip()
+        if not cid:
+            continue
+        concepts.append({
+            "id": cid,
+            "name": str(concept.get("name", cid)),
+            "status": "belum",
+            "is_thin": cid in thin_ids,
+            "analogies": [],
+            "unverified_notes": [],
+        })
+    return {
+        "video_id": None,
+        "ended": False,
+        "summary": "",
+        "concepts": concepts,
+        "messages": [],
+    }
+
+
+def _ask_tutor_json(video: Video, material: str, analysis: dict, session_data: dict):
+    system = (
+        "Kamu adalah Tutor-Led untuk pembelajaran. Memimpin percakapan berdasarkan analysis.json: "
+        "buka dengan peta singkat konsep dan tandai konsep tipis. Jelaskan satu konsep dengan analogi dan "
+        "contoh kerja Software Engineer. Lempar maksimal satu pertanyaan cek pemahaman saat diperlukan, "
+        "bukan kuis berat. Pengguna bebas menyela. Dilarang mengarang fakta di luar materi; tandai fakta tambahan "
+        "sebagai unverified_facts. Balas HANYA JSON dengan schema: "
+        '{"reply":"...","concept_updates":[{"id":"c1","status":"paham","new_analogies":[],"unverified_facts":[]}],'
+        '"session_summary":"..."}'
+    )
+    payload = {
+        "material": material,
+        "analysis": analysis,
+        "session": session_data,
+    }
+    try:
+        result = agentkit.ask(
+            video.provider,
+            video.model or None,
+            system,
+            json.dumps(payload, ensure_ascii=False),
+            lambda d: "" if isinstance(d, dict) and isinstance(d.get("reply"), str) else "Schema tutor tidak valid.",
+        )
+    except SystemExit as exc:
+        raise HTTPException(502, str(exc)) from exc
+    return result
+
+
+def _save_tutor_session(p: dict, session_data: dict):
+    p["session"].parent.mkdir(parents=True, exist_ok=True)
+    p["session"].write_text(json.dumps(session_data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _apply_tutor_updates(session_data: dict, result: dict):
+    by_id = {str(c["id"]): c for c in session_data.get("concepts", [])}
+    for update in result.get("concept_updates", []) or []:
+        if not isinstance(update, dict):
+            continue
+        concept = by_id.get(str(update.get("id", "")))
+        if not concept:
+            continue
+        if update.get("status") in {"belum", "sebagian", "paham"}:
+            concept["status"] = update["status"]
+        for analogy in update.get("new_analogies", []) or []:
+            if analogy and analogy not in concept["analogies"]:
+                concept["analogies"].append(str(analogy))
+        for fact in update.get("unverified_facts", []) or []:
+            if fact and fact not in concept["unverified_notes"]:
+                concept["unverified_notes"].append(str(fact))
+    session_data["summary"] = str(result.get("session_summary") or session_data.get("summary") or "")
+
+
+@app.get("/videos/{video_id}/tutor/session")
+def get_tutor_session(video_id: int, session: Session = Depends(db.get_session)):
+    video = get_video(session, video_id)
+    p, material, analysis = _read_tutor_sources(video)
+    if p["session"].exists():
+        try:
+            session_data = json.loads(p["session"].read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError):
+            session_data = None
+    else:
+        session_data = None
+    if not session_data:
+        session_data = _initial_tutor_session(analysis)
+        session_data["video_id"] = video_id
+        result = _ask_tutor_json(video, material, analysis, session_data)
+        _apply_tutor_updates(session_data, result)
+        session_data["messages"].append({
+            "role": "tutor",
+            "text": str(result.get("reply", "")),
+            "verifikasi_tags": [
+                fact for concept in session_data["concepts"] for fact in concept["unverified_notes"]
+            ],
+        })
+        _save_tutor_session(p, session_data)
+    return session_data
+
+
+@app.post("/videos/{video_id}/tutor/turn")
+def tutor_turn(video_id: int, body: TutorTurnIn, session: Session = Depends(db.get_session)):
+    video = get_video(session, video_id)
+    p, material, analysis = _read_tutor_sources(video)
+    if not body.message.strip():
+        raise HTTPException(400, "Pesan tidak boleh kosong.")
+    session_data = get_tutor_session(video_id, session)
+    session_data["messages"].append({"role": "user", "text": body.message.strip(), "verifikasi_tags": []})
+    result = _ask_tutor_json(video, material, analysis, session_data)
+    _apply_tutor_updates(session_data, result)
+    session_data["messages"].append({
+        "role": "tutor",
+        "text": str(result.get("reply", "")),
+        "verifikasi_tags": [
+            fact for concept in session_data["concepts"] for fact in concept["unverified_notes"]
+        ],
+    })
+    _save_tutor_session(p, session_data)
+    return session_data
+
+
+@app.post("/videos/{video_id}/tutor/finish")
+def finish_tutor_session(video_id: int, tasks: BackgroundTasks, session: Session = Depends(db.get_session)):
+    video = get_video(session, video_id)
+    p, _material, _analysis = _read_tutor_sources(video)
+    session_data = get_tutor_session(video_id, session)
+    session_data["ended"] = True
+    _save_tutor_session(p, session_data)
+
+    busy = session.scalars(select(Run).where(Run.video_id == video.id, Run.status.in_(["queued", "running"]))).first()
+    if busy:
+        raise HTTPException(409, f"Tahap '{busy.stage}' masih berjalan (run {busy.id}).")
+    why = service.can_run(session, video, "notes")
+    if why:
+        raise HTTPException(409, why)
+    run = Run(video_id=video.id, stage="notes")
+    session.add(run)
+    session.commit()
+    day_label, course = labels(session, video)
+    tasks.add_task(service.execute_run, db.SessionLocal, run.id, day_label, course)
+    return {"status": "queued", "session": session_data, "run_id": run.id}
+
+
+@app.post("/videos/{video_id}/tutor/reset")
+def reset_tutor_session(video_id: int, session: Session = Depends(db.get_session)):
+    video = get_video(session, video_id)
+    p, material, analysis = _read_tutor_sources(video)
+    session_data = _initial_tutor_session(analysis)
+    session_data["video_id"] = video_id
+    result = _ask_tutor_json(video, material, analysis, session_data)
+    _apply_tutor_updates(session_data, result)
+    session_data["messages"].append({
+        "role": "tutor",
+        "text": str(result.get("reply", "")),
+        "verifikasi_tags": [],
+    })
+    _save_tutor_session(p, session_data)
+    return session_data
 
 
 @app.get("/voices")
@@ -195,6 +394,50 @@ def _save_text(session, v: Video, stage: str, text: str):
 def put_material(video_id: int, body: TextIn, session: Session = Depends(db.get_session)):
     """Simpan materi mentah sebagai pemicu awal alur otomatis (material -> analysis -> notes)."""
     return _save_text(session, get_video(session, video_id), "material", body.text)
+
+
+def _extract_material_text(filename: str, raw: bytes) -> str:
+    ext = Path(filename or "").suffix.lower()
+    if ext in {".txt", ".md"}:
+        return raw.decode("utf-8", errors="replace").strip()
+    if ext == ".docx":
+        import docx
+
+        doc = docx.Document(io.BytesIO(raw))
+        parts = [p.text.strip() for p in doc.paragraphs if p.text.strip()]
+        for table in doc.tables:
+            for row in table.rows:
+                cells = [c.text.strip() for c in row.cells if c.text.strip()]
+                if cells:
+                    parts.append(" | ".join(cells))
+        return "\n\n".join(parts).strip()
+    if ext == ".pdf":
+        from pypdf import PdfReader
+
+        reader = PdfReader(io.BytesIO(raw))
+        pages = [(page.extract_text() or "").strip() for page in reader.pages]
+        return "\n\n".join(p for p in pages if p).strip()
+    raise HTTPException(
+        400,
+        f"Format file '{ext or 'tanpa ekstensi'}' belum didukung. Gunakan .docx, .pdf, .txt, atau .md.",
+    )
+
+
+@app.post("/videos/{video_id}/material/upload")
+async def upload_material(
+    video_id: int,
+    file: UploadFile = File(...),
+    session: Session = Depends(db.get_session),
+):
+    """Unggah dokumen (.docx, .pdf, .txt, .md), ekstrak teksnya, dan simpan sebagai artifak material baru."""
+    video = get_video(session, video_id)
+    raw = await file.read()
+    if not raw:
+        raise HTTPException(400, "File yang diunggah kosong.")
+    extracted = _extract_material_text(file.filename or "", raw)
+    if not extracted:
+        raise HTTPException(400, "Tidak ada teks yang dapat diekstrak dari dokumen tersebut.")
+    return _save_text(session, video, "material", extracted)
 
 
 @app.put("/videos/{video_id}/notes")

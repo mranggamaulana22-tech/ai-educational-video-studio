@@ -61,16 +61,28 @@ def check(cond, msg):
 v = c.post("/videos", json={"name": "full-v13", "title": "SDLC Lengkap", "day": 1}).json()
 vid = v["id"]
 
-# 1. Input materi mentah -> advance otomatis menjalankan analysis + notes lalu berhenti di gate 'notes'
+# 1. Input materi mentah -> advance otomatis menjalankan analysis lalu berhenti di depan Notes
 c.put(f"/videos/{vid}/material", json={"text": "SDLC adalah siklus hidup pengembangan perangkat lunak."})
 c.post(f"/videos/{vid}/advance")
 st = c.get(f"/videos/{vid}").json()
 check(st["stages"]["analysis"]["status"] == "draft", "analysis otomatis selesai")
-check(st["stages"]["notes"]["status"] == "draft", "notes otomatis selesai")
+check(st["stages"]["notes"]["status"] == "empty", "notes belum jalan sebelum sesi Tutor dibuat")
+check(st["waiting_approval"] is None, "advance berhenti di depan Notes, bukan di approval gate")
+
+# 2. Membuat session Tutor -> advance menjalankan notes lalu berhenti di gate 'notes'
+p = stages.paths("full-v13")
+p["session"].parent.mkdir(parents=True, exist_ok=True)
+p["session"].write_text(
+    json.dumps({"video_id": vid, "ended": True, "summary": "Sesi Tutor selesai", "concepts": [], "messages": []}),
+    encoding="utf-8",
+)
+c.post(f"/videos/{vid}/advance")
+st = c.get(f"/videos/{vid}").json()
+check(st["stages"]["notes"]["status"] == "draft", "notes otomatis selesai setelah sesi Tutor")
 check(st["waiting_approval"] == "notes", "orchestrator berhenti di titik persetujuan notes")
 check(st["stages"]["script"]["status"] == "empty", "script belum jalan sebelum notes disetujui")
 
-# 2. Approve notes -> advance otomatis menjalankan ideas lalu berhenti di gate 'ideas'
+# 3. Approve notes -> advance otomatis menjalankan ideas lalu berhenti di gate 'ideas'
 c.post(f"/videos/{vid}/approve/notes")
 c.post(f"/videos/{vid}/advance")
 st = c.get(f"/videos/{vid}").json()

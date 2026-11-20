@@ -1,0 +1,21 @@
+{
+  "title": "Beda Dokumen SRS URS SysRS",
+  "segments": [
+    {
+      "id": "seg-1",
+      "role": "hook",
+      "text": "Bingung membedakan dokumen spesifikasi proyek software?"
+    },
+    {
+      "id": "seg-2",
+      "role": "body",
+      "text": "Mari kita bandingkan tiga dokumen penting dari tahap planning SDLC. Pertama ada URS atau User Requirements Specification. Dokumen ini fokus mendeskripsikan kebutuhan bisnis dan ekspektasi user lewat user stories. Kedua ada SRS atau Software Requirements Specification. Dokumen ini merinci fungsionalitas software, batasan, serta requirement fungsional dan non fungsional. Ketiga ada SysRS atau System Requirements Specification. Dokumen ini menjelaskan kapabilitas teknis sistem, hardware, hingga standar keamanan dan regulasi."
+    },
+    {
+      "id": "seg-3",
+      "role": "closing",
+      "text": "Ketiga dokumen ini jadi fondasi suksesnya pengembangan aplikasi. Jangan lupa follow untuk tips belajar software engineering berikutnya."
+    }
+  ],
+  "script": "Bingung membedakan dokumen spesifikasi proyek software? Mari kita bandingkan tiga dokumen penting dari tahap planning SDLC. Pertama ada URS atau User Requirements Specification. Dokumen ini fokus mendeskripsikan kebutuhan bisnis dan ekspektasi user lewat user stories. Kedua ada SRS atau Software Requirements Specification. Dokumen ini merinci fungsionalitas software, batasan, serta requirement fungsional dan non fungsional. Ketiga ada SysRS atau System Requirements Specification. Dokumen ini menjelaskan kapabilitas teknis sistem, hardware, hingga standar keamanan dan regulasi. Ketiga dokumen ini jadi fondasi suksesnya pengembangan aplikasi. Jangan lupa follow untuk tips belajar software engineering berikutnya."
+}
