@@ -1,5 +1,107 @@
 # Laporan Implementasi AI Learning Tutor (Tutor-Led)
 
+## Ringkasan Perubahan Seluruh Sesi Implementasi
+
+Halaman ini mencatat seluruh peningkatan yang diterapkan pada sistem selama sesi pengembangan Gudang dan AI Learning Tutor.
+
+### A. Implementasi AI Learning Tutor
+
+1. Menambahkan mode `Sesi Belajar (Tutor)` pada tahap `3. Notes`.
+2. Memindahkan aturan Tutor-Led ke `prompts/learning_tutor/v1.md`.
+3. Memastikan Tutor membuka sesi dengan peta konsep dan penanda konsep tipis.
+4. Membatasi penjelasan Tutor menjadi satu konsep per giliran.
+5. Menambahkan analogi dan contoh nyata untuk Software Engineer.
+6. Membatasi pertanyaan cek pemahaman menjadi maksimal satu per giliran.
+7. Menolak fakta yang tidak didukung materi dan pencatatan `unverified_facts`.
+8. Menambahkan validator `check_tutor_turn(d)` untuk:
+   - `reply`
+   - `concept_updates`
+   - `id` dan `status` konsep
+   - `new_analogies`
+   - `unverified_facts`
+   - `session_summary`
+9. Membatasi konteks LLM menjadi `summary`, status `concepts`, dan 6 giliran terakhir.
+10. Mengubah `verifikasi_tags` agar hanya berisi fakta baru dari giliran berjalan.
+11. Menambahkan endpoint `POST /videos/{video_id}/tutor/finish`.
+12. Menambahkan endpoint `POST /videos/{video_id}/tutor/reset`.
+13. Menambahkan endpoint `POST /videos/{video_id}/tutor/skip`.
+14. Menghubungkan tombol **Lewati Sesi → Langsung Susun Catatan** ke endpoint skip.
+15. Memastikan sesi dilewati mengirim `"session": null` ke Learning Notes Agent.
+16. Memperbaiki layout chat agar area pesan, sidebar, dan tombol aksi memiliki scroll serta tinggi yang tepat.
+
+### B. Perbaikan Learning Notes Agent
+
+1. Menambahkan argumen CLI `--session`.
+2. Mengirim analogi sesi ke `examples` pada section catatan yang sesuai.
+3. Menandai konsep berstatus `belum` dengan penanda jelas `BELUM DIBAHAS`.
+4. Memasukkan konsep belum dibahas ke `omitted_concepts` bila tidak dimasukkan ke section.
+5. Memastikan kontrak Learning Notes tetap mencakup seluruh konsep hasil analisis.
+6. Menambahkan self-test melalui `python tools/run_learning_notes.py --self-test`.
+
+### C. Isolasi Storage dan Gudang Proyek
+
+1. Memindahkan file kerja proyek ke `storage/projects/{slug}/`.
+2. Menetapkan file kerja tersendiri untuk material, analisis, session, catatan, rencana, naskah, review, storyboard, dan render.
+3. Menempatkan audio dan word timing pada lokasi Remotion agar dapat dibaca langsung.
+4. Menyimpan artifact versi lama pada folder proyek.
+5. Menambahkan `migrate_legacy_files(name)` untuk memindahkan file lama dari:
+   - `catatan/`
+   - `rencana/`
+   - `naskah/`
+   - output Remotion lama
+6. Menambahkan endpoint `GET /storage/overview`.
+7. Menambahkan endpoint preview teks, JSON, audio, dan video.
+8. Menambahkan endpoint arsip proyek.
+9. Menambahkan endpoint penghapusan arsip.
+10. Menambahkan endpoint penghapusan proyek beserta record database dan file aktif.
+11. Menambahkan komponen frontend `StorageModal.jsx`.
+12. Menambahkan tombol **📦 Gudang** pada top-bar.
+13. Menambahkan Sleep Mode 3D saat modal Gudang terbuka.
+
+### D. Arsip dan Hapus Data
+
+1. Arsip proyek dibuat pada `storage/archive/{slug}-{YYYYMMDD-HHMMSS}/`.
+2. Setiap arsip menyertakan `manifest.json` berisi:
+   - `video_id`
+   - `slug`
+   - `title`
+   - `archived_at`
+   - daftar `files`
+   - ukuran dan SHA-256
+3. Salinan proyek dan external audio/words diverifikasi sebelum direktori aktif dihapus.
+4. Tab Arsip menampilkan daftar folder beserta isinya.
+5. Penghapusan arsip memakai konfirmasi dua langkah.
+6. Penghapusan arsip dibatasi agar hanya folder turunan `storage/archive/` yang dapat dihapus.
+7. Penghapusan proyek memakai konfirmasi dua langkah.
+8. Penghapusan proyek menghapus data database, run, artifact, folder proyek, audio, dan word timing.
+
+### E. Pratinjau dan Riwayat Versi
+
+1. Gudang menampilkan file kerja aktif dan file versi lama.
+2. Label **Versi Draft Naskah**, **Versi Storyboard**, dan **Versi Word Timing** berasal dari snapshot artifact pada database.
+3. Angka `v1`, `v2`, dan seterusnya menunjukkan urutan revisi.
+4. File tanpa label `Versi` adalah file kerja aktif terbaru.
+5. Video `render.mp4` ditambahkan ke daftar Gudang sebagai file media.
+6. Versi render lama dapat dipratinjau dari record artifact.
+7. Migrasi kompatibilitas mengenali render lama dari `storage/{slug}/render/` dan output Remotion lama.
+
+### F. Penyederhanaan HUD
+
+1. Tombol **Scan File** dihapus dari top-bar.
+2. Tombol **Upload Dokumen** dihapus dari top-bar.
+3. Handler upload dan scan beserta input file pendukung dihapus dari komponen utama.
+
+### G. Validasi yang Telah Dijalankan
+
+1. `python tools/run_learning_notes.py --self-test`: lulus.
+2. Compile Python backend: lulus.
+3. Frontend production build: lulus.
+4. Backend smoke test: seluruh pemeriksaan lulus.
+5. Orchestrator workflow test: seluruh tahap dan approval lulus.
+6. Smoke test Storage Vault: lulus.
+7. Smoke test penghapusan arsip: lulus.
+8. Smoke test pratinjau video render: lulus.
+
 ## Ringkasan
 Fitur AI Learning Tutor diterapkan pada tahap `3. Notes`. Tutor memimpin diskusi berdasarkan materi mentah dan hasil analisis, menyimpan perkembangan konsep serta riwayat giliran di `catatan/{name}.session.json`, lalu meneruskan konteks yang relevan ke Learning Notes Agent.
 
