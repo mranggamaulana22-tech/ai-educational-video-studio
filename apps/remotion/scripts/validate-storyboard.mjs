@@ -211,7 +211,7 @@ function checkValue(value, spec, where) {
       if (
         !Array.isArray(value) ||
         value.length < 2 ||
-        value.length > 5 ||
+        value.length > 4 ||
         !value.every(
           (n) =>
             n &&
@@ -222,7 +222,7 @@ function checkValue(value, spec, where) {
             okColor(n.color),
         )
       ) {
-        err(`${where}: 2-5 node, tiap node wajib punya id, label, serta sublabel/icon/color opsional`);
+        err(`${where}: 2-4 node, tiap node wajib punya id, label, serta sublabel/icon/color opsional`);
       }
       break;
     case "diagramEdges":
@@ -359,6 +359,9 @@ scenes.forEach((s, i) => {
   }
 
   if (compId === "DiagramScene" && Array.isArray(props.nodes)) {
+    if (props.layout !== "column") {
+      err(`${w}: DiagramScene.props.layout wajib "column" untuk tampilan vertikal 9:16`);
+    }
     const nodeIds = new Set(props.nodes.map((n) => n?.id).filter(Boolean));
     if (nodeIds.size !== props.nodes.length) {
       err(`${w}: id pada DiagramScene.nodes harus unik`);
@@ -367,6 +370,9 @@ scenes.forEach((s, i) => {
       for (const edge of props.edges) {
         if (edge && (!nodeIds.has(edge.from) || !nodeIds.has(edge.to))) {
           err(`${w}: DiagramScene.edges (${edge.from} -> ${edge.to}) merujuk id node yang tidak ada`);
+        }
+        if (edge?.label !== undefined && (typeof edge.label !== "string" || edge.label.length > 12)) {
+          err(`${w}: DiagramScene.edges.label maksimal 12 karakter`);
         }
       }
     }
