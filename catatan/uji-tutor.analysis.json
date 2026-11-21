@@ -1,0 +1,88 @@
+{
+  "topics": [
+    {
+      "id": "t1",
+      "title": "Software Development Methodologies",
+      "subtopics": [
+        "Waterfall",
+        "V Shape Model",
+        "Agile"
+      ]
+    }
+  ],
+  "key_concepts": [
+    {
+      "id": "c1",
+      "topic_id": "t1",
+      "name": "Waterfall",
+      "summary": "Metodologi pengembangan perangkat lunak linear berurutan dari Plan hingga Maintain, cocok untuk proyek dengan kebutuhan stabil."
+    },
+    {
+      "id": "c2",
+      "topic_id": "t1",
+      "name": "V Shape Model",
+      "summary": "Model pengembangan di mana setiap tahapan perencanaan dan desain memiliki pasangan tahapan pengujian yang berpusat pada coding."
+    },
+    {
+      "id": "c3",
+      "topic_id": "t1",
+      "name": "Agile",
+      "summary": "Metodologi iteratif yang fleksibel terhadap perubahan dengan siklus berputar melibatkan feedback pengguna secara cepat."
+    }
+  ],
+  "needs_expansion": [
+    {
+      "concept_id": "c3",
+      "reason": "Peran product owner dalam menentukan skala prioritas perlu dijelaskan lebih mendalam."
+    }
+  ],
+  "gaps": [
+    "Detail teknis mengenai bagaimana feedback diimplementasikan dalam Agile tidak dijelaskan secara rinci."
+  ],
+  "possible_misconceptions": [
+    {
+      "concept_id": "c1",
+      "statement": "Waterfall adalah metodologi yang paling bagus untuk semua jenis proyek modern.",
+      "issue": "Waterfall kurang fleksibel terhadap perubahan dan tidak ideal untuk proyek yang spesifikasinya sering berubah."
+    }
+  ],
+  "relations": [
+    {
+      "from": "c2",
+      "to": "c1",
+      "type": "depends_on"
+    }
+  ],
+  "technical_terms": [
+    {
+      "term": "Waterfall",
+      "needs_explanation": false
+    },
+    {
+      "term": "V shape model",
+      "needs_explanation": false
+    },
+    {
+      "term": "Agile",
+      "needs_explanation": false
+    },
+    {
+      "term": "ERP",
+      "needs_explanation": true
+    },
+    {
+      "term": "SaaS",
+      "needs_explanation": true
+    }
+  ],
+  "suggested_questions": [
+    "Apa perbedaan utama antara Waterfall dan Agile dalam hal fleksibilitas perubahan?",
+    "Kapan waktu yang tepat menggunakan V Shape Model dibandingkan Waterfall?"
+  ],
+  "sources_to_verify": [
+    {
+      "claim": "V shape model memiliki pasangan tahapan pengujian untuk setiap tahapan di atas coding.",
+      "reason": "Memastikan kesesuaian dengan standar industri umum untuk V-Model."
+    }
+  ]
+}

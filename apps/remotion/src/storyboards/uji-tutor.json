@@ -1,0 +1,358 @@
+{
+  "schemaVersion": "1.3",
+  "video": {
+    "title": "3 Metodologi Pengembangan Perangkat Lunak Startup",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 44920,
+    "badge": {
+      "day": "Day 1",
+      "course": "Software Dev"
+    }
+  },
+  "audio": {
+    "src": "audio/uji-tutor.wav",
+    "durationMs": 44920
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 7500,
+      "componentId": "IconHero",
+      "props": {
+        "icon": "rocket",
+        "title": "Bikin Aplikasi Startup?",
+        "subtitle": "3 Metodologi Penting",
+        "color": "teal",
+        "motion": "float"
+      },
+      "transition": "fade",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-002",
+      "startMs": 7500,
+      "durationMs": 5000,
+      "componentId": "CardList",
+      "props": {
+        "heading": "Metodologi Waterfall",
+        "items": [
+          {
+            "text": "Linear & berurutan",
+            "icon": "folder",
+            "color": "orange"
+          },
+          {
+            "text": "Website company profile",
+            "icon": "check",
+            "color": "violet"
+          }
+        ]
+      },
+      "transition": "slide",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-003",
+      "startMs": 12500,
+      "durationMs": 5000,
+      "componentId": "IconGrid",
+      "props": {
+        "heading": "V-Shape Model",
+        "items": [
+          {
+            "icon": "target",
+            "label": "Pengujian berpasangan",
+            "color": "green"
+          },
+          {
+            "icon": "server",
+            "label": "Software medis & penerbangan",
+            "color": "teal"
+          }
+        ]
+      },
+      "transition": "zoom",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-004",
+      "startMs": 17500,
+      "durationMs": 7500,
+      "componentId": "CompareCards",
+      "props": {
+        "heading": "Metodologi Agile",
+        "left": {
+          "title": "Iteratif",
+          "color": "orange",
+          "icon": "chat",
+          "items": [
+            "Fleksibel",
+            "Rilis bertahap"
+          ]
+        },
+        "right": {
+          "title": "Target",
+          "color": "teal",
+          "icon": "star",
+          "items": [
+            "Feedback pengguna",
+            "SaaS / E-Commerce"
+          ]
+        }
+      },
+      "transition": "wipe",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-005",
+      "startMs": 25000,
+      "durationMs": 6000,
+      "componentId": "FlowSteps",
+      "props": {
+        "heading": "Alur Agile",
+        "steps": [
+          {
+            "label": "Iteratif",
+            "icon": "gear",
+            "color": "teal"
+          },
+          {
+            "label": "Rilis",
+            "icon": "rocket",
+            "color": "orange"
+          },
+          {
+            "label": "Feedback",
+            "icon": "chat",
+            "color": "green"
+          }
+        ]
+      },
+      "transition": "slide",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-006",
+      "startMs": 31000,
+      "durationMs": 6920,
+      "componentId": "CtaCard",
+      "props": {
+        "title": "Pilih yang Pas",
+        "subtitle": "Jangan lupa follow akun ini untuk tips teknologi lainnya!",
+        "button": "Follow Akun",
+        "color": "teal",
+        "icon": "bulb"
+      },
+      "transition": "fade",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-007",
+      "startMs": 37920,
+      "durationMs": 7000,
+      "componentId": "IconHero",
+      "props": {
+        "icon": "star",
+        "title": "Tips Teknologi",
+        "subtitle": "Follow untuk info lainnya",
+        "color": "orange",
+        "motion": "pulse"
+      },
+      "transition": "zoom",
+      "componentVersion": "1.0.0"
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "sub-001",
+      "startMs": 250,
+      "endMs": 3430,
+      "text": "Bikin aplikasi startup paling pas pake cara apa?",
+      "wordStartsMs": [
+        250,
+        580,
+        1040,
+        1520,
+        2100,
+        2460,
+        2700,
+        2920
+      ]
+    },
+    {
+      "id": "sub-002",
+      "startMs": 3900,
+      "endMs": 7720,
+      "text": "Mari kita bahas 3 metodologi pengembangan perangkat lunak yang penting.",
+      "wordStartsMs": [
+        3900,
+        4200,
+        4480,
+        4780,
+        4980,
+        5600,
+        6020,
+        6400,
+        6740,
+        6960
+      ]
+    },
+    {
+      "id": "sub-003",
+      "startMs": 8050,
+      "endMs": 12210,
+      "text": "Pertama ada waterfall yang bekerja secara linear dan berurutan.",
+      "wordStartsMs": [
+        8050,
+        8420,
+        8920,
+        9520,
+        10000,
+        10420,
+        10760,
+        11120,
+        11520
+      ]
+    },
+    {
+      "id": "sub-004",
+      "startMs": 12750,
+      "endMs": 17390,
+      "text": "Metodologi ini sangat cocok untuk proyek stabil seperti website company profile.",
+      "wordStartsMs": [
+        12750,
+        13320,
+        13560,
+        13860,
+        14260,
+        14500,
+        14740,
+        15160,
+        15700,
+        16340,
+        16680
+      ]
+    },
+    {
+      "id": "sub-005",
+      "startMs": 17890,
+      "endMs": 22230,
+      "text": "Kedua ada V-shape model yang memiliki pasangan tahap pengujian.",
+      "wordStartsMs": [
+        17890,
+        18280,
+        18820,
+        19360,
+        20200,
+        20320,
+        20740,
+        21220,
+        21560
+      ]
+    },
+    {
+      "id": "sub-006",
+      "startMs": 22660,
+      "endMs": 26390,
+      "text": "Model ini sangat pas untuk software medis dan sistem penerbangan.",
+      "wordStartsMs": [
+        22660,
+        22820,
+        23120,
+        23400,
+        23740,
+        24160,
+        24460,
+        25000,
+        25260,
+        25560
+      ]
+    },
+    {
+      "id": "sub-007",
+      "startMs": 26820,
+      "endMs": 30730,
+      "text": "Ketiga, ada agile yang bersifat iteratif dan fleksibel.",
+      "wordStartsMs": [
+        26820,
+        27540,
+        27780,
+        28650,
+        28760,
+        29220,
+        29760,
+        30020
+      ]
+    },
+    {
+      "id": "sub-008",
+      "startMs": 31100,
+      "endMs": 34190,
+      "text": "Kita rilis fitur bertahap untuk dapat feedback pengguna.",
+      "wordStartsMs": [
+        31100,
+        31340,
+        31740,
+        32080,
+        32640,
+        32920,
+        33200,
+        33520
+      ]
+    },
+    {
+      "id": "sub-009",
+      "startMs": 34670,
+      "endMs": 38150,
+      "text": "Cara ini sangat cocok untuk aplikasi SaaS atau e-commerce.",
+      "wordStartsMs": [
+        34670,
+        34820,
+        35200,
+        35620,
+        36140,
+        36300,
+        36780,
+        37140,
+        37560
+      ]
+    },
+    {
+      "id": "sub-010",
+      "startMs": 38750,
+      "endMs": 41130,
+      "text": "Pilih metodologi yang paling pas untuk proyek kita ya.",
+      "wordStartsMs": [
+        38750,
+        39000,
+        39540,
+        39600,
+        39820,
+        40080,
+        40320,
+        40620,
+        40820
+      ]
+    },
+    {
+      "id": "sub-011",
+      "startMs": 41470,
+      "endMs": 44730,
+      "text": "Jangan lupa follow akun ini untuk tips teknologi lainnya.",
+      "wordStartsMs": [
+        41470,
+        41680,
+        42020,
+        42480,
+        42860,
+        43080,
+        43380,
+        43660,
+        44200
+      ]
+    }
+  ]
+}

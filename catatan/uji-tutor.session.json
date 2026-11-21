@@ -1,0 +1,77 @@
+{
+  "video_id": 2,
+  "ended": true,
+  "skipped": false,
+  "summary": "Sesi telah selesai membahas seluruh konsep: Waterfall, V Shape Model, dan Agile. Pengguna telah memahami karakteristik, kelebihan, kekurangan, serta analogi dari masing-masing metodologi pengembangan perangkat lunak.",
+  "concepts": [
+    {
+      "id": "c1",
+      "name": "Waterfall",
+      "status": "paham",
+      "is_thin": false,
+      "analogies": [
+        "Membangun jembatan di mana setiap tahap harus selesai sepenuhnya sebelum lanjut dan tidak bisa mengubah pondasi setelah cor beton mengering"
+      ],
+      "unverified_notes": []
+    },
+    {
+      "id": "c2",
+      "name": "V Shape Model",
+      "status": "paham",
+      "is_thin": false,
+      "analogies": [
+        "Merakit mesin mobil presisi tinggi di mana setiap komponen kecil harus diuji di bengkel khusus sebelum dirakit",
+        "Mencegah kesalahan sejak dini dengan mencocokkan tahap desain dan pengujian sebelum kode ditulis"
+      ],
+      "unverified_notes": []
+    },
+    {
+      "id": "c3",
+      "name": "Agile",
+      "status": "paham",
+      "is_thin": true,
+      "analogies": [
+        "Merakit mainan Lego bersama anak-anak secara bertahap berdasarkan masukan langsung",
+        "Merakit mainan Lego secara bertahap berdasarkan masukan langsung"
+      ],
+      "unverified_notes": []
+    }
+  ],
+  "messages": [
+    {
+      "role": "tutor",
+      "text": "Halo! Mari kita belajar mengenai Software Development Methodologies. Peta konsep kita hari ini mencakup:\n1. Waterfall (Linear berurutan)\n2. V Shape Model (Berpasangan dengan pengujian)\n3. Agile (Iteratif dan fleksibel - konsep tipis)\n\nKita mulai dari konsep pertama, yaitu Waterfall. Waterfall adalah metodologi pengembangan perangkat lunak yang berjalan secara linear dan berurutan dari Plan, Design, Develop, Test, Deploy, hingga Maintain. Analoginya seperti membangun jembatan: setiap tahap harus selesai sepenuhnya sebelum lanjut ke tahap berikutnya, tidak bisa mengubah pondasi setelah cor beton mengering. Dalam pekerjaan Software Engineer, ini mirip seperti membuat website company profile yang persyaratannya sudah pasti dan tidak akan berubah di tengah jalan.\n\nMenurutmu, apa salah satu kekurangan utama dari metode Waterfall ini?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "user",
+      "text": "kekurangan waterfall mungkin karna metodenya strict jadi gabisa ngedit kalo terdapat kesalahan",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "tutor",
+      "text": "Tepat sekali! Waterfall sangat kaku (strict), sehingga kurang fleksibel terhadap perubahan dan pengujian utamanya baru dilakukan setelah implementasi. \n\nSekarang kita masuk ke konsep kedua, yaitu V Shape Model. Model ini merupakan pengembangan dari linear di mana setiap tahapan perencanaan dan desain (seperti System design, Architecture design, hingga Module design) memiliki pasangan tahapan pengujiannya masing-masing yang berpusat pada coding. Analoginya seperti merakit mesin mobil presisi tinggi: setiap komponen kecil (baut, rem, transmisi) harus diuji di bengkel khusus sebelum dirakit ke badan mobil utama. Dalam Software Engineer, ini cocok digunakan untuk software perangkat medis atau sistem penerbangan yang membutuhkan keandalan sangat tinggi.\n\nPernahkah kamu membayangkan mengapa pengujian perlu direncanakan sejak tahap desain awal pada model ini?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "user",
+      "text": "knp tuh?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "tutor",
+      "text": "Pengujian direncanakan sejak awal agar kesalahan atau cacat bisa langsung dilacak dan dicegah pada tahapan yang sama, bahkan sebelum kode ditulis. Jadi kalau ada kesalahan di Architecture design, tim bisa langsung tahu lewat Integration testing yang menjadi pasangannya. Sebagai Software Engineer di bidang otomotif atau penerbangan, ini krusial supaya tidak terjadi kegagalan fatal saat sistem benar-benar dijalankan.\n\nSekarang kita lanjut ke konsep terakhir yaitu Agile (yang merupakan konsep tipis). Agile adalah metodologi yang berputar secara iteratif (Plan, Design, Develop, Test, Deploy, Feedback), di mana pengembangannya fleksibel dan melibatkan feedback pengguna secara cepat. Analoginya seperti merakit mainan Lego bersama anak-anak: kamu membuat bentuk dasarnya dulu, lalu meminta pendapat mereka apakah mau ditambah roda atau warna lain di iterasi berikutnya. \n\nBagaimana menurutmu, mengapa Agile sangat cocok digunakan untuk pengembangan aplikasi Startup atau E-commerce?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "user",
+      "text": "karna fleksibel?",
+      "verifikasi_tags": []
+    },
+    {
+      "role": "tutor",
+      "text": "Betul sekali! Karena sangat fleksibel terhadap perubahan dan feedback pengguna bisa diperoleh dengan cepat. Dalam Agile, fitur juga dirilis secara bertahap sehingga tim bisa melakukan evaluasi dan perbaikan berkelanjutan. Sebagai Software Engineer di perusahaan startup, pendekatan ini membantu kita merilis aplikasi lebih cepat ke pasar tanpa harus menunggu semua fitur sempurna dalam satu waktu. Apakah ada bagian dari Agile atau metodologi tadi yang masih ingin kamu tanyakan ulang?",
+      "verifikasi_tags": []
+    }
+  ]
+}

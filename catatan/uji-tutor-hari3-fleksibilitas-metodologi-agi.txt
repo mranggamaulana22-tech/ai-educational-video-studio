@@ -1,0 +1,11 @@
+Kursus: Catatan Belajar: Software Development Methodologies
+Modul: 
+
+Topik: Metodologi Agile
+Agile adalah metodologi iteratif (Plan, Design, Develop, Test, Deploy, Feedback) yang fleksibel terhadap perubahan dan mendapatkan feedback pengguna dengan cepat. Fitur dirilis secara bertahap untuk evaluasi berkelanjutan. Cocok untuk ERP, E-commerce, startup aplikasi, SaaS, dan platform edukasi online.
+- Istilah Agile: Metodologi iteratif yang fleksibel terhadap perubahan dengan siklus berputar melibatkan feedback pengguna.
+- Istilah ERP: Enterprise Resource Planning, salah satu jenis sistem yang cocok dikembangkan dengan Agile.
+- Istilah SaaS: Software as a Service, salah satu bentuk aplikasi yang cocok menggunakan Agile.
+- Contoh: Merakit mainan Lego bersama anak-anak secara bertahap berdasarkan masukan langsung
+- Contoh: ERP, E-commerce, startup aplikasi, SaaS, dan platform edukasi online
+- Contoh: Merakit mainan Lego secara bertahap berdasarkan masukan langsung

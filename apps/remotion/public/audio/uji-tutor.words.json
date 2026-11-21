@@ -1,0 +1,575 @@
+{
+ "audio": "uji-tutor.wav",
+ "durationMs": 44920,
+ "model": "small",
+ "silences": [
+  [
+   0,
+   250
+  ],
+  [
+   3570,
+   3900
+  ],
+  [
+   7570,
+   8050
+  ],
+  [
+   12210,
+   12750
+  ],
+  [
+   17350,
+   17890
+  ],
+  [
+   19920,
+   20200
+  ],
+  [
+   22170,
+   22660
+  ],
+  [
+   26240,
+   26820
+  ],
+  [
+   28420,
+   28650
+  ],
+  [
+   30630,
+   31100
+  ],
+  [
+   34070,
+   34670
+  ],
+  [
+   38190,
+   38750
+  ],
+  [
+   41050,
+   41470
+  ],
+  [
+   44590,
+   44920
+  ]
+ ],
+ "words": [
+  {
+   "text": "Bikin",
+   "startMs": 250,
+   "endMs": 580
+  },
+  {
+   "text": "aplikasi",
+   "startMs": 580,
+   "endMs": 1040
+  },
+  {
+   "text": "startup",
+   "startMs": 1040,
+   "endMs": 1520
+  },
+  {
+   "text": "paling",
+   "startMs": 1520,
+   "endMs": 2100
+  },
+  {
+   "text": "pas",
+   "startMs": 2100,
+   "endMs": 2460
+  },
+  {
+   "text": "pake",
+   "startMs": 2460,
+   "endMs": 2700
+  },
+  {
+   "text": "cara",
+   "startMs": 2700,
+   "endMs": 2920
+  },
+  {
+   "text": "apa?",
+   "startMs": 2920,
+   "endMs": 3280
+  },
+  {
+   "text": "Mari",
+   "startMs": 3900,
+   "endMs": 4200
+  },
+  {
+   "text": "kita",
+   "startMs": 4200,
+   "endMs": 4480
+  },
+  {
+   "text": "bahas",
+   "startMs": 4480,
+   "endMs": 4780
+  },
+  {
+   "text": "3",
+   "startMs": 4780,
+   "endMs": 4980
+  },
+  {
+   "text": "metodologi",
+   "startMs": 4980,
+   "endMs": 5600
+  },
+  {
+   "text": "pengembangan",
+   "startMs": 5600,
+   "endMs": 6020
+  },
+  {
+   "text": "perangkat",
+   "startMs": 6020,
+   "endMs": 6400
+  },
+  {
+   "text": "lunak",
+   "startMs": 6400,
+   "endMs": 6740
+  },
+  {
+   "text": "yang",
+   "startMs": 6740,
+   "endMs": 6960
+  },
+  {
+   "text": "penting.",
+   "startMs": 6960,
+   "endMs": 7570
+  },
+  {
+   "text": "Pertama",
+   "startMs": 8050,
+   "endMs": 8420
+  },
+  {
+   "text": "ada",
+   "startMs": 8420,
+   "endMs": 8920
+  },
+  {
+   "text": "waterfall",
+   "startMs": 8920,
+   "endMs": 9520
+  },
+  {
+   "text": "yang",
+   "startMs": 9520,
+   "endMs": 10000
+  },
+  {
+   "text": "bekerja",
+   "startMs": 10000,
+   "endMs": 10420
+  },
+  {
+   "text": "secara",
+   "startMs": 10420,
+   "endMs": 10760
+  },
+  {
+   "text": "linear",
+   "startMs": 10760,
+   "endMs": 11120
+  },
+  {
+   "text": "dan",
+   "startMs": 11120,
+   "endMs": 11520
+  },
+  {
+   "text": "berurutan.",
+   "startMs": 11520,
+   "endMs": 12060
+  },
+  {
+   "text": "Metodologi",
+   "startMs": 12750,
+   "endMs": 13320
+  },
+  {
+   "text": "ini",
+   "startMs": 13320,
+   "endMs": 13560
+  },
+  {
+   "text": "sangat",
+   "startMs": 13560,
+   "endMs": 13860
+  },
+  {
+   "text": "cocok",
+   "startMs": 13860,
+   "endMs": 14260
+  },
+  {
+   "text": "untuk",
+   "startMs": 14260,
+   "endMs": 14500
+  },
+  {
+   "text": "proyek",
+   "startMs": 14500,
+   "endMs": 14740
+  },
+  {
+   "text": "stabil",
+   "startMs": 14740,
+   "endMs": 15160
+  },
+  {
+   "text": "seperti",
+   "startMs": 15160,
+   "endMs": 15700
+  },
+  {
+   "text": "website",
+   "startMs": 15700,
+   "endMs": 16340
+  },
+  {
+   "text": "company",
+   "startMs": 16340,
+   "endMs": 16680
+  },
+  {
+   "text": "profile.",
+   "startMs": 16680,
+   "endMs": 17240
+  },
+  {
+   "text": "Kedua",
+   "startMs": 17890,
+   "endMs": 18280
+  },
+  {
+   "text": "ada",
+   "startMs": 18280,
+   "endMs": 18820
+  },
+  {
+   "text": "V",
+   "startMs": 18820,
+   "endMs": 19140
+  },
+  {
+   "text": "-shape",
+   "startMs": 19140,
+   "endMs": 19360
+  },
+  {
+   "text": "model",
+   "startMs": 19360,
+   "endMs": 19920
+  },
+  {
+   "text": "yang",
+   "startMs": 20200,
+   "endMs": 20320
+  },
+  {
+   "text": "memiliki",
+   "startMs": 20320,
+   "endMs": 20740
+  },
+  {
+   "text": "pasangan",
+   "startMs": 20740,
+   "endMs": 21220
+  },
+  {
+   "text": "tahap",
+   "startMs": 21220,
+   "endMs": 21560
+  },
+  {
+   "text": "pengujian.",
+   "startMs": 21560,
+   "endMs": 22080
+  },
+  {
+   "text": "Model",
+   "startMs": 22660,
+   "endMs": 22820
+  },
+  {
+   "text": "ini",
+   "startMs": 22820,
+   "endMs": 23120
+  },
+  {
+   "text": "sangat",
+   "startMs": 23120,
+   "endMs": 23400
+  },
+  {
+   "text": "pas",
+   "startMs": 23400,
+   "endMs": 23740
+  },
+  {
+   "text": "untuk",
+   "startMs": 23740,
+   "endMs": 24160
+  },
+  {
+   "text": "software",
+   "startMs": 24160,
+   "endMs": 24460
+  },
+  {
+   "text": "medis",
+   "startMs": 24460,
+   "endMs": 25000
+  },
+  {
+   "text": "dan",
+   "startMs": 25000,
+   "endMs": 25260
+  },
+  {
+   "text": "sistem",
+   "startMs": 25260,
+   "endMs": 25560
+  },
+  {
+   "text": "penderbangan.",
+   "startMs": 25560,
+   "endMs": 26240
+  },
+  {
+   "text": "Ketiga,",
+   "startMs": 26820,
+   "endMs": 27540
+  },
+  {
+   "text": "ada",
+   "startMs": 27540,
+   "endMs": 27780
+  },
+  {
+   "text": "agile",
+   "startMs": 27780,
+   "endMs": 28420
+  },
+  {
+   "text": "yang",
+   "startMs": 28650,
+   "endMs": 28760
+  },
+  {
+   "text": "bersifat",
+   "startMs": 28760,
+   "endMs": 29220
+  },
+  {
+   "text": "iteratif",
+   "startMs": 29220,
+   "endMs": 29760
+  },
+  {
+   "text": "dan",
+   "startMs": 29760,
+   "endMs": 30020
+  },
+  {
+   "text": "fleksibel.",
+   "startMs": 30020,
+   "endMs": 30580
+  },
+  {
+   "text": "Kita",
+   "startMs": 31100,
+   "endMs": 31340
+  },
+  {
+   "text": "rilis",
+   "startMs": 31340,
+   "endMs": 31740
+  },
+  {
+   "text": "fitur",
+   "startMs": 31740,
+   "endMs": 32080
+  },
+  {
+   "text": "bertahap",
+   "startMs": 32080,
+   "endMs": 32640
+  },
+  {
+   "text": "untuk",
+   "startMs": 32640,
+   "endMs": 32920
+  },
+  {
+   "text": "dapat",
+   "startMs": 32920,
+   "endMs": 33200
+  },
+  {
+   "text": "feedback",
+   "startMs": 33200,
+   "endMs": 33520
+  },
+  {
+   "text": "pengguna.",
+   "startMs": 33520,
+   "endMs": 34040
+  },
+  {
+   "text": "Cara",
+   "startMs": 34670,
+   "endMs": 34820
+  },
+  {
+   "text": "ini",
+   "startMs": 34820,
+   "endMs": 35200
+  },
+  {
+   "text": "sangat",
+   "startMs": 35200,
+   "endMs": 35620
+  },
+  {
+   "text": "cocok",
+   "startMs": 35620,
+   "endMs": 36140
+  },
+  {
+   "text": "untuk",
+   "startMs": 36140,
+   "endMs": 36300
+  },
+  {
+   "text": "aplikasi",
+   "startMs": 36300,
+   "endMs": 36780
+  },
+  {
+   "text": "SaaS",
+   "startMs": 36780,
+   "endMs": 37140
+  },
+  {
+   "text": "atau",
+   "startMs": 37140,
+   "endMs": 37560
+  },
+  {
+   "text": "e",
+   "startMs": 37560,
+   "endMs": 37760
+  },
+  {
+   "text": "-commerce.",
+   "startMs": 37760,
+   "endMs": 38000
+  },
+  {
+   "text": "Pilih",
+   "startMs": 38750,
+   "endMs": 39000
+  },
+  {
+   "text": "metodologi",
+   "startMs": 39000,
+   "endMs": 39540
+  },
+  {
+   "text": "yang",
+   "startMs": 39540,
+   "endMs": 39600
+  },
+  {
+   "text": "paling",
+   "startMs": 39600,
+   "endMs": 39820
+  },
+  {
+   "text": "pas",
+   "startMs": 39820,
+   "endMs": 40080
+  },
+  {
+   "text": "untuk",
+   "startMs": 40080,
+   "endMs": 40320
+  },
+  {
+   "text": "proyek",
+   "startMs": 40320,
+   "endMs": 40620
+  },
+  {
+   "text": "kita",
+   "startMs": 40620,
+   "endMs": 40820
+  },
+  {
+   "text": "ya.",
+   "startMs": 40820,
+   "endMs": 40980
+  },
+  {
+   "text": "Jangan",
+   "startMs": 41470,
+   "endMs": 41680
+  },
+  {
+   "text": "lupa",
+   "startMs": 41680,
+   "endMs": 42020
+  },
+  {
+   "text": "follow",
+   "startMs": 42020,
+   "endMs": 42480
+  },
+  {
+   "text": "akun",
+   "startMs": 42480,
+   "endMs": 42860
+  },
+  {
+   "text": "ini",
+   "startMs": 42860,
+   "endMs": 43080
+  },
+  {
+   "text": "untuk",
+   "startMs": 43080,
+   "endMs": 43380
+  },
+  {
+   "text": "tips",
+   "startMs": 43380,
+   "endMs": 43660
+  },
+  {
+   "text": "teknologi",
+   "startMs": 43660,
+   "endMs": 44200
+  },
+  {
+   "text": "lainnya.",
+   "startMs": 44200,
+   "endMs": 44580
+  }
+ ]
+}

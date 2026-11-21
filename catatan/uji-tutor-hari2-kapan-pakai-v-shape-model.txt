@@ -1,0 +1,9 @@
+Kursus: Catatan Belajar: Software Development Methodologies
+Modul: 
+
+Topik: V Shape Model
+V Shape Model adalah model pengembangan di mana setiap tahapan perencanaan dan desain (System design, Architecture design, Module design) memiliki pasangan tahapan pengujian yang berpusat pada coding. Cocok untuk sistem keandalan tinggi seperti software perangkat medis, otomotif, dan sistem penerbangan.
+- Istilah V shape model: Model pengembangan dengan pasangan tahapan desain dan pengujian yang berpusat pada coding.
+- Contoh: Merakit mesin mobil presisi tinggi di mana setiap komponen kecil harus diuji di bengkel khusus sebelum dirakit
+- Contoh: Mencegah kesalahan sejak dini dengan mencocokkan tahap desain dan pengujian sebelum kode ditulis
+- Contoh: Software perangkat medis, software otomotif, dan sistem penerbangan

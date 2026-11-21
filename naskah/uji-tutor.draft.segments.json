@@ -1,0 +1,61 @@
+{
+  "title": "Metodologi Pengembangan Perangkat Lunak",
+  "segments": [
+    {
+      "id": "seg-1",
+      "role": "hook",
+      "text": "Bikin aplikasi startup paling pas pakai cara apa?"
+    },
+    {
+      "id": "seg-2",
+      "role": "body",
+      "text": "Mari kita bahas tiga metodologi pengembangan perangkat lunak yang penting."
+    },
+    {
+      "id": "seg-3",
+      "role": "body",
+      "text": "Pertama ada Waterfall yang bekerja secara linear dan berurutan."
+    },
+    {
+      "id": "seg-4",
+      "role": "body",
+      "text": "Metodologi ini sangat cocok untuk proyek stabil seperti website company profile."
+    },
+    {
+      "id": "seg-5",
+      "role": "body",
+      "text": "Kedua ada V Shape Model yang memiliki pasangan tahap pengujian."
+    },
+    {
+      "id": "seg-6",
+      "role": "body",
+      "text": "Model ini sangat pas untuk software medis dan sistem penerbangan."
+    },
+    {
+      "id": "seg-7",
+      "role": "body",
+      "text": "Ketiga ada Agile yang bersifat iteratif dan fleksibel."
+    },
+    {
+      "id": "seg-8",
+      "role": "body",
+      "text": "Kita rilis fitur bertahap untuk dapat feedback pengguna."
+    },
+    {
+      "id": "seg-9",
+      "role": "body",
+      "text": "Cara ini sangat cocok untuk aplikasi SaaS atau E-commerce."
+    },
+    {
+      "id": "seg-10",
+      "role": "closing",
+      "text": "Pilih metodologi yang paling pas untuk proyek kita ya."
+    },
+    {
+      "id": "seg-11",
+      "role": "closing",
+      "text": "Jangan lupa follow akun ini untuk tips teknologi lainnya."
+    }
+  ],
+  "script": "Bikin aplikasi startup paling pas pakai cara apa? Mari kita bahas tiga metodologi pengembangan perangkat lunak yang penting. Pertama ada Waterfall yang bekerja secara linear dan berurutan. Metodologi ini sangat cocok untuk proyek stabil seperti website company profile. Kedua ada V Shape Model yang memiliki pasangan tahap pengujian. Model ini sangat pas untuk software medis dan sistem penerbangan. Ketiga ada Agile yang bersifat iteratif dan fleksibel. Kita rilis fitur bertahap untuk dapat feedback pengguna. Cara ini sangat cocok untuk aplikasi SaaS atau E-commerce. Pilih metodologi yang paling pas untuk proyek kita ya. Jangan lupa follow akun ini untuk tips teknologi lainnya."
+}

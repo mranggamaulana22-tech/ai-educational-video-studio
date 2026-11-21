@@ -1,6 +1,8 @@
 """Definisi tahap alur dan cara menjalankannya (memakai skrip di folder tools/ yang sudah ada)."""
 import json
+import shutil
 import sys
+from pathlib import Path
 
 from . import config
 
@@ -34,24 +36,60 @@ MANUAL = {"material"}
 
 
 def paths(name):
-    """Lokasi file kerja tiap tahap (kompatibel dengan pipeline.py dan runner agen v1)."""
+    """Lokasi file kerja tiap proyek di storage/projects/{name}/."""
+    migrate_legacy_files(name)
+    base = R / "storage" / "projects" / name
     a = REM / "public" / "audio"
     return {
-        "material": R / "catatan" / f"{name}.material.txt",
-        "analysis": R / "catatan" / f"{name}.analysis.json",
-        "session": R / "catatan" / f"{name}.session.json",
-        "notes": R / "catatan" / f"{name}.txt",
-        "notes_json": R / "catatan" / f"{name}.notes.v2.json",
-        "ideas": R / "rencana" / f"{name}.plan.json",
-        "selected_idea": R / "rencana" / f"{name}.selected_idea.json",
-        "script": R / "naskah" / f"{name}.draft.txt",
-        "review": R / "naskah" / f"{name}.txt",
-        "review_json": R / "naskah" / f"{name}.review.json",
+        "material": base / "material.txt",
+        "analysis": base / "analysis.json",
+        "session": base / "session.json",
+        "notes": base / "notes.txt",
+        "notes_json": base / "notes.v2.json",
+        "ideas": base / "plan.json",
+        "selected_idea": base / "selected_idea.json",
+        "script": base / "script.draft.txt",
+        "review": base / "script.txt",
+        "review_json": base / "review.json",
         "audio": a / f"{name}.wav",
         "words": a / f"{name}.words.json",
-        "storyboard": REM / "src" / "storyboards" / f"{name}.json",
-        "render": REM / "out" / f"{name}.mp4",
+        "storyboard": base / "storyboard.json",
+        "render": base / "render.mp4",
     }
+
+
+def migrate_legacy_files(name):
+    """Salin file kerja lama ke folder proyek baru tanpa menimpa file baru."""
+    base = R / "storage" / "projects" / name
+    base.mkdir(parents=True, exist_ok=True)
+    pairs = [
+        (R / "catatan" / f"{name}.material.txt", base / "material.txt"),
+        (R / "catatan" / f"{name}.analysis.json", base / "analysis.json"),
+        (R / "catatan" / f"{name}.session.json", base / "session.json"),
+        (R / "catatan" / f"{name}.txt", base / "notes.txt"),
+        (R / "catatan" / f"{name}.notes.v2.json", base / "notes.v2.json"),
+        (R / "rencana" / f"{name}.plan.json", base / "plan.json"),
+        (R / "rencana" / f"{name}.selected_idea.json", base / "selected_idea.json"),
+        (R / "naskah" / f"{name}.draft.txt", base / "script.draft.txt"),
+        (R / "naskah" / f"{name}.txt", base / "script.txt"),
+        (R / "naskah" / f"{name}.review.json", base / "review.json"),
+        (REM / "src" / "storyboards" / f"{name}.json", base / "storyboard.json"),
+        (REM / "out" / f"{name}.mp4", base / "render.mp4"),
+    ]
+    for source, destination in pairs:
+        if source.exists() and source.is_file() and not destination.exists():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+
+    legacy_render_dir = R / "storage" / name / "render"
+    if legacy_render_dir.exists():
+        candidates = sorted(
+            legacy_render_dir.glob("*.mp4"),
+            key=lambda path: path.stat().st_mtime,
+            reverse=True,
+        )
+        if candidates and not (base / "render.mp4").exists():
+            shutil.copy2(candidates[0], base / "render.mp4")
 
 
 def build_command(stage, video, day_label="", course=""):
@@ -157,8 +195,22 @@ def build_command(stage, video, day_label="", course=""):
         return cmd, False, R
 
     if stage == "render":
-        rel = p["storyboard"].relative_to(REM).as_posix()
-        cmd = f'npx remotion render HtmlCssJs "out/{video.name}.mp4" --props="{rel}" --concurrency=2'
-        return cmd, True, REM
+        rem_storyboard = REM / "src" / "storyboards" / f"{video.name}.json"
+        legacy_output = REM / "out" / f"{video.name}.mp4"
+        code = (
+            "import shutil, subprocess, sys, pathlib; "
+            f"src = pathlib.Path({str(p['storyboard'])!r}); "
+            f"dst = pathlib.Path({str(rem_storyboard)!r}); "
+            f"legacy = pathlib.Path({str(legacy_output)!r}); "
+            f"target = pathlib.Path({str(p['render'])!r}); "
+            "dst.parent.mkdir(parents=True, exist_ok=True); "
+            "shutil.copy2(src, dst); "
+            f"rel = dst.relative_to(pathlib.Path({str(REM)!r})).as_posix(); "
+            f"rc = subprocess.call(['npx', 'remotion', 'render', 'HtmlCssJs', 'out/{video.name}.mp4', '--props=' + rel, '--concurrency=2'], cwd={str(REM)!r}, shell=True); "
+            "sys.exit(rc) if rc != 0 else None; "
+            "target.parent.mkdir(parents=True, exist_ok=True); "
+            "shutil.copy2(legacy, target)"
+        )
+        return [sys.executable, "-c", code], False, R
 
     raise ValueError(f"Tahap tidak dikenal: {stage}")

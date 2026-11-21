@@ -17,8 +17,9 @@ MAX_CHARS = 120000
 VALID_BASIS = {"material", "analysis", "session"}
 
 
-def make_checker(expected_concept_ids=None):
+def make_checker(expected_concept_ids=None, weak_concept_ids=None):
     expected = set(expected_concept_ids or [])
+    weak_ids = set(weak_concept_ids or [])
 
     def check_notes(d):
         if not isinstance(d, dict):
@@ -73,6 +74,20 @@ def make_checker(expected_concept_ids=None):
             if missing:
                 return f"Konsep dari analisis belum tercakup di sections maupun omitted_concepts: {sorted(missing)}"
 
+        if weak_ids:
+            weak_not_marked = set()
+            weak_marked_by_omission = {
+                str(item["concept_id"]) for item in omitted
+                if "belum dibahas" in str(item.get("reason", "")).lower()
+            }
+            weak_marked_in_sections = {
+                cid for s in sections for cid in s.get("concept_ids", [])
+                if cid in weak_ids and "belum dibahas" in str(s.get("body_md", "")).lower()
+            }
+            weak_not_marked = weak_ids - weak_marked_by_omission - weak_marked_in_sections
+            if weak_not_marked:
+                return f"Konsep yang statusnya belum dibahas harus ditandai jelas: {sorted(weak_not_marked)}"
+
         return ""
 
     return check_notes
@@ -98,6 +113,78 @@ def to_markdown(d):
             "",
         ]
     return "\n".join(out)
+
+
+def enrich_session_content(result, session_data):
+    if not isinstance(session_data, dict):
+        return result
+
+    weak_ids = {
+        str(c["id"]) for c in session_data.get("concepts", []) or []
+        if isinstance(c, dict) and c.get("status") == "belum" and str(c.get("id", "")).strip()
+    }
+    sections = result.get("sections", []) or []
+
+    for concept in session_data.get("concepts", []) or []:
+        if not isinstance(concept, dict):
+            continue
+        cid = str(concept.get("id", "")).strip()
+        analogies = concept.get("analogies", []) or []
+        if not cid or not analogies:
+            continue
+        matched = False
+        for section in sections:
+            if cid in (section.get("concept_ids", []) or []):
+                examples = section.setdefault("examples", [])
+                if not isinstance(examples, list):
+                    examples = []
+                    section["examples"] = examples
+                existing = {str(ex.get("text", "")) for ex in examples if isinstance(ex, dict)}
+                for analogy in analogies:
+                    if isinstance(analogy, str) and analogy.strip() and analogy not in existing:
+                        examples.append({"kind": "analogi dari sesi", "text": analogy})
+                matched = True
+
+        if not matched:
+            next_id = f"s{len(sections) + 1}"
+            sections.append({
+                "id": next_id,
+                "heading": f"Konsep sesi: {concept.get('name', cid)}",
+                "body_md": "Analogi dari sesi belajar",
+                "concept_ids": [cid],
+                "key_terms": [],
+                "examples": [
+                    {"kind": "analogi dari sesi", "text": analogy}
+                    for analogy in analogies if isinstance(analogy, str) and analogy.strip()
+                ],
+                "basis": ["session"],
+            })
+
+    for section in sections:
+        cids = set(str(cid) for cid in section.get("concept_ids", []) or [])
+        if cids & weak_ids:
+            body = str(section.get("body_md", "")).strip()
+            marker = "⚠ BELUM DIBAHAS: konsep ini belum mencapai status paham dalam sesi."
+            if marker not in body:
+                section["body_md"] = f"{body}\n\n{marker}".strip()
+
+    omitted = result.setdefault("omitted_concepts", [])
+    omitted_ids = {str(item.get("concept_id", "")) for item in omitted if isinstance(item, dict)}
+    covered_ids = {str(cid) for section in sections for cid in section.get("concept_ids", []) or []}
+    for cid in sorted(weak_ids):
+        if cid not in covered_ids and cid not in omitted_ids:
+            omitted.append({
+                "concept_id": cid,
+                "reason": "BELUM DIBAHAS: status konsep masih belum dalam sesi.",
+            })
+
+    for item in omitted:
+        if isinstance(item, dict) and str(item.get("concept_id", "")) in weak_ids:
+            reason = str(item.get("reason", "")).strip()
+            if "belum dibahas" not in reason.lower():
+                item["reason"] = f"BELUM DIBAHAS: {reason}".strip()
+
+    return result
 
 
 def run_self_test():
@@ -141,6 +228,15 @@ def main():
     session_data = None
     if a.session and Path(a.session).exists():
         session_data = json.loads(Path(a.session).read_text(encoding="utf-8-sig"))
+        if session_data.get("skipped") is True:
+            session_data = None
+
+    weak_ids = []
+    if session_data:
+        weak_ids = [
+            str(c["id"]) for c in session_data.get("concepts", []) or []
+            if isinstance(c, dict) and c.get("status") == "belum" and str(c.get("id", "")).strip()
+        ]
 
     system = (agentkit.ROOT / "prompts" / "learning_notes" / "v1.md").read_text(encoding="utf-8-sig")
     payload = {
@@ -155,7 +251,8 @@ def main():
     user = json.dumps(payload, ensure_ascii=False, indent=2)
 
     print("Learning Notes Agent menyusun catatan terstruktur...")
-    result = agentkit.ask(a.provider, a.model, system, user, make_checker(expected_ids))
+    result = agentkit.ask(a.provider, a.model, system, user, make_checker(expected_ids, weak_ids))
+    result = enrich_session_content(result, session_data)
 
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)

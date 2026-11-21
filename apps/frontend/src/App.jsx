@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { api } from "./api.js";
 import { AGENT_STAGES } from "./agentsConfig.js";
 import CommandCenter3D from "./CommandCenter3D.jsx";
 import AgentWorkspaceModal from "./AgentWorkspaceModal.jsx";
+import StorageModal from "./StorageModal.jsx";
 
 const APPROVAL_TO_AGENT_INDEX = {
   notes: 2,
@@ -36,10 +37,9 @@ export default function App() {
   const [perfPreset, setPerfPreset] = useState("balanced");
   const [manualSleep, setManualSleep] = useState(false);
   const [workspaceSleep, setWorkspaceSleep] = useState(false);
-
+  const [showStorage, setShowStorage] = useState(false);
   const [showNewVideo, setShowNewVideo] = useState(false);
   const [newForm, setNewForm] = useState({ name: "", day: 1, title: "", next_topic: "" });
-  const materialInputRef = useRef(null);
 
   const showError = useCallback((text) => setToast({ kind: "error", text }), []);
   const showInfo = useCallback((text) => setToast({ kind: "info", text }), []);
@@ -86,7 +86,7 @@ export default function App() {
   // Auto Sleep Mode saat render (Remotion) atau words (Whisper) berjalan untuk hemat RAM 8 GB & CPU
   const heavyRunningStage = isHeavyStageRunning(video);
   const isSleepMode = manualSleep || Boolean(heavyRunningStage);
-  const is3DSleepMode = isSleepMode || workspaceSleep;
+  const is3DSleepMode = isSleepMode || workspaceSleep || showStorage;
 
   const requestCamera = useCallback((target) => {
     if (typeof target === "number") {
@@ -104,6 +104,7 @@ export default function App() {
         if (e.key === "Escape") {
           setWorkspaceIndex(null);
           setShowNewVideo(false);
+          setShowStorage(false);
         }
         return;
       }
@@ -120,6 +121,7 @@ export default function App() {
       } else if (k === "escape") {
         setWorkspaceIndex(null);
         setShowNewVideo(false);
+        setShowStorage(false);
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -173,40 +175,6 @@ export default function App() {
       await loadVideos();
     } catch (e) {
       showError(e.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleScan = async () => {
-    if (!video) return;
-    setBusy(true);
-    try {
-      const r = await api.scan(video.id);
-      showInfo(
-        r.registered?.length
-          ? `File terdaftar: ${r.registered.join(", ")}`
-          : "Tidak ada file baru yang ditemukan di folder proyek."
-      );
-      await loadVideos();
-    } catch (e) {
-      showError(e.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleUploadMaterial = async (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file || !video) return;
-    setBusy(true);
-    try {
-      await api.uploadMaterial(video.id, file);
-      showInfo(`Materi "${file.name}" berhasil diekstrak dan disimpan.`);
-      await loadVideos();
-    } catch (e2) {
-      showError(e2.message);
     } finally {
       setBusy(false);
     }
@@ -301,29 +269,12 @@ export default function App() {
               </button>
 
               <button
-                onClick={handleScan}
-                disabled={busy}
-                className="hud-pill hover:bg-slate-800/80 rounded-full px-3 py-1.5 text-[11px] font-mono-tech text-slate-300 cursor-pointer transition hidden md:inline-flex"
-                title="Daftarkan file yang sudah ada di folder proyek"
+                onClick={() => setShowStorage(true)}
+                className="hud-pill hover:bg-violet-950/60 border-violet-400/40 rounded-full px-3 py-1.5 text-[11px] font-mono-tech text-violet-200 cursor-pointer transition"
+                title="Buka Gudang proyek aktif dan arsip"
               >
-                Scan File
+                📦 Gudang
               </button>
-
-              <button
-                onClick={() => materialInputRef.current?.click()}
-                disabled={busy}
-                className="hud-pill hover:bg-cyan-950/60 rounded-full px-3 py-1.5 text-[11px] font-mono-tech text-cyan-200 cursor-pointer transition"
-                title="Unggah dokumen .docx, .pdf, .txt, atau .md sebagai material"
-              >
-                Upload Dokumen
-              </button>
-              <input
-                ref={materialInputRef}
-                type="file"
-                accept=".docx,.pdf,.txt,.md"
-                className="hidden"
-                onChange={handleUploadMaterial}
-              />
             </>
           )}
         </div>
@@ -483,6 +434,19 @@ export default function App() {
             </button>
           </form>
         </div>
+      )}
+
+      {showStorage && (
+        <StorageModal
+          onClose={() => setShowStorage(false)}
+          onSwitchProject={(id) => setSelectedId(id)}
+          onDeleted={async (deletedId) => {
+            const remaining = await loadVideos();
+            setSelectedId((current) => (current === deletedId ? (remaining[0]?.id ?? null) : current));
+          }}
+          onError={showError}
+          onInfo={showInfo}
+        />
       )}
 
       {/* MODAL RUANG KERJA PER AGEN ([E]) */}

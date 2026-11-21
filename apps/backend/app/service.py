@@ -28,7 +28,7 @@ def register_artifact(session: Session, video: Video, stage: str, source="auto")
         raise FileNotFoundError(f"File hasil tahap '{stage}' tidak ada: {src}")
     prev = latest(session, video.id, stage)
     version = (prev.version + 1) if prev else 1
-    dest = config.STORAGE / video.name / stage / f"v{version}{src.suffix}"
+    dest = config.STORAGE / "projects" / video.name / "artifacts" / stage / f"v{version}{src.suffix}"
     dest.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, dest)
     art = Artifact(video_id=video.id, stage=stage, version=version, path=str(dest), source=source)

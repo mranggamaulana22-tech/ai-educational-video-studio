@@ -1,0 +1,53 @@
+{
+  "series": "Software Development Methodologies",
+  "videos": [
+    {
+      "day": 1,
+      "title": "Mengenal Metodologi Waterfall",
+      "format": "analogy",
+      "hook": "Kenapa Waterfall mirip banget seperti membangun jembatan?",
+      "angle": "Menjelaskan konsep dasar dan keterbatasan Waterfall melalui analogi fisik.",
+      "topics": [
+        "Metodologi Waterfall"
+      ],
+      "section_ids": [
+        "s1"
+      ],
+      "why": "Memulai seri dari metodologi paling dasar secara linear.",
+      "name": "uji-tutor-hari1-mengenal-metodologi-waterfal",
+      "next": "Kapan Pakai V Shape Model?"
+    },
+    {
+      "day": 2,
+      "title": "Kapan Pakai V Shape Model?",
+      "format": "step_by_step",
+      "hook": "Software medis butuh pengujian seketat apa sih?",
+      "angle": "Membedah pasangan tahapan desain dan pengujian pada sistem keandalan tinggi.",
+      "topics": [
+        "V Shape Model"
+      ],
+      "section_ids": [
+        "s2"
+      ],
+      "why": "Melanjutkan ke model turunan yang lebih presisi dan ketat.",
+      "name": "uji-tutor-hari2-kapan-pakai-v-shape-model",
+      "next": "Fleksibilitas Metodologi Agile"
+    },
+    {
+      "day": 3,
+      "title": "Fleksibilitas Metodologi Agile",
+      "format": "concept_breakdown",
+      "hook": "Bikin aplikasi startup paling pas pakai cara apa?",
+      "angle": "Menjelaskan siklus iteratif dan pentingnya feedback pengguna di Agile.",
+      "topics": [
+        "Metodologi Agile"
+      ],
+      "section_ids": [
+        "s3"
+      ],
+      "why": "Menutup seri dengan metodologi modern yang paling populer untuk startup.",
+      "name": "uji-tutor-hari3-fleksibilitas-metodologi-agi",
+      "next": ""
+    }
+  ]
+}

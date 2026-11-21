@@ -1,0 +1,112 @@
+{
+  "title": "Catatan Belajar: Software Development Methodologies",
+  "sections": [
+    {
+      "id": "s1",
+      "heading": "Metodologi Waterfall",
+      "body_md": "Waterfall adalah metodologi pengembangan perangkat lunak linear berurutan yang mencakup tahap Plan, Design, Develop, Test, Deploy, hingga Maintain. Kelebihannya mudah dipahami, tahapan jelas, dan cocok untuk proyek kebutuhan stabil seperti website company profile. Kekurangannya kurang fleksibel terhadap perubahan dan pengujian baru dilakukan di akhir.",
+      "concept_ids": [
+        "c1"
+      ],
+      "key_terms": [
+        {
+          "term": "Waterfall",
+          "definition": "Metodologi pengembangan perangkat lunak linear berurutan dari Plan hingga Maintain."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "analogi",
+          "text": "Membangun jembatan di mana setiap tahap harus selesai sepenuhnya sebelum lanjut dan tidak bisa mengubah pondasi setelah cor beton mengering"
+        },
+        {
+          "kind": "contoh",
+          "text": "Website company profile"
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis",
+        "session"
+      ]
+    },
+    {
+      "id": "s2",
+      "heading": "V Shape Model",
+      "body_md": "V Shape Model adalah model pengembangan di mana setiap tahapan perencanaan dan desain (System design, Architecture design, Module design) memiliki pasangan tahapan pengujian yang berpusat pada coding. Cocok untuk sistem keandalan tinggi seperti software perangkat medis, otomotif, dan sistem penerbangan.",
+      "concept_ids": [
+        "c2"
+      ],
+      "key_terms": [
+        {
+          "term": "V shape model",
+          "definition": "Model pengembangan dengan pasangan tahapan desain dan pengujian yang berpusat pada coding."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "analogi",
+          "text": "Merakit mesin mobil presisi tinggi di mana setiap komponen kecil harus diuji di bengkel khusus sebelum dirakit"
+        },
+        {
+          "kind": "analogi",
+          "text": "Mencegah kesalahan sejak dini dengan mencocokkan tahap desain dan pengujian sebelum kode ditulis"
+        },
+        {
+          "kind": "contoh",
+          "text": "Software perangkat medis, software otomotif, dan sistem penerbangan"
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis",
+        "session"
+      ]
+    },
+    {
+      "id": "s3",
+      "heading": "Metodologi Agile",
+      "body_md": "Agile adalah metodologi iteratif (Plan, Design, Develop, Test, Deploy, Feedback) yang fleksibel terhadap perubahan dan mendapatkan feedback pengguna dengan cepat. Fitur dirilis secara bertahap untuk evaluasi berkelanjutan. Cocok untuk ERP, E-commerce, startup aplikasi, SaaS, dan platform edukasi online.",
+      "concept_ids": [
+        "c3"
+      ],
+      "key_terms": [
+        {
+          "term": "Agile",
+          "definition": "Metodologi iteratif yang fleksibel terhadap perubahan dengan siklus berputar melibatkan feedback pengguna."
+        },
+        {
+          "term": "ERP",
+          "definition": "Enterprise Resource Planning, salah satu jenis sistem yang cocok dikembangkan dengan Agile."
+        },
+        {
+          "term": "SaaS",
+          "definition": "Software as a Service, salah satu bentuk aplikasi yang cocok menggunakan Agile."
+        }
+      ],
+      "examples": [
+        {
+          "kind": "analogi",
+          "text": "Merakit mainan Lego bersama anak-anak secara bertahap berdasarkan masukan langsung"
+        },
+        {
+          "kind": "contoh",
+          "text": "ERP, E-commerce, startup aplikasi, SaaS, dan platform edukasi online"
+        },
+        {
+          "kind": "analogi dari sesi",
+          "text": "Merakit mainan Lego secara bertahap berdasarkan masukan langsung"
+        }
+      ],
+      "basis": [
+        "material",
+        "analysis",
+        "session"
+      ]
+    }
+  ],
+  "open_questions": [
+    "Bagaimana detail teknis implementasi feedback pengguna secara langsung dalam manajemen proyek Agile?"
+  ],
+  "omitted_concepts": []
+}

@@ -322,6 +322,7 @@ function TutorLearningPanel({ video, reload, onError, onInfo, busy, onOpenNotes 
   const [sending, setSending] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const chatEndRef = useRef(null);
+  const chatScrollRef = useRef(null);
 
   const load = async () => {
     try {
@@ -336,7 +337,15 @@ function TutorLearningPanel({ video, reload, onError, onInfo, busy, onOpenNotes 
   }, [video.id]);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const frame = window.requestAnimationFrame(() => {
+      if (chatScrollRef.current) {
+        chatScrollRef.current.scrollTo({
+          top: chatScrollRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, [session?.messages?.length]);
 
   const send = async (text) => {
@@ -370,7 +379,7 @@ function TutorLearningPanel({ video, reload, onError, onInfo, busy, onOpenNotes 
   const skip = async () => {
     setFinishing(true);
     try {
-      await api.finishTutorSession(video.id);
+      await api.skipTutorSession(video.id);
       onInfo("Sesi dilewati. Catatan sedang disusun dari materi dan analisis.");
       reload();
       onOpenNotes();
@@ -385,9 +394,9 @@ function TutorLearningPanel({ video, reload, onError, onInfo, busy, onOpenNotes 
     status === "paham" ? "Paham" : status === "sebagian" ? "Sebagian paham" : "Belum dibahas";
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0">
-      <div className="lg:col-span-8 flex flex-col min-h-[420px] lg:min-h-0 bg-slate-950/90 border border-cyan-500/20 rounded-xl overflow-hidden">
-        <div className="flex-1 min-h-[420px] p-4 space-y-4 overflow-y-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 h-full min-h-0 overflow-y-auto lg:overflow-hidden">
+      <div className="h-[420px] lg:h-auto lg:col-span-8 flex flex-col min-h-0 bg-slate-950/90 border border-cyan-500/20 rounded-xl overflow-hidden">
+        <div ref={chatScrollRef} className="flex-1 min-h-0 p-4 space-y-4 overflow-y-auto">
           {!session?.messages?.length && (
             <div className="text-xs text-slate-400">Tutor sedang menyiapkan peta konsep...</div>
           )}
@@ -449,8 +458,8 @@ function TutorLearningPanel({ video, reload, onError, onInfo, busy, onOpenNotes 
         </div>
       </div>
 
-      <div className="lg:col-span-4 min-h-0 overflow-y-auto space-y-3">
-        <div className="bg-slate-950/90 border border-violet-500/20 rounded-xl p-3.5 space-y-2">
+      <div className="lg:col-span-4 flex flex-col min-h-0 gap-3 overflow-hidden">
+        <div className="bg-slate-950/90 border border-violet-500/20 rounded-xl p-3.5 space-y-2 shrink-0 max-h-[42%] overflow-y-auto">
           <div className="text-xs font-mono-tech text-violet-300">PETA KONSEP</div>
           {(session?.concepts || []).map((concept) => (
             <div key={concept.id} className="rounded-lg border border-slate-800 bg-slate-900/70 p-2.5">
@@ -467,7 +476,7 @@ function TutorLearningPanel({ video, reload, onError, onInfo, busy, onOpenNotes 
           ))}
         </div>
 
-        <div className="bg-slate-950/90 border border-emerald-500/20 rounded-xl p-3.5">
+        <div className="bg-slate-950/90 border border-emerald-500/20 rounded-xl p-3.5 flex-1 min-h-[90px] overflow-y-auto">
           <div className="text-xs font-mono-tech text-emerald-300 mb-2">BANK ANALOGI</div>
           <div className="space-y-1.5">
             {[...(session?.concepts || [])].flatMap((c) => c.analogies || []).length ? (
@@ -480,7 +489,7 @@ function TutorLearningPanel({ video, reload, onError, onInfo, busy, onOpenNotes 
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 shrink-0">
           <button
             disabled={finishing || busy}
             onClick={finish}
@@ -701,7 +710,7 @@ export default function AgentWorkspaceModal({
         </div>
 
         {/* Body */}
-        <div className={`p-5 overflow-y-auto flex-1 min-h-0 space-y-4 ${agent.key === "notes" && isTutorMode ? "flex flex-col" : ""}`}>
+        <div className={`p-5 flex-1 min-h-0 space-y-4 ${agent.key === "notes" && isTutorMode ? "flex flex-col overflow-hidden" : "overflow-y-auto"}`}>
           {tab === "workspace" ? (
             <>
               {agent.key === "notes" && (

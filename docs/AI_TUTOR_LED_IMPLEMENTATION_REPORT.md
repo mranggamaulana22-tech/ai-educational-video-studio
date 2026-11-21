@@ -1,129 +1,102 @@
 # Laporan Implementasi AI Learning Tutor (Tutor-Led)
 
 ## Ringkasan
-Fitur AI Learning Tutor telah diterapkan pada stasiun `3. Notes`. Sistem kini dapat memimpin diskusi belajar berdasarkan materi dan hasil analisis, menyimpan riwayat serta perkembangan konsep terpisah dalam file session, dan meneruskan konteks diskusi ke Learning Notes Agent saat sesi selesai.
+Fitur AI Learning Tutor diterapkan pada tahap `3. Notes`. Tutor memimpin diskusi berdasarkan materi mentah dan hasil analisis, menyimpan perkembangan konsep serta riwayat giliran di `catatan/{name}.session.json`, lalu meneruskan konteks yang relevan ke Learning Notes Agent.
 
-## Perubahan yang Dilakukan
+Implementasi kini membatasi konteks LLM, menggunakan prompt Tutor terpisah, memvalidasi schema `TutorTurn`, membedakan fakta per giliran, mendukung sesi dilewati tanpa pemanggilan LLM, dan mempertahankan analogi serta konsep belum dibahas pada catatan.
 
-### 1. Learning Notes CLI
-File: `tools/run_learning_notes.py`
+## Perubahan Utama
 
-- Menambahkan argumen opsional `--session`.
-- Membaca file `.session.json` bila argumen diberikan.
-- Menambahkan data sesi ke payload LLM melalui field `session`.
-- Tanpa file sesi, payload tetap menggunakan `session: null`.
+### 1. Prompt Tutor Terpisah
+Prompt lengkap dipindahkan ke:
 
-### 2. Orkestrasi Tahap Notes
-File: `apps/backend/app/stages.py`
+- `prompts/learning_tutor/v1.md`
 
-- Menambahkan path:
-  - `catatan/{name}.session.json`
-- Menambahkan argumen `--session` ke perintah `run_learning_notes.py` bila file sesi tersedia.
-- Perilaku tahap `notes` lain tetap mengikuti pola orkestrasi yang sudah ada.
+Prompt tersebut mengatur pembukaan sesi dengan peta konsep dan penanda konsep tipis, penjelasan satu konsep per giliran, analogi dan contoh untuk Software Engineer, maksimal satu pertanyaan pemahaman, larangan mengarang fakta di luar materi, pencatatan `unverified_facts`, serta format JSON `TutorTurn`.
 
-### 3. Backend Tutor
-File: `apps/backend/app/main.py`
+`_ask_tutor_json()` pada `apps/backend/app/main.py` membaca prompt dari `agentkit.ROOT / "prompts" / "learning_tutor" / "v1.md"`.
 
-- Menambahkan helper pembacaan sumber:
-  - material
-  - analysis
-- Menambahkan helper pemanggilan Gemini melalui `agentkit.ask`.
-- Menambahkan inisialisasi konsep dari `analysis.key_concepts`.
-- Menandai konsep sebagai tipis berdasarkan `needs_expansion` dan `gaps`.
-- Menambahkan pembaruan status konsep:
-  - `belum`
-  - `sebagian`
-  - `paham`
-- Menambahkan penyimpanan analogi baru.
-- Menambahkan pencatatan fakta yang perlu diverifikasi.
-- Menambahkan penyimpanan file:
-  - `catatan/{name}.session.json`
+### 2. Konteks LLM Dibatasi
+Pemanggilan Tutor tidak lagi mengirim seluruh riwayat sesi. Payload session dipangkas menjadi:
 
-#### Endpoint Baru
-- `GET /videos/{video_id}/tutor/session`
-  - Memastikan materi dan analisis tersedia.
-  - Membuat session otomatis bila belum ada.
-  - Memanggil Tutor untuk memberi pembuka dengan peta konsep.
+- `summary`
+- status dan data `concepts` saat ini
+- hanya `messages[-6:]`
 
-- `POST /videos/{video_id}/tutor/turn`
-  - Menerima body JSON `{ "message": "..." }`.
-  - Menyimpan pesan pengguna.
-  - Mengirim material, analysis, dan riwayat sesi ke Tutor.
-  - Memperbarui status konsep, analogi, serta fakta perlu verifikasi.
+Materi dan hasil analisis tetap dikirim sebagai sumber fakta.
 
-- `POST /videos/{video_id}/tutor/finish`
-  - Menandai `ended = true`.
-  - Menjalankan tahap `notes` dengan file session.
-  - Menghasilkan atau memperbarui catatan di latar belakang.
+### 3. Validator `TutorTurn`
+Backend menyediakan `check_tutor_turn(d)` yang memvalidasi:
 
-- `POST /videos/{video_id}/tutor/reset`
-  - Menghapus konteks diskusi lama secara logis dengan membuat session awal baru.
-  - Memanggil Tutor untuk membuka sesi baru.
+- `reply`: string tidak kosong.
+- `concept_updates`: list objek.
+- `id`: wajib cocok dengan konsep yang valid.
+- `status`: hanya `belum`, `sebagian`, atau `paham`.
+- `new_analogies`: list string.
+- `unverified_facts`: list string.
+- `session_summary`: string.
 
-### 4. Frontend API
-File: `apps/frontend/src/api.js`
+Hasil yang tidak memenuhi validator ditolak dan diulang sesuai mekanisme `agentkit.ask`.
 
-Menambahkan pemanggil:
-- `getTutorSession`
-- `sendTutorTurn`
-- `finishTutorSession`
-- `resetTutorSession`
+### 4. Tag Verifikasi per Giliran
+Pesan Tutor baru pada `get_tutor_session` dan `tutor_turn` mengisi `verifikasi_tags` hanya dari `unverified_facts` yang dihasilkan pada giliran tersebut.
 
-### 5. Ruang Kerja Frontend
-File: `apps/frontend/src/AgentWorkspaceModal.jsx`
+Fakta lama atau seluruh `unverified_notes` dari sesi tidak lagi ditampilkan sebagai tag akumulatif pada giliran baru.
 
-Pada tahap `notes`, ditambahkan dua sub-mode:
+### 5. Lewati Sesi
+Endpoint baru ditambahkan:
+
+- `POST /videos/{video_id}/tutor/skip`
+
+Endpoint ini menyimpan session dengan:
+
+- `ended: true`
+- `skipped: true`
+- `video_id`
+- status konsep
+- ringkasan dan riwayat yang ada
+
+Endpoint tidak memanggil `_ask_tutor_json()` dan langsung mengantrekan tahap `notes`.
+
+Frontend menambahkan pemanggil `skipTutorSession` pada `apps/frontend/src/api.js`, lalu tombol **Lewati Sesi → Langsung Susun Catatan** pada `AgentWorkspaceModal.jsx` menggunakan endpoint tersebut.
+
+### 6. Kontrak Learning Notes
+`tools/run_learning_notes.py` tetap mendukung `--session` dan meneruskan session ke prompt Learning Notes.
+
+Untuk session normal, script:
+
+- meneruskan `session.concepts[].analogies` ke `examples` pada section konsep yang cocok;
+- menambahkan section atau contoh berbasis sesi bila analogi tidak punya section terkait;
+- menandai konsep berstatus `belum` dengan penanda jelas `BELUM DIBAHAS`;
+- memasukkan konsep belum dibahas ke `omitted_concepts` beserta statusnya apabila konsep tidak dimasukkan ke section.
+
+Untuk session yang dilewati, `run_learning_notes.py` mengirim `"session": null` bila `session_data.get("skipped")` bernilai `true`, sehingga catatan disusun hanya dari materi dan analisis.
+
+Orkestrasi tahap `notes` pada `apps/backend/app/stages.py` tetap meneruskan file session ke CLI bila file tersedia.
+
+### 7. Antarmuka Tutor
+Pada tahap `3. Notes`, frontend menyediakan sub-mode:
 
 - `Sesi Belajar (Tutor)`
 - `Catatan & Approval 1`
 
-Mode Tutor memiliki:
-- Layout dua kolom untuk desktop.
+Mode Tutor berisi:
+
 - Chat Tutor dan pengguna.
-- Scroll otomatis ke pesan terbaru.
-- Quick interrupts:
-  - `Belum paham, jelaskan ulang`
-  - `Kasih analogi lain`
-  - `Contohnya di kerjaan nyata?`
-  - `Lanjut konsep berikutnya`
-- Peta konsep dengan status:
-  - Belum dibahas
-  - Sebagian paham
-  - Paham
-- Penanda `TIPIS` untuk konsep yang perlu diperluas.
+- Peta konsep beserta status dan penanda konsep tipis.
 - Bank analogi.
-- Badge amber `⚠ Perlu Verifikasi`.
-- Tombol:
-  - `Akhiri Sesi & Susun Catatan`
-  - `Lewati Sesi → Langsung Susun Catatan`
-
-Mode catatan tetap mempertahankan editor, kontrol jalankan ulang agen, riwayat run, dan Approval 1.
-
-### 6. Fullscreen dan Auto-Pause 3D
-Files:
-- `apps/frontend/src/App.jsx`
-- `apps/frontend/src/AgentWorkspaceModal.jsx`
-
-- Menambahkan mode fullscreen cyber untuk ruang kerja.
-- Sesi Notes otomatis terbuka fullscreen.
-- Menambahkan tombol `⛶ FULLSCREEN [F]` dan `🗗 COMPACT [F]`.
-- Menambahkan shortcut keyboard `F`, kecuali saat fokus berada di `INPUT`, `TEXTAREA`, atau `SELECT`.
-- Saat ruang kerja fullscreen atau Notes aktif, Command Center 3D masuk Sleep Mode sementara.
-- Saat modal ditutup, Sleep Mode ruang kerja dilepas.
-- Mode Sleep yang sudah ada untuk `words`, `render`, dan manual tetap dipertahankan.
-- Layout Tutor menggunakan `flex-1` dan `min-h-0` agar area chat serta sidebar mengisi tinggi layar.
-- Pesan Tutor dengan format `**teks**` dirender sebagai teks tebal berwarna cyan.
-- Editor teks untuk Notes dan tahap lain mengisi ruang fleksibel layar dengan tinggi minimum 280px.
-- Panel chat Tutor memiliki tinggi minimal 420px, gelembung maksimum `max-w-3xl`, teks `text-sm`, dan jarak paragraf yang lebih lega.
-- Peta Konsep dan Bank Analogi memiliki scroll independen agar tidak mengecilkan area obrolan.
+- Badge fakta yang perlu diverifikasi.
+- Quick interrupt untuk meminta penjelasan ulang atau contoh nyata.
+- Tombol mengakhiri sesi.
+- Tombol melewati sesi dan menyusun catatan.
 
 ## Format Data Sesi
-File session disimpan terpisah dari material dan hasil analisis:
 
 ```json
 {
   "video_id": 1,
   "ended": false,
+  "skipped": false,
   "summary": "",
   "concepts": [],
   "messages": []
@@ -131,6 +104,7 @@ File session disimpan terpisah dari material dan hasil analisis:
 ```
 
 Setiap konsep memuat:
+
 - `id`
 - `name`
 - `status`
@@ -138,32 +112,67 @@ Setiap konsep memuat:
 - `analogies`
 - `unverified_notes`
 
-## Alur yang Diharapkan
+Pesan tutor dan pengguna pada `messages` memuat `verifikasi_tags`. Untuk pengguna biasanya kosong; untuk Tutor berisi fakta eksternal baru pada giliran tersebut.
 
-1. Tombol `ADVANCE` menjalankan `2. Analyst`, lalu berhenti sebelum `3. Notes` bila session Tutor belum ada.
-2. Pengguna membuka tahap `3. Notes`.
-3. Frontend membuat atau mengambil session Tutor.
-4. Tutor membuka sesi dengan peta konsep dan konsep tipis.
-5. Pengguna mengirim pertanyaan atau memilih quick interrupt.
-6. Backend memperbarui status konsep, analogi, dan catatan verifikasi.
-7. Pengguna mengakhiri atau melewati sesi.
-8. Backend menandai session selesai.
-9. Tahap `notes` dijalankan dengan session sebagai konteks tambahan.
-10. Tombol `ADVANCE` berikutnya dapat melanjutkan setelah catatan tersedia dan disetujui.
-11. Draf catatan tampil pada sub-mode `Catatan & Approval 1`.
-12. Pengguna dapat menyetujui melalui Approval 1.
+## Alur Penggunaan
+
+1. Material dan analisis tersedia.
+2. Pengguna membuka atau memulai sesi Tutor.
+3. Backend mengambil/membuat session.
+4. Tutor memberi pembuka berisi peta konsep dan penanda konsep tipis.
+5. Setiap giliran dapat memperbarui status konsep, analogi, ringkasan, dan fakta perlu verifikasi.
+6. Pengguna dapat mengakhiri sesi atau melewati sesi.
+7. Tahap `notes` dijalankan dengan session normal atau `session: null` untuk sesi dilewati.
+8. Learning Notes menyusun catatan dan melewati approval sesuai alur aplikasi.
 
 ## Hasil Validasi
-- Frontend production build: berhasil.
-- Learning Notes contract/self-test: berhasil.
-- Python compile check: berhasil.
-- Backend smoke test: berhasil.
-- Orchestrator workflow test: berhasil.
 
-Build frontend masih menampilkan peringatan ukuran bundle, tetapi proses build selesai tanpa kegagalan.
+Berikut pemeriksaan yang dijalankan:
 
-## Catatan Implementasi
-- Integrasi LLM Tutor menggunakan provider dan model dari konfigurasi video.
-- Jika API key penyedia belum tersedia, endpoint Tutor akan mengembalikan error backend.
-- `tutor/reset` membuat session baru dan memanggil Tutor untuk pembukaan sesi kembali.
-- File session bersifat terpisah dari `material`, `analysis.json`, dan artifact catatan.
+- `python tools/run_learning_notes.py --self-test`: lulus.
+- `python -m compileall -q apps/backend/app tools/run_learning_notes.py`: lulus.
+- Backend smoke test: seluruh pemeriksaan lulus.
+- Orchestrator workflow test: seluruh 10 tahap dan approval lulus.
+- Pemeriksaan validasi `TutorTurn`: valid dan invalid case bekerja sesuai ekspektasi.
+- Pemeriksaan pengayaan analogi serta penandaan konsep belum dibahas: lulus.
+
+`pytest` tidak tersedia pada Python lingkungan saat ini, sehingga pengujian backend dijalankan melalui smoke test dan orchestrator test bawaan proyek.
+
+## Catatan Operasional
+
+- Konfigurasi provider dan model Tutor berasal dari video.
+- Jika API key penyedia atau koneksi LLM tidak tersedia, pemanggilan Tutor mengembalikan error backend.
+- Session bersifat terpisah dari file material, hasil analisis, dan artifact catatan.
+- `tutor/reset` membuat session awal baru dan memanggil Tutor untuk pembuka sesi kembali.
+
+## Gudang Proyek dan Isolasi Storage
+
+File kerja tiap proyek kini disimpan di `storage/projects/{slug}/`:
+
+- `material.txt`
+- `analysis.json`
+- `session.json`
+- `notes.txt`
+- `notes.v2.json`
+- `plan.json`
+- `selected_idea.json`
+- `script.draft.txt`
+- `script.txt`
+- `review.json`
+- `storyboard.json`
+- `render.mp4`
+
+Audio tetap berada di `apps/remotion/public/audio/{slug}.wav` dan word timing di `apps/remotion/public/audio/{slug}.words.json` agar Remotion dapat membacanya langsung.
+
+Fungsi `migrate_legacy_files(name)` menyalin file lama dari `catatan/`, `rencana/`, `naskah/`, dan output Remotion lama ke folder proyek baru hanya jika file tujuan belum ada.
+
+Gudang menyediakan:
+
+- pratinjau teks dan JSON;
+- pemutaran audio/video;
+- pengarsipan ke `storage/archive/{slug}-{YYYYMMDD-HHMMSS}/`;
+- verifikasi ukuran dan SHA-256 sebelum direktori kerja aktif dihapus;
+- penghapusan permanen proyek beserta database, artifact, run, audio, dan word timing setelah konfirmasi dua langkah.
+- penghapusan permanen folder arsip dari tab **Arsip** setelah konfirmasi dua langkah melalui `DELETE /storage/archives/{folder_name}`.
+- memutar file render video pada panel pratinjau Gudang, termasuk `render.mp4` proyek dan versi artifact render lama;
+- mengenali ulang render lama dari `storage/{slug}/render/` dan output Remotion lama melalui migrasi kompatibilitas.

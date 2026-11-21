@@ -1,0 +1,8 @@
+Kursus: Catatan Belajar: Software Development Methodologies
+Modul: 
+
+Topik: Metodologi Waterfall
+Waterfall adalah metodologi pengembangan perangkat lunak linear berurutan yang mencakup tahap Plan, Design, Develop, Test, Deploy, hingga Maintain. Kelebihannya mudah dipahami, tahapan jelas, dan cocok untuk proyek kebutuhan stabil seperti website company profile. Kekurangannya kurang fleksibel terhadap perubahan dan pengujian baru dilakukan di akhir.
+- Istilah Waterfall: Metodologi pengembangan perangkat lunak linear berurutan dari Plan hingga Maintain.
+- Contoh: Membangun jembatan di mana setiap tahap harus selesai sepenuhnya sebelum lanjut dan tidak bisa mengubah pondasi setelah cor beton mengering
+- Contoh: Website company profile

@@ -2,9 +2,12 @@
 from contextlib import asynccontextmanager
 import io
 import json
+import hashlib
+import shutil
 from pathlib import Path
 import subprocess
 import sys
+from datetime import datetime
 
 from fastapi import BackgroundTasks, Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -157,26 +160,55 @@ def _initial_tutor_session(analysis: dict):
     return {
         "video_id": None,
         "ended": False,
+        "skipped": False,
         "summary": "",
         "concepts": concepts,
         "messages": [],
     }
 
 
+def check_tutor_turn(d, valid_ids=None):
+    if not isinstance(d, dict):
+        return "TutorTurn harus berupa objek JSON."
+    if not isinstance(d.get("reply"), str) or not d["reply"].strip():
+        return 'Field "reply" wajib berupa string tidak kosong.'
+    updates = d.get("concept_updates")
+    if not isinstance(updates, list):
+        return 'Field "concept_updates" wajib berupa daftar.'
+    allowed_status = {"belum", "sebagian", "paham"}
+    allowed_ids = set(valid_ids or [])
+    for i, update in enumerate(updates, 1):
+        if not isinstance(update, dict):
+            return f"concept_updates #{i} harus berupa objek."
+        cid = str(update.get("id", "")).strip()
+        if not cid or (allowed_ids and cid not in allowed_ids):
+            return f"concept_updates #{i} memiliki id konsep tidak valid."
+        if update.get("status") not in allowed_status:
+            return f'concept_updates #{i} memiliki status tidak valid.'
+        if not isinstance(update.get("new_analogies"), list) or not all(isinstance(x, str) for x in update["new_analogies"]):
+            return f"concept_updates #{i} harus memiliki new_analogies berupa daftar string."
+        if not isinstance(update.get("unverified_facts"), list) or not all(isinstance(x, str) for x in update["unverified_facts"]):
+            return f"concept_updates #{i} harus memiliki unverified_facts berupa daftar string."
+    if not isinstance(d.get("session_summary"), str):
+        return 'Field "session_summary" wajib berupa string.'
+    return ""
+
+
 def _ask_tutor_json(video: Video, material: str, analysis: dict, session_data: dict):
-    system = (
-        "Kamu adalah Tutor-Led untuk pembelajaran. Memimpin percakapan berdasarkan analysis.json: "
-        "buka dengan peta singkat konsep dan tandai konsep tipis. Jelaskan satu konsep dengan analogi dan "
-        "contoh kerja Software Engineer. Lempar maksimal satu pertanyaan cek pemahaman saat diperlukan, "
-        "bukan kuis berat. Pengguna bebas menyela. Dilarang mengarang fakta di luar materi; tandai fakta tambahan "
-        "sebagai unverified_facts. Balas HANYA JSON dengan schema: "
-        '{"reply":"...","concept_updates":[{"id":"c1","status":"paham","new_analogies":[],"unverified_facts":[]}],'
-        '"session_summary":"..."}'
-    )
+    system = (agentkit.ROOT / "prompts" / "learning_tutor" / "v1.md").read_text(encoding="utf-8-sig")
+    valid_ids = [
+        str(c["id"]) for c in analysis.get("key_concepts", []) or []
+        if isinstance(c, dict) and str(c.get("id", "")).strip()
+    ]
+    compact_session = {
+        "summary": str(session_data.get("summary", "") or ""),
+        "concepts": session_data.get("concepts", []),
+        "messages": (session_data.get("messages", []) or [])[-6:],
+    }
     payload = {
         "material": material,
         "analysis": analysis,
-        "session": session_data,
+        "session": compact_session,
     }
     try:
         result = agentkit.ask(
@@ -184,7 +216,7 @@ def _ask_tutor_json(video: Video, material: str, analysis: dict, session_data: d
             video.model or None,
             system,
             json.dumps(payload, ensure_ascii=False),
-            lambda d: "" if isinstance(d, dict) and isinstance(d.get("reply"), str) else "Schema tutor tidak valid.",
+            lambda d: check_tutor_turn(d, valid_ids),
         )
     except SystemExit as exc:
         raise HTTPException(502, str(exc)) from exc
@@ -215,6 +247,17 @@ def _apply_tutor_updates(session_data: dict, result: dict):
     session_data["summary"] = str(result.get("session_summary") or session_data.get("summary") or "")
 
 
+def _new_unverified_facts(result: dict):
+    facts = []
+    for update in result.get("concept_updates", []) or []:
+        if not isinstance(update, dict):
+            continue
+        for fact in update.get("unverified_facts", []) or []:
+            if isinstance(fact, str) and fact.strip() and fact not in facts:
+                facts.append(fact)
+    return facts
+
+
 @app.get("/videos/{video_id}/tutor/session")
 def get_tutor_session(video_id: int, session: Session = Depends(db.get_session)):
     video = get_video(session, video_id)
@@ -234,11 +277,11 @@ def get_tutor_session(video_id: int, session: Session = Depends(db.get_session))
         session_data["messages"].append({
             "role": "tutor",
             "text": str(result.get("reply", "")),
-            "verifikasi_tags": [
-                fact for concept in session_data["concepts"] for fact in concept["unverified_notes"]
-            ],
+            "verifikasi_tags": _new_unverified_facts(result),
         })
         _save_tutor_session(p, session_data)
+    else:
+        session_data.setdefault("skipped", False)
     return session_data
 
 
@@ -255,9 +298,7 @@ def tutor_turn(video_id: int, body: TutorTurnIn, session: Session = Depends(db.g
     session_data["messages"].append({
         "role": "tutor",
         "text": str(result.get("reply", "")),
-        "verifikasi_tags": [
-            fact for concept in session_data["concepts"] for fact in concept["unverified_notes"]
-        ],
+        "verifikasi_tags": _new_unverified_facts(result),
     })
     _save_tutor_session(p, session_data)
     return session_data
@@ -285,6 +326,40 @@ def finish_tutor_session(video_id: int, tasks: BackgroundTasks, session: Session
     return {"status": "queued", "session": session_data, "run_id": run.id}
 
 
+@app.post("/videos/{video_id}/tutor/skip")
+def skip_tutor_session(video_id: int, tasks: BackgroundTasks, session: Session = Depends(db.get_session)):
+    video = get_video(session, video_id)
+    p, material, analysis = _read_tutor_sources(video)
+
+    if p["session"].exists():
+        try:
+            session_data = json.loads(p["session"].read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError):
+            session_data = None
+    else:
+        session_data = None
+    if not isinstance(session_data, dict):
+        session_data = _initial_tutor_session(analysis)
+
+    session_data["video_id"] = video_id
+    session_data["ended"] = True
+    session_data["skipped"] = True
+    _save_tutor_session(p, session_data)
+
+    busy = session.scalars(select(Run).where(Run.video_id == video.id, Run.status.in_(["queued", "running"]))).first()
+    if busy:
+        raise HTTPException(409, f"Tahap '{busy.stage}' masih berjalan (run {busy.id}).")
+    why = service.can_run(session, video, "notes")
+    if why:
+        raise HTTPException(409, why)
+    run = Run(video_id=video.id, stage="notes")
+    session.add(run)
+    session.commit()
+    day_label, course = labels(session, video)
+    tasks.add_task(service.execute_run, db.SessionLocal, run.id, day_label, course)
+    return {"status": "queued", "session": session_data, "run_id": run.id, "skipped": True}
+
+
 @app.post("/videos/{video_id}/tutor/reset")
 def reset_tutor_session(video_id: int, session: Session = Depends(db.get_session)):
     video = get_video(session, video_id)
@@ -296,7 +371,7 @@ def reset_tutor_session(video_id: int, session: Session = Depends(db.get_session
     session_data["messages"].append({
         "role": "tutor",
         "text": str(result.get("reply", "")),
-        "verifikasi_tags": [],
+        "verifikasi_tags": _new_unverified_facts(result),
     })
     _save_tutor_session(p, session_data)
     return session_data
@@ -350,6 +425,7 @@ def list_series(session: Session = Depends(db.get_session)):
 def create_video(body: VideoIn, session: Session = Depends(db.get_session)):
     if session.scalars(select(Video).where(Video.name == body.name)).first():
         raise HTTPException(409, "Nama video sudah ada")
+    stages.migrate_legacy_files(body.name)
     v = Video(**body.model_dump())
     session.add(v)
     session.commit()
@@ -547,3 +623,310 @@ def artifact_file(artifact_id: int, session: Session = Depends(db.get_session)):
     if not a:
         raise HTTPException(404, "Tidak ditemukan")
     return FileResponse(a.path)
+
+
+STORAGE_LABELS = {
+    "material": "Material",
+    "analysis": "Analisis",
+    "session": "Sesi Tutor",
+    "notes": "Catatan",
+    "notes_json": "Catatan JSON",
+    "ideas": "Rencana Ide",
+    "selected_idea": "Ide Terpilih",
+    "script": "Draft Naskah",
+    "review": "Naskah Review",
+    "review_json": "Hasil Review",
+    "audio": "Audio",
+    "words": "Word Timing",
+    "storyboard": "Storyboard",
+    "render": "Render Video",
+    "render_preview": "Contoh Video Render",
+}
+
+
+def _sha256(path: Path):
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _storage_file_row(file_key: str, path: Path):
+    if not path.exists() or not path.is_file():
+        return None
+    stat = path.stat()
+    updated = datetime.fromtimestamp(stat.st_mtime)
+    return {
+        "key": file_key,
+        "label": STORAGE_LABELS.get(file_key, file_key),
+        "name": path.name,
+        "size_bytes": stat.st_size,
+        "updated_at": updated.isoformat(),
+        "path": str(path),
+    }
+
+
+@app.get("/storage/overview")
+def storage_overview(session: Session = Depends(db.get_session)):
+    projects = []
+    for video in session.scalars(select(Video).order_by(Video.day, Video.id)):
+        stages.migrate_legacy_files(video.name)
+        p = stages.paths(video.name)
+        files = []
+        seen_keys = set()
+        for key, path in p.items():
+            row = _storage_file_row(key, path)
+            if row:
+                files.append(row)
+                seen_keys.add(key)
+
+        base = config.STORAGE / "projects" / video.name
+        artifacts_base = base / "artifacts"
+        if artifacts_base.exists():
+            for path in sorted(artifacts_base.rglob("*")):
+                if not path.is_file():
+                    continue
+                stage = path.parent.parent.name if path.parent.parent != artifacts_base else path.parent.name
+                key = f"artifact:{stage}:{path.name}"
+                row = _storage_file_row(key, path)
+                if row:
+                    row["label"] = f"Versi {STORAGE_LABELS.get(stage, stage)}"
+                    files.append(row)
+
+        for artifact in session.scalars(
+            select(Artifact)
+            .where(Artifact.video_id == video.id)
+            .order_by(Artifact.stage, Artifact.version.desc())
+        ):
+            artifact_path = Path(artifact.path)
+            if not artifact_path.exists() or not artifact_path.is_file():
+                continue
+            key = f"artifact:{artifact.stage}:{artifact.id}:{artifact_path.name}"
+            if any(file_row["key"] == key for file_row in files):
+                continue
+            stat = artifact_path.stat()
+            files.append({
+                "key": key,
+                "label": f"Versi {STORAGE_LABELS.get(artifact.stage, artifact.stage)}",
+                "name": artifact_path.name,
+                "size_bytes": stat.st_size,
+                "updated_at": artifact.created_at.isoformat() if artifact.created_at else datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                "path": str(artifact_path),
+            })
+
+        projects.append({
+            "video_id": video.id,
+            "slug": video.name,
+            "title": video.title or video.name,
+            "day": video.day,
+            "files": files,
+        })
+
+    archive_root = config.STORAGE / "archive"
+    archives = []
+    if archive_root.exists():
+        for folder in sorted(archive_root.iterdir(), reverse=True):
+            if not folder.is_dir():
+                continue
+            manifest_path = folder / "manifest.json"
+            manifest = {}
+            if manifest_path.exists():
+                try:
+                    manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+                except (OSError, json.JSONDecodeError):
+                    manifest = {}
+            archives.append({
+                "folder": folder.name,
+                "manifest": manifest,
+                "files": [
+                    {
+                        "path": str(path.relative_to(folder)).replace("\\", "/"),
+                        "size_bytes": path.stat().st_size,
+                    }
+                    for path in sorted(folder.rglob("*"))
+                    if path.is_file() and path.name != "manifest.json"
+                ],
+            })
+    return {"projects": projects, "archives": archives}
+
+
+@app.get("/storage/projects/{video_id}/preview/{file_key}")
+def preview_storage_file(video_id: int, file_key: str, session: Session = Depends(db.get_session)):
+    video = get_video(session, video_id)
+
+    if file_key.startswith("artifact:"):
+        parts = file_key.split(":", 3)
+        if len(parts) == 4:
+            _prefix, stage, artifact_id, _name = parts
+            try:
+                artifact = session.get(Artifact, int(artifact_id))
+            except ValueError:
+                artifact = None
+            if not artifact or artifact.video_id != video.id:
+                raise HTTPException(404, "Versi artifact tidak ditemukan")
+            path = Path(artifact.path)
+            if not path.exists() or not path.is_file():
+                raise HTTPException(404, "File versi belum tersedia")
+            if stage in {"audio", "render"} or path.suffix.lower() in {".wav", ".mp3", ".mp4", ".mov", ".webm"}:
+                return {
+                    "kind": "media",
+                    "key": file_key,
+                    "name": path.name,
+                    "size_bytes": path.stat().st_size,
+                    "media_url": f"/artifacts/{artifact.id}/file",
+                }
+            if path.stat().st_size > 2 * 1024 * 1024:
+                raise HTTPException(413, "File terlalu besar untuk pratinjau teks")
+            content = path.read_text(encoding="utf-8-sig")
+            if path.suffix.lower() == ".json":
+                try:
+                    content = json.dumps(json.loads(content), ensure_ascii=False, indent=2)
+                except json.JSONDecodeError:
+                    pass
+            return {"kind": "text", "key": file_key, "name": path.name, "content": content}
+
+    p = stages.paths(video.name)
+    if file_key not in p:
+        raise HTTPException(404, "File proyek tidak ditemukan")
+    path = p[file_key]
+    if not path.exists() or not path.is_file():
+        raise HTTPException(404, "File belum tersedia")
+
+    if file_key in {"audio", "render"}:
+        return {
+            "kind": "media",
+            "key": file_key,
+            "name": path.name,
+            "size_bytes": path.stat().st_size,
+            "media_url": f"/storage/media/{video_id}/{file_key}",
+        }
+    if file_key == "words" or path.suffix.lower() in {".json"}:
+        text = path.read_text(encoding="utf-8-sig")
+        try:
+            text = json.dumps(json.loads(text), ensure_ascii=False, indent=2)
+        except json.JSONDecodeError:
+            pass
+        return {"kind": "text", "key": file_key, "name": path.name, "content": text}
+    if path.stat().st_size > 2 * 1024 * 1024:
+        raise HTTPException(413, "File terlalu besar untuk pratinjau teks")
+    return {
+        "kind": "text",
+        "key": file_key,
+        "name": path.name,
+        "content": path.read_text(encoding="utf-8-sig"),
+    }
+
+
+@app.get("/storage/media/{video_id}/{file_key}")
+def storage_media(video_id: int, file_key: str, session: Session = Depends(db.get_session)):
+    video = get_video(session, video_id)
+    p = stages.paths(video.name)
+    if file_key not in {"audio", "render"}:
+        raise HTTPException(404, "File media tidak ditemukan")
+    path = p[file_key]
+    if not path.exists():
+        raise HTTPException(404, "File media belum tersedia")
+    return FileResponse(path)
+
+
+@app.post("/storage/projects/{video_id}/archive")
+def archive_project(video_id: int, session: Session = Depends(db.get_session)):
+    video = get_video(session, video_id)
+    p = stages.paths(video.name)
+    archive_root = config.STORAGE / "archive"
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    destination_root = archive_root / f"{video.name}-{timestamp}"
+    if destination_root.exists():
+        raise HTTPException(409, "Nama folder arsip bentrok; coba lagi.")
+    destination_root.mkdir(parents=True)
+
+    source_files = []
+    project_root = config.STORAGE / "projects" / video.name
+    if project_root.exists():
+        for path in sorted(project_root.rglob("*")):
+            if path.is_file():
+                rel = path.relative_to(project_root).as_posix()
+                source_files.append((path, destination_root / "project" / rel))
+    for key in ("audio", "words"):
+        path = p[key]
+        if path.exists() and path.is_file():
+            source_files.append((path, destination_root / "external" / f"{video.name}-{path.name}"))
+
+    manifest_files = []
+    try:
+        for source, destination in source_files:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+            if source.stat().st_size != destination.stat().st_size:
+                raise IOError(f"Ukuran hasil salinan tidak cocok: {source}")
+            if _sha256(source) != _sha256(destination):
+                raise IOError(f"Hash hasil salinan tidak cocok: {source}")
+            manifest_files.append({
+                "path": str(destination.relative_to(destination_root)).replace("\\", "/"),
+                "size_bytes": destination.stat().st_size,
+                "sha256": _sha256(destination),
+            })
+    except Exception as exc:
+        shutil.rmtree(destination_root, ignore_errors=True)
+        raise HTTPException(500, f"Gagal memverifikasi arsip: {exc}") from exc
+
+    manifest = {
+        "video_id": video.id,
+        "slug": video.name,
+        "title": video.title or video.name,
+        "archived_at": datetime.now().isoformat(),
+        "files": manifest_files,
+    }
+    (destination_root / "manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    if project_root.exists():
+        shutil.rmtree(project_root)
+    for key in ("audio", "words"):
+        path = p[key]
+        if path.exists() and path.is_file():
+            path.unlink()
+
+    return {"status": "archived", "folder": destination_root.name, "manifest": manifest}
+
+
+@app.delete("/storage/archives/{folder_name}")
+def delete_archive(folder_name: str):
+    archive_root = (config.STORAGE / "archive").resolve()
+    destination_root = (archive_root / folder_name).resolve()
+
+    if archive_root not in destination_root.parents:
+        raise HTTPException(400, "Nama folder arsip tidak valid.")
+    if destination_root == archive_root:
+        raise HTTPException(400, "Folder arsip utama tidak boleh dihapus.")
+    if not destination_root.exists() or not destination_root.is_dir():
+        raise HTTPException(404, "Folder arsip tidak ditemukan.")
+
+    shutil.rmtree(destination_root)
+    return {"status": "deleted", "folder": folder_name}
+
+
+@app.delete("/videos/{video_id}")
+def delete_project(video_id: int, session: Session = Depends(db.get_session)):
+    video = get_video(session, video_id)
+    busy = session.scalars(select(Run).where(Run.video_id == video.id, Run.status.in_(["queued", "running"]))).first()
+    if busy:
+        raise HTTPException(409, f"Tahap '{busy.stage}' masih berjalan dan tidak dapat dihapus.")
+    p = stages.paths(video.name)
+
+    session.execute(Run.__table__.delete().where(Run.video_id == video.id))
+    session.execute(Artifact.__table__.delete().where(Artifact.video_id == video.id))
+    session.delete(video)
+    session.commit()
+
+    project_root = config.STORAGE / "projects" / video.name
+    if project_root.exists():
+        shutil.rmtree(project_root)
+    for key in ("audio", "words"):
+        path = p[key]
+        if path.exists() and path.is_file():
+            path.unlink()
+    return {"status": "deleted", "video_id": video_id, "slug": video.name}

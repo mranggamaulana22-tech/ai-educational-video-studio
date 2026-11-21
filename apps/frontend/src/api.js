@@ -67,7 +67,17 @@ export const api = {
   getTutorSession: (id) => call("GET", `/videos/${id}/tutor/session`),
   sendTutorTurn: (id, message) => call("POST", `/videos/${id}/tutor/turn`, { message }),
   finishTutorSession: (id) => call("POST", `/videos/${id}/tutor/finish`),
+  skipTutorSession: (id) => call("POST", `/videos/${id}/tutor/skip`),
   resetTutorSession: (id) => call("POST", `/videos/${id}/tutor/reset`),
+  getStorageOverview: () => call("GET", "/storage/overview"),
+  previewStorageFile: (id, fileKey) =>
+    call("GET", `/storage/projects/${id}/preview/${encodeURIComponent(fileKey)}`),
+  archiveProject: (id) => call("POST", `/storage/projects/${id}/archive`),
+  deleteArchive: (folder) =>
+    call("DELETE", `/storage/archives/${encodeURIComponent(folder)}`),
+  deleteProject: (id) => {
+    return call("DELETE", `/videos/${id}`);
+  },
 };
 
 export const fileUrl = (artifactId) => `${API}/artifacts/${artifactId}/file`;

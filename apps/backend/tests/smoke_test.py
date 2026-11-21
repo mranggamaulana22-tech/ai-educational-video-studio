@@ -76,7 +76,10 @@ check(r.status_code == 409, "audio ditolak sebelum naskah disetujui")
 c.post(f"/videos/{vid}/approve/script")
 run = c.get(f"/runs/{c.post(f'/videos/{vid}/run/audio').json()['run_id']}").json()
 check(run["status"] == "ok", "audio jalan setelah naskah disetujui")
-check(Path(config.STORAGE / "tes-video/audio/v1.wav").exists(), "versi audio v1 disalin ke storage")
+check(
+    Path(config.STORAGE / "projects/tes-video/artifacts/audio/v1.wav").exists(),
+    "versi audio v1 disalin ke storage project",
+)
 txt = Path(stages.paths("tes-video")["audio"]).read_text()
 check("voice=Puck" in txt, "pilihan narator (voice) diteruskan ke tahap audio")
 

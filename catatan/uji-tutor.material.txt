@@ -1,0 +1,129 @@
+Softwere development metodologies
+
+Adalah proses yang diperlukan untuk kejelasan komunikasi dan fasilitas pembagian informasi kepada tim.
+
+Waterfal (kebawah)
+
+Plan
+
+Design
+
+Develop
+
+Test
+
+Deploy
+
+Maintain
+
+Kelebihan :
+
+mudah di pahami dan dikelola
+
+Tahapan pengerjaan jelas
+
+Cocok untuk proyek dengan kebutuhan stabil
+
+Kekurangan :
+
+Kurang fleksibel terhadap perubahan
+
+Pengujian utama dilakukan setelah implementasi
+
+Pengguna mungkin baru dapat melihat hasil sistem secara utuh ketika pengembangan sudah jauh berjalan
+
+Cocok untuk :
+
+Website company profile
+
+Sistem informasi sederhana
+
+V shape model (batas di coding, setiap tahapan atasnya coding memiliki pasangan tahapan pengujian)
+
+Plan
+
+System design
+
+Architecture design
+
+Module design
+
+Coding
+
+Unit testing
+
+Integration testing
+
+System testing
+
+Acceptence testing’
+
+Kelebihan :
+
+Pengujian terencana sejak awal
+
+Kesalahan lebih mudah di lacak berdasarkan tahapan
+
+Cocok untuk sistem yang membutuhkan keandalan tinggi
+
+Kekurangan :
+
+Kurang fleksibel terhadap perubahan kebutuhan
+
+Membutuhkan pernecanaan dokumentasi yang matang
+
+Tidak ideal untuk projek yang spesifikasinya sering berubah
+
+Cocok untuk :
+
+Softwere perangkat medis
+
+Softwere otomotif
+
+Sistem penerbangan
+
+Agile (muter)
+
+Plan
+
+Design
+
+Develop
+
+Test
+
+Deploy
+
+Feedback
+
+Kelebihan :
+
+Fleksibel terhadap perubahan
+
+Feedback pengguna diperoleh lebih cepat
+
+Fitur dapat di rilis bertahap
+
+Memungkinkan evaluasi dan perbaikan berkelanjutan
+
+Kekurangan :
+
+Membutuhkan komunikasi tim yang intensif
+
+Ruang lingkup proyek bisa melebar
+
+Estimasi waktu dan biaya lebih sulit diprediksi
+
+Membutuhkan product owner yang menentukanr sekala prioritas
+
+Cocok untuk :
+
+ERP
+
+E-commerce
+
+Startup applikasi
+
+SaaS
+
+Platform edukasi online
