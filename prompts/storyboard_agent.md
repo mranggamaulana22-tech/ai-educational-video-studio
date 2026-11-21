@@ -43,7 +43,7 @@ Ikon (field `icon`): laptop, code, gear, cloud, people, bug, check, lock, clock,
 - BigStatement: kalimat kunci besar. props: kicker?, icon?, iconColor?, lines [{text, color?}] 1-5, cuesMs? [baris1, ...]
 - CompareCards: perbandingan dua sisi. props: heading?, left {title, color?, icon?, items[1-4 teks]}, right {sama}, cuesMs? [judul, kiri, kanan]
 - FlowSteps: urutan langkah lurus. props: heading?, steps [{label, icon?, color?}] 2-5, cuesMs? [judul, langkah1, ...]
-- DiagramScene: diagram arsitektur/hubungan kotak, panah, dan ikon (2-5 node). props: heading?, nodes [{id, label, sublabel?, icon?, color?}] 2-5, edges? [{from, to, label?}], cuesMs? [judul, node1, ...]
+- DiagramScene: diagram arsitektur/hubungan kotak, panah, dan ikon (maksimal 4 node). WAJIB gunakan layout `"column"`; props: heading?, nodes [{id, label, sublabel?, icon?, color?}] 2-4, edges? [{from, to, label?}], cuesMs? [judul, node1, ...]. Label panah (edge.label) maksimal 12 karakter agar terbaca di layar vertikal 9:16.
 - CardList: daftar poin bernomor. props: heading?, items [{text, icon?, color?}] 1-5, cuesMs? [judul, poin1, ...]
 - CtaCard: penutup. props: title, subtitle?, button?, color?, icon?, cuesMs? [judul, subjudul, tombol]
 

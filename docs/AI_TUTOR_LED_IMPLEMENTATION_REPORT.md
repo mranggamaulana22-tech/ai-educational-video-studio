@@ -94,13 +94,31 @@ Halaman ini mencatat seluruh peningkatan yang diterapkan pada sistem selama sesi
 ### G. Validasi yang Telah Dijalankan
 
 1. `python tools/run_learning_notes.py --self-test`: lulus.
-2. Compile Python backend: lulus.
-3. Frontend production build: lulus.
-4. Backend smoke test: seluruh pemeriksaan lulus.
-5. Orchestrator workflow test: seluruh tahap dan approval lulus.
-6. Smoke test Storage Vault: lulus.
-7. Smoke test penghapusan arsip: lulus.
-8. Smoke test pratinjau video render: lulus.
+2. `python tools/run_content_planner.py --self-test`: lulus.
+3. `python tools/run_scriptwriter.py --self-test`: lulus.
+4. `python tools/run_storyboard_agent.py --self-test`: lulus.
+5. `python tools/run_storyboard.py --self-test`: lulus.
+6. Compile Python backend: lulus.
+7. Frontend production build: lulus.
+8. Backend smoke test: seluruh pemeriksaan lulus.
+9. Orchestrator workflow test: seluruh tahap dan approval lulus.
+10. Smoke test Storage Vault: lulus.
+11. Smoke test penghapusan arsip: lulus.
+12. Smoke test pratinjau video render: lulus.
+
+### H. Kalibrasi Produksi Konten P1
+
+1. Kecepatan bicara Scriptwriter dikalibrasi menjadi sekitar 2,0 kata/detik.
+2. Batas naskah menjadi 60-125 kata, dengan target 45-55 detik atau 90-110 kata.
+3. Maksimal kalimat lisan validator dinaikkan menjadi 18 kata agar kalimat alami tidak ditolak berlebihan.
+4. Estimasi durasi pada output Scriptwriter dihitung dengan pembagian `count_words(script) / 2.0`.
+5. Prompt `prompts/scriptwriter/v1.md` dan `prompts/scriptwriter_agent.md` diselaraskan dengan batas panjang naskah baru.
+6. Fungsi `slug(s)` pada Content Planner membatasi nama slug hingga 32 karakter.
+7. Pemotongan slug dipindahkan ke tanda hubung terakhir agar tidak memotong kata di tengah.
+8. Cetakan perintah pipeline `--course` kini memprioritaskan `plan.series`, lalu `notes.course`, lalu `notes.title`.
+9. Spesifikasi `DiagramScene` kini mewajibkan `layout: "column"`, maksimal 4 node, dan label panah maksimal 12 karakter.
+10. Validator storyboard memperkuat batas 4 node, layout kolom, dan panjang label panah.
+11. Ditambahkan entrypoint kompatibilitas `tools/run_storyboard.py` yang meneruskan eksekusi ke `run_storyboard_agent.py`.
 
 ## Ringkasan
 Fitur AI Learning Tutor diterapkan pada tahap `3. Notes`. Tutor memimpin diskusi berdasarkan materi mentah dan hasil analisis, menyimpan perkembangan konsep serta riwayat giliran di `catatan/{name}.session.json`, lalu meneruskan konteks yang relevan ke Learning Notes Agent.

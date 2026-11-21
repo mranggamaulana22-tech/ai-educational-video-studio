@@ -20,7 +20,9 @@ VALID_FORMATS = {"myth_vs_fact", "step_by_step", "analogy", "comparison", "conce
 
 def slug(s):
     s = re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
-    return s[:28].strip("-") or "video"
+    if len(s) > 32:
+        s = s[:32].rsplit("-", 1)[0]
+    return s.strip("-") or "video"
 
 
 def _extract_entries(notes):
@@ -173,7 +175,7 @@ def main():
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     root = agentkit.ROOT
-    course = notes.get("course") or notes.get("title") or ""
+    course = plan.get("series") or notes.get("course") or notes.get("title") or ""
     videos = plan["videos"]
     print("\nRencana video:")
     for i, v in enumerate(videos):

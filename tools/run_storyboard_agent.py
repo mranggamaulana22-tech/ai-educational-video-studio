@@ -13,6 +13,7 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -166,17 +167,62 @@ def validate(path):
     return r.returncode == 0, (r.stdout + r.stderr).strip()
 
 
+def run_self_test():
+    sample = {
+        "schemaVersion": "1.3",
+        "video": {"title": "Diagram Test", "width": 1080, "height": 1920, "fps": 30, "durationMs": 3000},
+        "audio": {"src": "audio/uji-tutor.wav", "durationMs": 3000},
+        "scenes": [{
+            "id": "scene-001",
+            "startMs": 0,
+            "durationMs": 3000,
+            "componentId": "DiagramScene",
+            "componentVersion": "1.0.0",
+            "props": {
+                "layout": "column",
+                "nodes": [
+                    {"id": "a", "label": "Masukan", "icon": "file"},
+                    {"id": "b", "label": "Proses", "icon": "gear"},
+                    {"id": "c", "label": "Simpan", "icon": "database"},
+                    {"id": "d", "label": "Hasil", "icon": "check"},
+                ],
+                "edges": [{"from": "a", "to": "b", "label": "Masuk"}, {"from": "b", "to": "c", "label": "Simpan"}],
+            },
+            "transition": "fade",
+        }],
+        "subtitles": [{"id": "sub-001", "startMs": 0, "endMs": 3000, "text": "Alur data ringkas."}],
+    }
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", encoding="utf-8", delete=False) as f:
+        json.dump(sample, f, ensure_ascii=False)
+        temp_path = Path(f.name)
+    try:
+        ok, report = validate(temp_path)
+    finally:
+        temp_path.unlink(missing_ok=True)
+    if not ok:
+        print(f"[GAGAL] Fixture Storyboard tidak valid:\n{report}")
+        return 1
+    print("[OK] Kontrak & fixture Storyboard (DiagramScene column, 4 node, label panah <=12) valid.")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("script")
-    ap.add_argument("words")
-    ap.add_argument("out")
+    ap.add_argument("script", nargs="?")
+    ap.add_argument("words", nargs="?")
+    ap.add_argument("out", nargs="?")
     ap.add_argument("--provider", default="gemini", choices=list(llm.PROVIDERS))
     ap.add_argument("--model", default=None)
     ap.add_argument("--day", default=None)
     ap.add_argument("--course", default=None)
     ap.add_argument("--retries", type=int, default=2)
+    ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
+
+    if a.self_test:
+        return run_self_test()
+    if not a.script or not a.words or not a.out:
+        ap.error("Argumen script, words, dan out wajib diisi kecuali memakai --self-test.")
 
     naskah = " ".join(Path(a.script).read_text(encoding="utf-8-sig").split())
     words = json.loads(Path(a.words).read_text(encoding="utf-8-sig"))

@@ -21,8 +21,8 @@ import llm  # noqa: E402
 import run_script_reviewer  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-MIN_WORDS, MAX_WORDS = 90, 170
-MAX_SENTENCE = 16  # kalimat lebih panjang dari ini ditolak (aturan prompt: maks 14 kata)
+MIN_WORDS, MAX_WORDS = 60, 125
+MAX_SENTENCE = 18
 ACRONYMS = ["SDLC", "SRS", "URS", "SysRS", "UAT", "API", "UI", "UX", "SQL", "HTML", "CSS", "MVP", "PRD", "TTS", "JSON", "CLI", "SDK"]
 VALID_ROLES = {"hook", "body", "analogy", "closing"}
 MAX_REVISIONS = 2
@@ -90,10 +90,21 @@ def make_check():
         longs = long_sentences(text)
         if longs and state["style_rejects"] < 2:  # soal gaya: maks 2 kali minta ulang, lalu diterima
             state["style_rejects"] += 1
-            return f'Ada {len(longs)} kalimat lebih dari {MAX_SENTENCE} kata, mis.: "{longs[0]}". Pecah jadi kalimat pendek (maks 14 kata).'
+            return f'Ada {len(longs)} kalimat lebih dari {MAX_SENTENCE} kata, mis.: "{longs[0]}". Pecah jadi kalimat pendek (maks {MAX_SENTENCE} kata).'
         return ""
 
     return check_script
+
+
+def run_self_test():
+    sample_script = " ".join(["Ini adalah naskah contoh."] * 20)
+    sample = {"script": sample_script}
+    err = make_check()(sample)
+    if err:
+        print(f"[GAGAL] Fixture Scriptwriter tidak valid: {err}")
+        return 1
+    print("[OK] Kontrak & fixture Scriptwriter (60-125 kata, kecepatan 2,0 kata/detik) valid.")
+    return 0
 
 
 def _load_writer_prompt():
@@ -103,8 +114,8 @@ def _load_writer_prompt():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("notes")
-    ap.add_argument("out")
+    ap.add_argument("notes", nargs="?")
+    ap.add_argument("out", nargs="?")
     ap.add_argument("--day")
     ap.add_argument("--course")
     ap.add_argument("--format", dest="video_format")
@@ -116,7 +127,13 @@ def main():
     ap.add_argument("--review-json", help="Opsional: simpan JSON hasil review terakhir dari Script Reviewer")
     ap.add_argument("--max-revisions", type=int, default=MAX_REVISIONS)
     ap.add_argument("--no-review", action="store_true")
+    ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
+
+    if a.self_test:
+        return run_self_test()
+    if not a.notes or not a.out:
+        ap.error("Argumen notes dan out wajib diisi kecuali memakai --self-test.")
 
     notes = Path(a.notes).read_text(encoding="utf-8-sig").strip()
     if not notes:
@@ -186,7 +203,7 @@ def main():
         rp.parent.mkdir(parents=True, exist_ok=True)
         rp.write_text(json.dumps(last_review, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    secs = count_words(script) / 2.5
+    secs = count_words(script) / 2.0
     print(f"\n[OK] Naskah {count_words(script)} kata (sekitar {secs:.0f} detik) disimpan: {out}")
     print("Baca dan edit seandainya perlu (titik persetujuan naskah), lalu lanjut ke pipeline.")
     return 0
