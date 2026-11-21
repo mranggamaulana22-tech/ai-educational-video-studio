@@ -1,3 +1,10 @@
+export const FELISA_LEADER = {
+  name: "Felisa",
+  roleTitle: "Studio Leader",
+  persona: "Pemimpin Operasional Studio — memantau tahap produksi, menyampaikan pesan ringkas, dan mengarahkan tindakan berikutnya.",
+  scopeTag: "LEADER OPERATION CENTER",
+};
+
 export const AGENT_STAGES = [
   {
     index: 0,

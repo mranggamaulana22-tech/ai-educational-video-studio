@@ -1,5 +1,6 @@
 """API backend AI Educational Video Studio. Jalankan:  uvicorn app.main:app --reload  (dari apps/backend)"""
 from contextlib import asynccontextmanager
+import asyncio
 import io
 import json
 import hashlib
@@ -11,12 +12,13 @@ from datetime import datetime
 
 from fastapi import BackgroundTasks, Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from . import config, db, service, stages
+from . import config, db, leader, service, stages
+from .events import emit_studio_event, studio_events
 from .models import Artifact, Run, Series, Video
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
@@ -38,6 +40,35 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/events")
+async def studio_events_stream():
+    subscriber, initial = studio_events.subscribe()
+
+    async def stream():
+        try:
+            for event in initial[-20:]:
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+            while True:
+                try:
+                    event = await asyncio.wait_for(subscriber[1].get(), timeout=15)
+                    yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+                except asyncio.TimeoutError:
+                    yield ": ping\n\n"
+        finally:
+            studio_events.unsubscribe(subscriber)
+
+    return StreamingResponse(
+        stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 # Suara bawaan Gemini TTS (pilihan narator)
 VOICES = [
@@ -86,6 +117,15 @@ class SelectIdeaIn(BaseModel):
 
 class TutorTurnIn(BaseModel):
     message: str
+
+
+class LeaderCommandIn(BaseModel):
+    message: str
+    video_id: int | None = None
+
+
+class LeaderExecuteIn(BaseModel):
+    pending_action: dict
 
 
 def get_video(session: Session, video_id: int) -> Video:
@@ -311,6 +351,14 @@ def finish_tutor_session(video_id: int, tasks: BackgroundTasks, session: Session
     session_data = get_tutor_session(video_id, session)
     session_data["ended"] = True
     _save_tutor_session(p, session_data)
+    emit_studio_event(
+        "tutor_ready",
+        video_id=video.id,
+        video_title=video.title or video.name,
+        stage="notes",
+        detail=f"Sesi Tutor untuk \"{video.title or video.name}\" selesai. Catatan siap disusun.",
+        action_hint="open_tutor",
+    )
 
     busy = session.scalars(select(Run).where(Run.video_id == video.id, Run.status.in_(["queued", "running"]))).first()
     if busy:
@@ -345,6 +393,14 @@ def skip_tutor_session(video_id: int, tasks: BackgroundTasks, session: Session =
     session_data["ended"] = True
     session_data["skipped"] = True
     _save_tutor_session(p, session_data)
+    emit_studio_event(
+        "tutor_ready",
+        video_id=video.id,
+        video_title=video.title or video.name,
+        stage="notes",
+        detail=f"Sesi Tutor untuk \"{video.title or video.name}\" dilewati. Catatan akan disusun dari materi dan analisis.",
+        action_hint="open_tutor",
+    )
 
     busy = session.scalars(select(Run).where(Run.video_id == video.id, Run.status.in_(["queued", "running"]))).first()
     if busy:
@@ -404,6 +460,35 @@ def voice_sample(voice: str):
 @app.get("/health")
 def health():
     return {"ok": True}
+
+
+@app.get("/leader/status")
+def leader_status(session: Session = Depends(db.get_session)):
+    return leader.build_studio_brief(session)
+
+
+@app.post("/leader/command")
+def leader_command(body: LeaderCommandIn, session: Session = Depends(db.get_session)):
+    payload = leader.interpret_command(session, body.message, body.video_id)
+    if payload.get("requires_confirmation"):
+        pending_action = {
+            "action": payload["intent"],
+            "video_id": payload.get("video_id"),
+            "stage": payload.get("stage", ""),
+            "approval_point": payload.get("approval_point", ""),
+            "project_title": payload.get("project_title", ""),
+        }
+        return {"result": payload, "pending_action": pending_action}
+    return {"result": payload}
+
+
+@app.post("/leader/execute")
+def leader_execute(body: LeaderExecuteIn, tasks: BackgroundTasks, session: Session = Depends(db.get_session)):
+    try:
+        result = leader.execute_action(session, tasks, body.pending_action)
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return {"status": "executed", "result": result}
 
 
 @app.post("/series")

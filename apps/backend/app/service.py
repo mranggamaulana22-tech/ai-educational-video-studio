@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import config, stages
+from .events import emit_studio_event
 from .models import Artifact, Run, Video
 
 
@@ -160,6 +161,13 @@ def execute_run(SessionLocal, run_id: int, day_label="", course=""):
         video = session.get(Video, run.video_id)
         run.status, run.started_at = "running", now()
         session.commit()
+        emit_studio_event(
+            "stage_started",
+            video_id=video.id,
+            video_title=video.title or video.name,
+            stage=run.stage,
+            action_hint="open_stage",
+        )
         try:
             cmd, shell, cwd = stages.build_command(run.stage, video, day_label, course)
             proc = subprocess.run(
@@ -168,12 +176,55 @@ def execute_run(SessionLocal, run_id: int, day_label="", course=""):
             run.log = (proc.stdout + "\n" + proc.stderr).strip()[-20000:]
             if proc.returncode != 0:
                 run.status = "failed"
+                emit_studio_event(
+                    "stage_failed",
+                    video_id=video.id,
+                    video_title=video.title or video.name,
+                    stage=run.stage,
+                    detail=f"Tahap {run.stage.replace('_', ' ').title()} gagal dijalankan. Buka log untuk melihat penyebabnya.",
+                    action_hint="open_stage",
+                )
             else:
                 art = register_artifact(session, video, run.stage)
                 run.status, run.artifact_id = "ok", art.id
+                emit_studio_event(
+                    "stage_completed",
+                    video_id=video.id,
+                    video_title=video.title or video.name,
+                    stage=run.stage,
+                    action_hint="open_stage",
+                )
+                if run.stage == "analysis":
+                    emit_studio_event(
+                        "tutor_ready",
+                        video_id=video.id,
+                        video_title=video.title or video.name,
+                        stage="notes",
+                        detail=f"Analisis \"{video.title or video.name}\" sudah siap. Sesi belajar bersama Tutor bisa dimulai.",
+                        action_hint="open_tutor",
+                    )
+                waiting = waiting_approval_detail(session, video)
+                if waiting["waiting_approval"]:
+                    point = waiting["waiting_approval"]
+                    emit_studio_event(
+                        "waiting_approval",
+                        video_id=video.id,
+                        video_title=video.title or video.name,
+                        stage=stages.APPROVAL_POINTS[point],
+                        detail=f"Hasil tahap {run.stage.replace('_', ' ').title()} sudah siap. Menunggu persetujuan {point}.",
+                        action_hint="open_approval",
+                    )
         except Exception as e:  # noqa: BLE001
             run.status = "failed"
             run.log = (run.log or "") + f"\n[ERROR] {e}"
+            emit_studio_event(
+                "stage_failed",
+                video_id=video.id,
+                video_title=video.title or video.name,
+                stage=run.stage,
+                detail=f"Tahap {run.stage.replace('_', ' ').title()} gagal dijalankan. Buka log untuk meninjau kesalahan.",
+                action_hint="open_stage",
+            )
         run.finished_at = now()
         session.commit()
 
@@ -195,6 +246,20 @@ def advance_workflow(SessionLocal, video_id: int, day_label="", course=""):
                     next_stage = s
                     break
             if not next_stage:
+                with SessionLocal() as approval_session:
+                    approval_video = approval_session.get(Video, video_id)
+                    if approval_video:
+                        approval = waiting_approval_detail(approval_session, approval_video)
+                        point = approval["waiting_approval"]
+                        if point:
+                            emit_studio_event(
+                                "waiting_approval",
+                                video_id=approval_video.id,
+                                video_title=approval_video.title or approval_video.name,
+                                stage=stages.APPROVAL_POINTS[point],
+                                detail=f"Menunggu persetujuan {point} untuk \"{approval_video.title or approval_video.name}\".",
+                                action_hint="open_approval",
+                            )
                 break
             if next_stage == "notes" and not stages.paths(video.name)["session"].exists():
                 break

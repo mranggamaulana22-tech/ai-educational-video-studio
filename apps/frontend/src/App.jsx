@@ -4,6 +4,7 @@ import { AGENT_STAGES } from "./agentsConfig.js";
 import CommandCenter3D from "./CommandCenter3D.jsx";
 import AgentWorkspaceModal from "./AgentWorkspaceModal.jsx";
 import StorageModal from "./StorageModal.jsx";
+import FelisaLeaderPanel from "./FelisaLeaderPanel.jsx";
 
 const APPROVAL_TO_AGENT_INDEX = {
   notes: 2,
@@ -206,6 +207,75 @@ export default function App() {
     requestCamera(idx);
     setWorkspaceIndex(idx);
   };
+
+  const handleFelisaEvent = useCallback(
+    (event) => {
+      if (event?.video_id) {
+        setSelectedId((current) => (current === event.video_id ? current : event.video_id));
+      }
+      loadVideos();
+    },
+    [loadVideos]
+  );
+
+  const handleFelisaAction = useCallback(
+    (event) => {
+      if (event?.video_id) setSelectedId(event.video_id);
+
+      let targetIndex = null;
+      if (event.action_hint === "open_tutor") {
+        targetIndex = 2;
+      } else if (event.action_hint === "open_approval") {
+        const stageIndex = AGENT_STAGES.findIndex((agent) => agent.approval === event.stage);
+        targetIndex =
+          stageIndex >= 0
+            ? stageIndex
+            : APPROVAL_TO_AGENT_INDEX[event.stage] ?? (event.stage ? AGENT_STAGES.findIndex((agent) => agent.key === event.stage) : 0);
+      } else if (event.action_hint === "open_stage") {
+        targetIndex = AGENT_STAGES.findIndex((agent) => agent.key === event.stage);
+      }
+
+      if (typeof targetIndex === "number" && targetIndex >= 0) {
+        requestCamera(targetIndex);
+        setWorkspaceIndex(targetIndex);
+      }
+    },
+    [requestCamera]
+  );
+
+  const handleFelisaNavigate = useCallback(
+    (payload) => {
+      if (!payload) return;
+      if (payload.video_id) setSelectedId(payload.video_id);
+
+      if (payload.intent === "open_storage") {
+        setShowStorage(true);
+        return;
+      }
+      if (payload.intent === "open_tutor") {
+        requestCamera(2);
+        setWorkspaceIndex(2);
+        return;
+      }
+      if (payload.intent === "approve" || payload.intent === "open_approval") {
+        const point = payload.approval_point;
+        const idx = point ? APPROVAL_TO_AGENT_INDEX[point] : null;
+        if (typeof idx === "number") {
+          requestCamera(idx);
+          setWorkspaceIndex(idx);
+        }
+        return;
+      }
+      if (payload.intent === "run_stage" || payload.intent === "open_stage") {
+        const idx = AGENT_STAGES.findIndex((agent) => agent.key === payload.stage);
+        if (idx >= 0) {
+          requestCamera(idx);
+          setWorkspaceIndex(idx);
+        }
+      }
+    },
+    [requestCamera]
+  );
 
   return (
     <div className="relative w-full h-full overflow-hidden">
@@ -473,6 +543,13 @@ export default function App() {
           }}
         />
       )}
+
+      <FelisaLeaderPanel
+        videoId={video?.id ?? null}
+        onEvent={handleFelisaEvent}
+        onAction={handleFelisaAction}
+        onNavigate={handleFelisaNavigate}
+      />
 
       {/* BOTTOM DOCK BAR: 10 AGENT WORKSTATIONS */}
       <footer className="fixed bottom-2.5 left-0 right-0 z-20 px-3 flex flex-col items-center pointer-events-none">

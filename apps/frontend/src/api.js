@@ -80,5 +80,12 @@ export const api = {
   },
 };
 
+export const getEventsUrl = () => `${API}/events`;
+export const getLeaderStatus = () => call("GET", "/leader/status");
+export const sendLeaderCommand = (message, videoId = null) =>
+  call("POST", "/leader/command", { message, video_id: videoId });
+export const executeLeaderAction = (pendingAction) =>
+  call("POST", "/leader/execute", { pending_action: pendingAction });
+
 export const fileUrl = (artifactId) => `${API}/artifacts/${artifactId}/file`;
 export const sampleUrl = (voice) => `${API}/voices/${voice}/sample`;

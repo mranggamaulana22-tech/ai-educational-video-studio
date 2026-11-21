@@ -105,6 +105,9 @@ Halaman ini mencatat seluruh peningkatan yang diterapkan pada sistem selama sesi
 10. Smoke test Storage Vault: lulus.
 11. Smoke test penghapusan arsip: lulus.
 12. Smoke test pratinjau video render: lulus.
+13. `python -m compileall -q apps/backend/app`: lulus.
+14. `npm run build` pada `apps/frontend`: lulus.
+15. Smoke test `GET /events`: koneksi SSE terbuka dan heartbeat `: ping` 15 detik diterima.
 
 ### H. Kalibrasi Produksi Konten P1
 
@@ -119,6 +122,33 @@ Halaman ini mencatat seluruh peningkatan yang diterapkan pada sistem selama sesi
 9. Spesifikasi `DiagramScene` kini mewajibkan `layout: "column"`, maksimal 4 node, dan label panah maksimal 12 karakter.
 10. Validator storyboard memperkuat batas 4 node, layout kolom, dan panjang label panah.
 11. Ditambahkan entrypoint kompatibilitas `tools/run_storyboard.py` yang meneruskan eksekusi ke `run_storyboard_agent.py`.
+
+### I. Saluran Event Realtime dan Panel Felisa P7
+
+1. Ditambahkan event bus in-memory thread-safe pada `apps/backend/app/events.py`.
+2. Event bus menyimpan 50 event terbaru dan mendukung subscriber `asyncio.Queue` untuk SSE.
+3. Helper `emit_studio_event()` menyediakan tipe `stage_started`, `stage_completed`, `stage_failed`, `waiting_approval`, `tutor_ready`, dan `leader_message`.
+4. Payload event mencakup ID, timestamp, identitas proyek, tahap, pesan Bahasa Indonesia dari Leader Felisa, dan `action_hint`.
+5. Orkestrator memancarkan event mulai, sukses, gagal, siap Tutor, dan menunggu persetujuan.
+6. Endpoint Tutor finish dan skip memancarkan event `tutor_ready`.
+7. Endpoint `GET /events` menyediakan `StreamingResponse` bertipe `text/event-stream` dan heartbeat `: ping` setiap 15 detik.
+8. `agentsConfig.js` menambahkan definisi agen Leader Felisa.
+9. `api.js` menambahkan helper `getEventsUrl()` mengikuti `API_BASE`.
+10. Frontend menampilkan panel Felisa dengan status realtime, pesan terbaru, tombol aksi cepat, serta riwayat aktivitas yang dapat dilipat.
+11. Tombol aksi Felisa membuka workspace Tutor, tahap produksi, atau titik approval yang sesuai.
+12. Event masuk menyegarkan ringkasan proyek melalui `loadVideos()` tanpa polling tambahan agresif.
+
+### J. Koordinator Interaktif Felisa dan Ringkasan Lintas Proyek P7 Lapis 2
+
+1. Ditambahkan prompt Felisa pada `prompts/leader_felisa/v1.md` untuk niat terstruktur dan Bahasa Indonesia alami.
+2. Modul `apps/backend/app/leader.py` menyediakan ringkasan seluruh proyek, pencocokan perintah deterministik, fallback LLM, dan eksekusi aksi dikonfirmasi.
+3. Ringkasan Leader mencakup jumlah proyek aktif, persetujuan tertunda, proses berjalan, kegagalan, dan proyek siap.
+4. Perintah deterministik mendukung status, advance, persetujuan, Tutor, Gudang, dan jalankan tahap pipeline.
+5. Aksi advance, run stage, render, approval, dan create project memakai konfirmasi sebelum dieksekusi.
+6. Endpoint `GET /leader/status`, `POST /leader/command`, dan `POST /leader/execute` ditambahkan pada backend.
+7. Panel Felisa memuat sapaan status awal, form perintah, chip saran cepat, dan kotak konfirmasi Jalankan/Batal.
+8. Panel Felisa mendukung minimize menjadi kapsul kecil agar tidak menutupi area agen bawah.
+9. Callback aplikasi menghubungkan perintah Felisa ke pemilihan proyek, workspace Tutor, Gudang, tahap, dan approval.
 
 ## Ringkasan
 Fitur AI Learning Tutor diterapkan pada tahap `3. Notes`. Tutor memimpin diskusi berdasarkan materi mentah dan hasil analisis, menyimpan perkembangan konsep serta riwayat giliran di `catatan/{name}.session.json`, lalu meneruskan konteks yang relevan ke Learning Notes Agent.
