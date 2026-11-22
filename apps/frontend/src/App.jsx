@@ -4,7 +4,7 @@ import { AGENT_STAGES } from "./agentsConfig.js";
 import CommandCenter3D from "./CommandCenter3D.jsx";
 import AgentWorkspaceModal from "./AgentWorkspaceModal.jsx";
 import StorageModal from "./StorageModal.jsx";
-import FelisaLeaderPanel from "./FelisaLeaderPanel.jsx";
+import FelisaRoom from "./FelisaRoom.jsx";
 
 const APPROVAL_TO_AGENT_INDEX = {
   notes: 2,
@@ -41,6 +41,10 @@ export default function App() {
   const [showStorage, setShowStorage] = useState(false);
   const [showNewVideo, setShowNewVideo] = useState(false);
   const [newForm, setNewForm] = useState({ name: "", day: 1, title: "", next_topic: "" });
+  const [felisaRoomOpen, setFelisaRoomOpen] = useState(() => {
+    const saved = localStorage.getItem("felisaRoomOpen");
+    return saved === null ? true : saved === "open";
+  });
 
   const showError = useCallback((text) => setToast({ kind: "error", text }), []);
   const showInfo = useCallback((text) => setToast({ kind: "info", text }), []);
@@ -106,11 +110,14 @@ export default function App() {
           setWorkspaceIndex(null);
           setShowNewVideo(false);
           setShowStorage(false);
+          if (felisaRoomOpen) setFelisaRoomOpen(false);
         }
         return;
       }
       const k = e.key.toLowerCase();
-      if (k >= "1" && k <= "9") {
+      if (k === "f") {
+        setFelisaRoomOpen(true);
+      } else if (k >= "1" && k <= "9") {
         requestCamera(parseInt(k, 10) - 1);
       } else if (k === "0") {
         requestCamera(9);
@@ -120,6 +127,7 @@ export default function App() {
       } else if (k === "e") {
         if (video) setWorkspaceIndex(focusedIndex !== null ? focusedIndex : 0);
       } else if (k === "escape") {
+        if (felisaRoomOpen) setFelisaRoomOpen(false);
         setWorkspaceIndex(null);
         setShowNewVideo(false);
         setShowStorage(false);
@@ -127,7 +135,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [focusedIndex, requestCamera, video]);
+  }, [felisaRoomOpen, focusedIndex, requestCamera, video]);
 
   const handleRunStage = async (stageKey) => {
     if (!video) return;
@@ -276,6 +284,10 @@ export default function App() {
     },
     [requestCamera]
   );
+
+  const handleFelisaStatusUpdate = useCallback((fresh) => {
+    setVideos((current) => current.map((item) => (item.id === fresh.id ? fresh : item)));
+  }, []);
 
   return (
     <div className="relative w-full h-full overflow-hidden">
@@ -544,11 +556,22 @@ export default function App() {
         />
       )}
 
-      <FelisaLeaderPanel
-        videoId={video?.id ?? null}
-        onEvent={handleFelisaEvent}
-        onAction={handleFelisaAction}
-        onNavigate={handleFelisaNavigate}
+      <FelisaRoom
+        open={felisaRoomOpen}
+        video={video}
+        sleep={isSleepMode}
+        busy={busy}
+        onClose={() => setFelisaRoomOpen(false)}
+        onOpen={() => setFelisaRoomOpen(true)}
+        onAdvance={handleAdvance}
+        onApprove={handleApprovePoint}
+        onOpenWorkspace={(index) => {
+          requestCamera(index);
+          setWorkspaceIndex(index);
+        }}
+        onOpenStorage={() => setShowStorage(true)}
+        onStatusUpdate={handleFelisaStatusUpdate}
+        onInfo={showInfo}
       />
 
       {/* BOTTOM DOCK BAR: 10 AGENT WORKSTATIONS */}
