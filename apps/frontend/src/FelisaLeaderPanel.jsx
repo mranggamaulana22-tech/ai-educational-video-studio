@@ -6,6 +6,7 @@ import {
   getLeaderStatus,
   sendLeaderCommand,
 } from "./api.js";
+import FelisaLayered from "./FelisaLayered.jsx";
 
 const ACTION_LABEL = {
   open_tutor: "Buka Sesi Tutor",
@@ -35,6 +36,7 @@ export default function FelisaLeaderPanel({ videoId, onEvent, onAction, onNaviga
   const [command, setCommand] = useState("");
   const [pendingAction, setPendingAction] = useState(null);
   const [commandBusy, setCommandBusy] = useState(false);
+  const [felisaStatus, setFelisaStatus] = useState(null);
   const sourceRef = useRef(null);
 
   useEffect(() => {
@@ -109,6 +111,14 @@ export default function FelisaLeaderPanel({ videoId, onEvent, onAction, onNaviga
   };
 
   const latest = history[0] || null;
+  const latestStatus = latest?.type || "";
+  const speaking = ["running", "started"].includes(latestStatus);
+  const glowMode =
+    latestStatus === "failed"
+      ? "flicker"
+      : latestStatus === "waiting_approval"
+        ? "calm"
+        : "normal";
   const statusStyle =
     status === "connected"
       ? "bg-emerald-400"
@@ -156,6 +166,34 @@ export default function FelisaLeaderPanel({ videoId, onEvent, onAction, onNaviga
                 —
               </button>
             </div>
+          </div>
+
+          <div className="mt-3 flex items-end gap-3">
+            <div className="w-[138px] h-[181px] shrink-0 rounded-xl overflow-hidden bg-slate-950/40">
+              <FelisaLayered
+                speaking={speaking}
+                level={speaking ? 0.55 : 0}
+                pulse={history.length}
+                sleep={false}
+                glowMode={glowMode}
+                mood={latestStatus === "failed" ? "concerned" : latestStatus === "waiting_approval" ? "thinking" : "happy"}
+                fps={24}
+                onStatus={setFelisaStatus}
+              />
+            </div>
+            {felisaStatus && (
+              <div className="pb-1 min-w-0 text-[9px] font-mono-tech text-slate-400 leading-relaxed">
+                <div className={felisaStatus.failedNames.length ? "text-amber-300" : "text-emerald-300"}>
+                  {felisaStatus.activeCount}/{felisaStatus.totalCount} layer aktif
+                </div>
+                <div>{felisaStatus.width}×{felisaStatus.height}px</div>
+                {felisaStatus.failedNames.length > 0 && (
+                  <div className="mt-1 text-amber-300/80 break-words">
+                    Gagal: {felisaStatus.failedNames.join(", ")}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="mt-3 rounded-xl bg-slate-950/55 border border-white/7 px-3 py-2.5">
