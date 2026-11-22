@@ -10,15 +10,15 @@ const ROOM_KEY = "felisaRoomOpen";
 
 const SHORT_STAGE_LABELS = {
   material: "Material",
-  analyst: "Analyst",
+  analysis: "Analysis",
   notes: "Notes",
-  planner: "Planner",
-  writer: "Writer",
-  reviewer: "Reviewer",
-  narrator: "Narrator",
-  aligner: "Aligner",
+  ideas: "Ideas",
+  script: "Script",
+  review: "Review",
+  audio: "Audio",
+  words: "Words",
   storyboard: "Storyboard",
-  renderer: "Renderer",
+  render: "Render",
 };
 
 function detectErrorCode(video) {

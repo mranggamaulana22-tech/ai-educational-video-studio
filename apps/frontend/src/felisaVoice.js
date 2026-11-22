@@ -2,6 +2,8 @@ import { resolveFelisaLine } from "./felisaLines.js";
 
 let activeVoiceTimer = null;
 
+// Stub suara: menampilkan teks dan mensimulasikan animasi bicara.
+// Belum memanggil API TTS atau pemutar audio.
 export function speak(lineId, options = {}) {
   const text = options.text || resolveFelisaLine(lineId, options);
   if (typeof options.onText === "function") options.onText(text);
