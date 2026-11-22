@@ -250,10 +250,23 @@ def synthesize_gemini(text, voice, style, output):
         raise RuntimeError("gemini_empty_response")
 
 
-def synthesize_gemini_with_retry(text, voice, style, output, progress="", sleep_fn=time.sleep):
+def synthesize_gemini_with_retry(
+    text,
+    voice,
+    style,
+    output,
+    progress="",
+    sleep_fn=time.sleep,
+    call_state=None,
+    max_calls=None,
+):
     """Coba satu kalimat maksimal 3 kali untuk rate limit per menit."""
     backoff = (30, 60, 90)
     for attempt in range(1, 4):
+        if call_state is not None and max_calls is not None:
+            if call_state["attempts"] >= max_calls or call_state["successes"] >= max_calls:
+                raise RuntimeError("max_calls_exhausted|Batas panggilan Gemini untuk satu run sudah tercapai.")
+            call_state["attempts"] += 1
         try:
             synthesize_gemini(text, voice, style, output)
             return
@@ -274,6 +287,21 @@ def synthesize_gemini_with_retry(text, voice, style, output, progress="", sleep_
             sleep_fn(wait_seconds)
 
 
+def line_priority(line_id):
+    if line_id.startswith("greeting_"):
+        return 0
+    if line_id.startswith("status_completed_") or line_id.startswith("status_waiting_approval_"):
+        return 1
+    if line_id in (
+        "error_rate_limited",
+        "error_quota_exhausted",
+        "error_invalid_output",
+        "error_interrupted",
+    ):
+        return 2
+    return 3
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate static Felisa voice assets")
     parser.add_argument("--force", action="store_true", help="Buat ulang meski cache cocok")
@@ -281,7 +309,24 @@ def main():
     parser.add_argument("--lang", nargs="+", choices=tuple(LANGUAGES), default=list(LANGUAGES))
     parser.add_argument("--voice", nargs="+", default=None)
     parser.add_argument("--previews", help="Daftar voice Gemini dipisah koma")
+    parser.add_argument(
+        "--max-calls",
+        type=int,
+        default=None,
+        help="Batas panggilan Gemini per run, termasuk percobaan ulang (default: FELISA_TTS_MAX_CALLS atau 6)",
+    )
     args = parser.parse_args()
+
+    if args.max_calls is None:
+        try:
+            max_calls = max(0, int(read_setting("FELISA_TTS_MAX_CALLS", default="6")))
+        except ValueError:
+            max_calls = 6
+    else:
+        if args.max_calls < 0:
+            print("Gagal: --max-calls tidak boleh negatif.")
+            return 2
+        max_calls = args.max_calls
 
     provider = read_setting("TTS_PROVIDER", default="gemini").lower()
     if provider not in ("gemini", "azure"):
@@ -311,9 +356,9 @@ def main():
     if not felisa_style_id:
         felisa_style_id = "Bacakan dalam Bahasa Indonesia dengan nada ramah, hangat, dan tempo santai."
     try:
-        tts_delay_seconds = max(0.0, float(read_setting("FELISA_TTS_DELAY_SECONDS", default="20")))
+        tts_delay_seconds = max(0.0, float(read_setting("FELISA_TTS_DELAY_SECONDS", default="25")))
     except ValueError:
-        tts_delay_seconds = 20.0
+        tts_delay_seconds = 25.0
     narrator_voice = read_setting("NARRATOR_VOICE", default="Kore")
     if provider == "gemini" and felisa_voice.lower() == narrator_voice.lower():
         print(f"Gagal: FELISA_VOICE ({felisa_voice}) harus berbeda dari voice narator ({narrator_voice}).")
@@ -352,12 +397,20 @@ def main():
     generated = 0
     skipped = 0
     stopped = False
+    gemini_call_state = {"attempts": 0, "successes": 0}
+    ready_line_ids = set()
 
     if args.previews:
         preview_total = len(preview_voices) * 2
         preview_processed = 0
         for voice_name in preview_voices:
             for lang in ("id", "en"):
+                if provider == "gemini" and (
+                    gemini_call_state["successes"] >= max_calls
+                    or gemini_call_state["attempts"] >= max_calls
+                ):
+                    stopped = True
+                    break
                 preview_processed += 1
                 preview_text = (
                     "Hai, aku Felisa. Aku siap membantu kamu dengan suara yang hangat dan santai."
@@ -395,13 +448,17 @@ def main():
                         felisa_style,
                         output,
                         progress=progress,
+                        call_state=gemini_call_state,
+                        max_calls=max_calls,
                     )
                 except RuntimeError as error:
                     raw = str(error)
                     code = raw.split("|", 1)[0]
-                    if code in ("rate_limited", "quota_exhausted"):
+                    if code in ("rate_limited", "quota_exhausted", "max_calls_exhausted"):
                         if code == "quota_exhausted":
                             print(f"Berhenti: quota_exhausted. Kuota harian Gemini sudah habis; coba lagi setelah kuota diperbarui.")
+                        elif code == "max_calls_exhausted":
+                            print(f"Berhenti: batas {max_calls} panggilan Gemini untuk satu run tercapai.")
                         else:
                             print(f"Berhenti: rate_limited. 3 percobaan untuk kalimat ini sudah habis.")
                     else:
@@ -418,6 +475,7 @@ def main():
                 if voice_statuses[lang].get(voice_name) != "complete":
                     voice_statuses[lang][voice_name] = "preview_only"
                 generated += 1
+                gemini_call_state["successes"] += 1
                 print(f"[OK] {lang}/{voice_name}/{output.name}")
                 if preview_processed < preview_total and tts_delay_seconds > 0:
                     print(f"[{preview_processed}/{preview_total}] {lang}/{voice_name}/preview menunggu {tts_delay_seconds:g} detik (jeda antar panggilan)")
@@ -466,7 +524,11 @@ def main():
             if args.only == "preview":
                 line_items["preview"] = PREVIEW_LINES[lang]
             else:
-                for line_id, text in LINES[lang].items():
+                ordered_lines = sorted(
+                    LINES[lang].items(),
+                    key=lambda item: line_priority(item[0]),
+                )
+                for line_id, text in ordered_lines:
                     if args.only is None or line_id == args.only:
                         line_items[line_id] = text
 
@@ -488,7 +550,16 @@ def main():
                 )
                 if cache_matches and not args.force:
                     skipped += 1
+                    ready_line_ids.add((lang, line_id))
                     continue
+
+                if provider == "gemini" and (
+                    gemini_call_state["successes"] >= max_calls
+                    or gemini_call_state["attempts"] >= max_calls
+                ):
+                    print(f"Berhenti: batas {max_calls} panggilan Gemini untuk satu run tercapai.")
+                    stopped = True
+                    break
 
                 try:
                     if provider == "gemini":
@@ -498,6 +569,8 @@ def main():
                             felisa_style_id if lang == "id" else felisa_style_en,
                             output,
                             progress=f"[{line_index}/{line_total}] {lang}/{legacy_voice}/{line_id}",
+                            call_state=gemini_call_state,
+                            max_calls=max_calls,
                         )
                     else:
                         synthesize_azure(
@@ -512,9 +585,11 @@ def main():
                 except RuntimeError as error:
                     raw = str(error)
                     code = raw.split("|", 1)[0]
-                    if code in ("rate_limited", "quota_exhausted"):
+                    if code in ("rate_limited", "quota_exhausted", "max_calls_exhausted"):
                         if code == "quota_exhausted":
                             print(f"Berhenti: quota_exhausted. Kuota harian Gemini sudah habis; coba lagi setelah kuota diperbarui.")
+                        elif code == "max_calls_exhausted":
+                            print(f"Berhenti: batas {max_calls} panggilan Gemini untuk satu run tercapai.")
                         else:
                             print(f"Berhenti: rate_limited. 3 percobaan untuk kalimat ini sudah habis.")
                     else:
@@ -526,6 +601,9 @@ def main():
                 generation_hashes[lang][legacy_voice][line_id] = generation_digest
                 files[lang][legacy_voice][line_id] = output.name
                 generated += 1
+                ready_line_ids.add((lang, line_id))
+                if provider == "gemini":
+                    gemini_call_state["successes"] += 1
                 print(f"[OK] [{line_index}/{line_total}] {lang}/{legacy_voice}/{output.name}")
                 if line_index < line_total and tts_delay_seconds > 0:
                     print(f"[{line_index}/{line_total}] {lang}/{legacy_voice}/{line_id} menunggu {tts_delay_seconds:g} detik (jeda antar panggilan)")
@@ -569,6 +647,20 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Selesai: {generated} dibuat, {skipped} dilewati, manifest={manifest_path}")
+    if not args.previews:
+        for lang in args.lang:
+            ready_count = 0
+            for line_id in LINES[lang]:
+                if (lang, line_id) in ready_line_ids:
+                    ready_count += 1
+                    continue
+                if any(
+                    (OUTPUT_DIR / lang / voice_name / f"{line_id}.{extension}").exists()
+                    for voice_name in selected_voices
+                ):
+                    ready_count += 1
+            remaining_count = len(LINES[lang]) - ready_count
+            print(f"Ringkasan {lang}: {ready_count} kalimat sudah jadi, {remaining_count} tersisa.")
     return 1 if stopped else 0
 
 
