@@ -343,6 +343,8 @@ def main():
                 stopped = True
                 break
 
+            text_hashes.setdefault(lang, {}).setdefault(voice_name, {})
+            generation_hashes.setdefault(lang, {}).setdefault(voice_name, {})
             text_hashes[lang][voice_name]["preview"] = text_digest
             generation_hashes[lang][voice_name]["preview"] = generation_digest
             voice_formats[lang][voice_name] = "wav"
