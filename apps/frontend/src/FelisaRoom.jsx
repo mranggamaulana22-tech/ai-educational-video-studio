@@ -75,7 +75,7 @@ export default function FelisaRoom({
 
   useEffect(() => {
     let alive = true;
-    getFelisaVoiceOptions()
+    getFelisaVoiceOptions(felisaLang)
       .then((options) => {
         if (alive) setFelisaVoiceOptions(options);
       })
@@ -83,7 +83,7 @@ export default function FelisaRoom({
         if (alive) setFelisaVoiceOptions([]);
       });
     return () => { alive = false; };
-  }, []);
+  }, [felisaLang]);
 
   useEffect(() => {
     localStorage.setItem(ROOM_KEY, open ? "open" : "closed");

@@ -78,18 +78,19 @@ async function loadManifest() {
   return manifestPromise;
 }
 
-export async function getFelisaVoiceOptions() {
+export async function getFelisaVoiceOptions(lang = getFelisaLang()) {
   const manifest = await loadManifest();
+  const selectedLang = lang === "en" ? "en" : "id";
   return GEMINI_VOICES
     .map((voice) => {
-      const previewFile = manifest?.voice_previews?.id?.[voice];
+      const previewFile = manifest?.voice_previews?.[selectedLang]?.[voice];
       if (!previewFile) return null;
       return {
         voice,
         label: voice,
-        status: manifest?.voice_statuses?.id?.[voice] === "complete" ? "complete" : "preview_only",
+        status: manifest?.voice_statuses?.[selectedLang]?.[voice] === "complete" ? "complete" : "preview_only",
         previewFile,
-        format: manifest?.voice_formats?.id?.[voice] || "wav",
+        format: manifest?.voice_formats?.[selectedLang]?.[voice] || "wav",
       };
     })
     .filter(Boolean);
@@ -285,14 +286,14 @@ export async function previewVoice({ lang = getFelisaLang(), voice = getFelisaVo
   const selectedLang = lang === "en" ? "en" : "id";
   const selectedVoice = GEMINI_VOICES.includes(voice) ? voice : "Leda";
   const manifest = await loadManifest();
-  const previewFile = manifest?.voice_previews?.id?.[selectedVoice]
-    || manifest?.files?.id?.[selectedVoice]?.preview;
+  const previewFile = manifest?.voice_previews?.[selectedLang]?.[selectedVoice]
+    || manifest?.files?.[selectedLang]?.[selectedVoice]?.preview;
   if (!previewFile) {
     onSpeaking?.(false);
     onLevel?.(0);
     return false;
   }
-  await playUrl(`/audio/felisa/id/${selectedVoice}/${previewFile}`, {
+  await playUrl(`/audio/felisa/${selectedLang}/${selectedVoice}/${previewFile}`, {
     onSpeaking,
     onLevel,
   });

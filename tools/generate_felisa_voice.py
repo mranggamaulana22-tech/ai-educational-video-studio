@@ -259,10 +259,19 @@ def main():
         provider = "gemini"
 
     felisa_voice = read_setting("FELISA_VOICE", default="Leda")
-    felisa_style = read_setting(
-        "FELISA_STYLE",
-        default="Bacakan dalam Bahasa Indonesia dengan nada ramah, hangat, dan tempo santai.",
+    felisa_style_id = read_setting(
+        "FELISA_STYLE_ID",
+        default="",
     )
+    felisa_style_en = read_setting(
+        "FELISA_STYLE_EN",
+        default="Read in English with a cheerful, friendly tone, energetic but calm and clear, medium pace.",
+    )
+    felisa_style_legacy = read_setting("FELISA_STYLE", default="")
+    if not felisa_style_id and felisa_style_legacy:
+        felisa_style_id = felisa_style_legacy
+    if not felisa_style_id:
+        felisa_style_id = "Bacakan dalam Bahasa Indonesia dengan nada ramah, hangat, dan tempo santai."
     narrator_voice = read_setting("NARRATOR_VOICE", default="Kore")
     if provider == "gemini" and felisa_voice.lower() == narrator_voice.lower():
         print(f"Gagal: FELISA_VOICE ({felisa_voice}) harus berbeda dari voice narator ({narrator_voice}).")
@@ -303,56 +312,59 @@ def main():
     stopped = False
 
     if args.previews:
-        felisa_style = read_setting(
-            "FELISA_STYLE",
-            default="Bacakan dalam Bahasa Indonesia dengan nada ramah, hangat, dan tempo santai.",
-        )
-        preview_text = "Hai, aku Felisa. Aku siap membantu kamu dengan suara yang hangat dan santai."
         for voice_name in preview_voices:
-            lang = "id"
-            voice_statuses.setdefault(lang, {})
-            voice_formats.setdefault(lang, {})
-            voice_previews.setdefault(lang, {})
-            voice_dir = OUTPUT_DIR / lang / voice_name
-            voice_dir.mkdir(parents=True, exist_ok=True)
-            output = voice_dir / f"preview-{voice_name}.wav"
-            text_digest = text_hash(preview_text)
-            generation_digest = generation_hash("gemini", voice_name, felisa_style)
+            for lang in ("id", "en"):
+                preview_text = (
+                    "Hai, aku Felisa. Aku siap membantu kamu dengan suara yang hangat dan santai."
+                    if lang == "id"
+                    else "Hi, I am Felisa. I am ready to help you with a warm and calm voice."
+                )
+                felisa_style = felisa_style_id if lang == "id" else felisa_style_en
+                voice_statuses.setdefault(lang, {})
+                voice_formats.setdefault(lang, {})
+                voice_previews.setdefault(lang, {})
+                voice_dir = OUTPUT_DIR / lang / voice_name
+                voice_dir.mkdir(parents=True, exist_ok=True)
+                output = voice_dir / f"preview-{voice_name}.wav"
+                text_digest = text_hash(preview_text)
+                generation_digest = generation_hash("gemini", voice_name, felisa_style)
 
-            cache_matches = (
-                output.exists()
-                and text_hashes.setdefault(lang, {}).setdefault(voice_name, {}).get("preview") == text_digest
-                and generation_hashes.setdefault(lang, {}).setdefault(voice_name, {}).get("preview") == generation_digest
-            )
-            if cache_matches and not args.force:
-                skipped += 1
+                cache_matches = (
+                    output.exists()
+                    and text_hashes.setdefault(lang, {}).setdefault(voice_name, {}).get("preview") == text_digest
+                    and generation_hashes.setdefault(lang, {}).setdefault(voice_name, {}).get("preview") == generation_digest
+                )
+                if cache_matches and not args.force:
+                    skipped += 1
+                    voice_formats[lang][voice_name] = "wav"
+                    voice_previews[lang][voice_name] = output.name
+                    if voice_statuses[lang].get(voice_name) != "complete":
+                        voice_statuses[lang][voice_name] = "preview_only"
+                    continue
+
+                try:
+                    synthesize_gemini(preview_text, voice_name, felisa_style, output)
+                except RuntimeError as error:
+                    code = str(error)
+                    if code in ("rate_limited", "quota_exhausted"):
+                        print(f"Berhenti: {code}. Preview yang belum jadi dapat dilanjutkan saat dijalankan lagi.")
+                    else:
+                        print(f"Gagal: preview {lang}/{voice_name}: {code}")
+                    stopped = True
+                    break
+
+                text_hashes.setdefault(lang, {}).setdefault(voice_name, {})
+                generation_hashes.setdefault(lang, {}).setdefault(voice_name, {})
+                text_hashes[lang][voice_name]["preview"] = text_digest
+                generation_hashes[lang][voice_name]["preview"] = generation_digest
                 voice_formats[lang][voice_name] = "wav"
                 voice_previews[lang][voice_name] = output.name
                 if voice_statuses[lang].get(voice_name) != "complete":
                     voice_statuses[lang][voice_name] = "preview_only"
-                continue
-
-            try:
-                synthesize_gemini(preview_text, voice_name, felisa_style, output)
-            except RuntimeError as error:
-                code = str(error)
-                if code in ("rate_limited", "quota_exhausted"):
-                    print(f"Berhenti: {code}. Preview yang belum jadi dapat dilanjutkan saat dijalankan lagi.")
-                else:
-                    print(f"Gagal: preview {voice_name}: {code}")
-                stopped = True
+                generated += 1
+                print(f"[OK] {lang}/{voice_name}/{output.name}")
+            if stopped:
                 break
-
-            text_hashes.setdefault(lang, {}).setdefault(voice_name, {})
-            generation_hashes.setdefault(lang, {}).setdefault(voice_name, {})
-            text_hashes[lang][voice_name]["preview"] = text_digest
-            generation_hashes[lang][voice_name]["preview"] = generation_digest
-            voice_formats[lang][voice_name] = "wav"
-            voice_previews[lang][voice_name] = output.name
-            if voice_statuses[lang].get(voice_name) != "complete":
-                voice_statuses[lang][voice_name] = "preview_only"
-            generated += 1
-            print(f"[OK] {lang}/{voice_name}/{output.name}")
 
     if not args.previews:
         if args.voice is None:
@@ -406,7 +418,7 @@ def main():
                 generation_digest = generation_hash(
                     provider,
                     voice_name,
-                    felisa_style if provider == "gemini" else get_expression_style(line_id)[0],
+                    (felisa_style_id if lang == "id" else felisa_style_en) if provider == "gemini" else get_expression_style(line_id)[0],
                 )
 
                 cache_matches = (
@@ -420,7 +432,12 @@ def main():
 
                 try:
                     if provider == "gemini":
-                        synthesize_gemini(text, voice_name, felisa_style, output)
+                        synthesize_gemini(
+                            text,
+                            voice_name,
+                            felisa_style_id if lang == "id" else felisa_style_en,
+                            output,
+                        )
                     else:
                         synthesize_azure(
                             azure_key,
