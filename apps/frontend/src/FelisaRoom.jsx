@@ -198,11 +198,11 @@ export default function FelisaRoom({
               className="absolute left-1/2 z-0 origin-bottom"
               style={{
                 bottom: "7%",
-                width: "82%",
-                height: "58%",
+                width: "100%",
+                height: "68%",
                 transform: "translateX(-50%)",
                 background: `linear-gradient(to top, ${podiumPalette.glow}, transparent 72%)`,
-                clipPath: "polygon(43% 0, 57% 0, 88% 100%, 12% 100%)",
+                clipPath: "polygon(44% 100%, 56% 100%, 88% 0, 12% 0)",
                 opacity: sleep ? 0.2 : 0.78,
                 filter: "blur(1px)",
               }}
@@ -211,7 +211,7 @@ export default function FelisaRoom({
               aria-hidden="true"
               viewBox="0 0 460 180"
               className="absolute left-1/2 z-[1] w-[92%]"
-              style={{ bottom: "2%", transform: "translateX(-50%)", opacity: sleep ? 0.28 : 1 }}
+              style={{ bottom: "-5%", transform: "translateX(-50%)", opacity: sleep ? 0.28 : 1 }}
             >
               <defs>
                 <radialGradient id="felisaPodiumFill">
@@ -232,18 +232,32 @@ export default function FelisaRoom({
                 <line key={y} x1="88" x2="372" y1={y} y2={y} stroke={podiumPalette.core} strokeWidth="1" opacity="0.08" />
               ))}
             </svg>
-            <FelisaLayered
-              speaking={speaking}
-              level={speaking ? 0.55 : 0}
-              pulse={pulse}
-              sleep={sleep}
-              glowMode={glowMode}
-              mood={status === "failed" ? "concerned" : status === "waiting_approval" ? "thinking" : "happy"}
-              fps={24}
-              opacity={opacity}
-              onStatus={setFelisaStatus}
-              className="relative z-[2]"
-            />
+            <div
+              className="absolute inset-x-0 bottom-20 z-[2] h-[calc(100%-88px)]"
+              style={{ animation: "felisaFloat 4.8s ease-in-out infinite" }}
+            >
+              <FelisaLayered
+                speaking={speaking}
+                level={speaking ? 0.55 : 0}
+                pulse={pulse}
+                sleep={sleep}
+                glowMode={glowMode}
+                mood={status === "failed" ? "concerned" : status === "waiting_approval" ? "thinking" : "happy"}
+                fps={24}
+                opacity={opacity}
+                onStatus={setFelisaStatus}
+                className="relative z-[2]"
+              />
+            </div>
+            <style>{`
+              @keyframes felisaFloat {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-5px); }
+              }
+              @media (prefers-reduced-motion: reduce) {
+                .felisaFloat { animation: none !important; }
+              }
+            `}</style>
           </div>
         </section>
 
