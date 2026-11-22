@@ -414,13 +414,44 @@ export default function FelisaRoom({
 
         {/* Tengah: Potret Felisa dengan rasio asli */}
         <section className="felisa-figure-column" aria-label="Potret Felisa">
+          {/* Cahaya proyektor: sempit di bawah, melebar ke atas, tepat di belakang Felisa */}
+          <div
+            aria-hidden="true"
+            className="felisa-holo-beam"
+            style={{
+              background: `linear-gradient(to top, ${theme.aura} 0%, ${theme.aura} 12%, rgba(34,211,238,0.10) 52%, transparent 100%)`,
+              filter: sleep ? "blur(18px) saturate(.25)" : "blur(12px)",
+              opacity: sleep ? 0.18 : 0.9,
+            }}
+          />
+          <div
+            aria-hidden="true"
+            className="felisa-holo-scan"
+            style={{
+              borderColor: `${theme.accent}55`,
+              backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent 8px, ${theme.accent}12 9px, transparent 10px)`,
+              opacity: sleep ? 0.12 : 0.34,
+            }}
+          />
+          <div
+            aria-hidden="true"
+            className="felisa-holo-platform"
+            style={{
+              borderColor: `${theme.accent}aa`,
+              color: theme.accent,
+              boxShadow: `0 0 10px ${theme.accent}55, 0 0 28px ${theme.aura}`,
+              opacity: sleep ? 0.18 : 0.82,
+            }}
+          />
+
           {/* Ambient Glow dinamis di belakang bahu/tubuh Felisa */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[74%] w-[82%] -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors duration-500"
+            className="pointer-events-none absolute left-1/2 top-[56%] h-[58%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors duration-500"
             style={{
               background: `radial-gradient(circle, ${theme.aura} 0%, transparent 70%)`,
-              filter: "blur(26px)",
+              filter: "blur(30px)",
+              opacity: sleep ? 0.28 : 0.72,
             }}
           />
 
@@ -449,8 +480,8 @@ export default function FelisaRoom({
                 height: "100%",
                 maxHeight: "none",
                 display: "block",
-                WebkitMaskImage: "linear-gradient(to bottom, #000 0%, #000 90%, transparent 100%)",
-                maskImage: "linear-gradient(to bottom, #000 0%, #000 90%, transparent 100%)",
+                WebkitMaskImage: "radial-gradient(ellipse 50% 54% at 50% 46%, #000 58%, transparent 100%)",
+                maskImage: "radial-gradient(ellipse 50% 54% at 50% 46%, #000 58%, transparent 100%)",
               }}
             />
           </div>
@@ -539,6 +570,71 @@ export default function FelisaRoom({
               align-items: center;
               justify-content: center;
               overflow: visible;
+            }
+            .felisa-holo-beam {
+              position: absolute;
+              z-index: 1;
+              left: 50%;
+              bottom: 4%;
+              width: 96%;
+              height: 82%;
+              transform: translateX(-50%);
+              clip-path: polygon(43% 100%, 57% 100%, 92% 0, 8% 0);
+              transform-origin: 50% 100%;
+              pointer-events: none;
+            }
+            .felisa-holo-scan {
+              position: absolute;
+              z-index: 2;
+              left: 50%;
+              bottom: 6%;
+              width: 64%;
+              height: 68%;
+              transform: translateX(-50%);
+              clip-path: polygon(43% 100%, 57% 100%, 88% 0, 12% 0);
+              border-left: 1px solid;
+              border-right: 1px solid;
+              mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.7) 55%, transparent 100%);
+              -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.7) 55%, transparent 100%);
+              pointer-events: none;
+              animation: holoScanMove 3.8s linear infinite;
+            }
+            .felisa-holo-platform {
+              position: absolute;
+              z-index: 3;
+              left: 50%;
+              bottom: 1.5%;
+              width: 78%;
+              height: 8.5%;
+              transform: translateX(-50%);
+              border: 1px solid;
+              border-radius: 50%;
+              background: radial-gradient(ellipse at center, rgba(15,23,42,.28) 0%, transparent 68%);
+              pointer-events: none;
+            }
+            .felisa-holo-platform::before,
+            .felisa-holo-platform::after {
+              content: "";
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              transform: translate(-50%, -50%);
+              border: 1px solid currentColor;
+              border-radius: 50%;
+            }
+            .felisa-holo-platform::before {
+              width: 58%;
+              height: 58%;
+              opacity: .65;
+            }
+            .felisa-holo-platform::after {
+              width: 34%;
+              height: 34%;
+              opacity: .9;
+            }
+            @keyframes holoScanMove {
+              0% { background-position: 0 0; }
+              100% { background-position: 0 18px; }
             }
             .felisa-figure {
               position: relative;
