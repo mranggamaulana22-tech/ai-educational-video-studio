@@ -29,6 +29,7 @@ storage/library/**/*.mp3
 storage/library/**/*.wav
 storage/library/**/*.mp4
 apps/remotion/public/audio/*.wav
+backup/felisa-azure-mp3/
 
 # sistem
 .DS_Store
