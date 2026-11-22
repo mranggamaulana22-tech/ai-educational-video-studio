@@ -8,6 +8,19 @@ import { speak } from "./felisaVoice.js";
 const NAME_KEY = "felisaUserName";
 const ROOM_KEY = "felisaRoomOpen";
 
+const SHORT_STAGE_LABELS = {
+  material: "Material",
+  analyst: "Analyst",
+  notes: "Notes",
+  planner: "Planner",
+  writer: "Writer",
+  reviewer: "Reviewer",
+  narrator: "Narrator",
+  aligner: "Aligner",
+  storyboard: "Storyboard",
+  renderer: "Renderer",
+};
+
 function detectErrorCode(video) {
   if (!video?.stages) return null;
   for (const stage of Object.values(video.stages)) {
@@ -32,13 +45,13 @@ export default function FelisaRoom({
   onOpenWorkspace,
   onOpenStorage,
   onStatusUpdate,
-  onInfo,
 }) {
   const [name, setName] = useState(() => localStorage.getItem(NAME_KEY) || "");
   const [nameDraft, setNameDraft] = useState("");
   const [started, setStarted] = useState(() => Boolean(localStorage.getItem(NAME_KEY)));
   const [pulse, setPulse] = useState(0);
   const [showExplain, setShowExplain] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [opacity, setOpacity] = useState(1);
   const [speaking, setSpeaking] = useState(false);
   const [felisaStatus, setFelisaStatus] = useState(null);
@@ -56,7 +69,7 @@ export default function FelisaRoom({
         const fresh = await api.video(video.id);
         if (active) onStatusUpdate?.(fresh);
       } catch {
-        // Polling status akan mencoba lagi; pesan tidak menggantikan error UI utama.
+        // Polling status akan mencoba lagi
       }
     };
     refresh();
@@ -67,23 +80,46 @@ export default function FelisaRoom({
     };
   }, [open, video?.id, onStatusUpdate]);
 
+  const stageItems = useMemo(() => {
+    return AGENT_STAGES.map((agent, index) => {
+      const stage = video?.stages?.[agent.key] || {};
+      const runStatus = stage?.last_run?.status || "";
+      const isWaiting =
+        Boolean(video?.waiting_approval) &&
+        (video.waiting_approval === agent.approval || video.waiting_approval === agent.key);
+      const isFailed = runStatus === "failed";
+      const isRunning = ["queued", "running"].includes(runStatus);
+      const isDone = stage?.status === "approved" || runStatus === "completed" || runStatus === "succeeded";
+
+      let state = "idle";
+      if (isFailed) state = "failed";
+      else if (isWaiting) state = "waiting";
+      else if (isRunning) state = "running";
+      else if (isDone) state = "done";
+
+      return {
+        ...agent,
+        index,
+        shortName: SHORT_STAGE_LABELS[agent.key] || agent.label || agent.key,
+        state,
+        runStatus,
+        log: stage?.last_run?.log || "",
+      };
+    });
+  }, [video]);
+
   const status = useMemo(() => {
     if (video?.waiting_approval) return "waiting_approval";
-    if (video?.stages) {
-      const stages = Object.values(video.stages);
-      if (stages.some((stage) => stage?.last_run?.status === "failed")) return "failed";
-      if (stages.some((stage) => stage?.last_run && ["queued", "running"].includes(stage.last_run.status))) return "running";
-      if (stages.some((stage) => stage?.status === "approved")) return "completed";
-    }
+    if (stageItems.some((s) => s.state === "failed")) return "failed";
+    if (stageItems.some((s) => s.state === "running")) return "running";
+    if (stageItems.some((s) => s.state === "done")) return "completed";
     return "completed";
-  }, [video]);
+  }, [video, stageItems]);
 
   const statusSignature = [
     status,
     video?.waiting_approval || "",
-    Object.values(video?.stages || {})
-      .map((stage) => `${stage?.last_run?.id || ""}:${stage?.last_run?.status || ""}:${stage?.status || ""}`)
-      .join("|"),
+    stageItems.map((s) => `${s.key}:${s.state}`).join("|"),
   ].join(";");
 
   useEffect(() => {
@@ -97,17 +133,144 @@ export default function FelisaRoom({
 
   useEffect(() => {
     if (!started) return;
-    const initialText = pulse <= 1 ? greeting : message;
-    setDisplayedText(initialText);
+    setDisplayedText(pulse <= 1 ? greeting : message);
   }, [started, pulse, greeting, message]);
 
-  const podiumPalette = sleep
-    ? { core: "#64748b", glow: "rgba(100,116,139,0.28)", label: "tidur" }
+  const theme = sleep
+    ? {
+        accent: "#94a3b8",
+        aura: "rgba(148,163,184,0.22)",
+        badge: "border-slate-500/40 bg-slate-800/70 text-slate-300",
+        cta: "bg-slate-300 text-slate-950 hover:bg-white",
+      }
     : glowMode === "flicker"
-      ? { core: "#fb7185", glow: "rgba(244,63,94,0.36)", label: "gagal" }
+      ? {
+          accent: "#fb7185",
+          aura: "rgba(244,63,94,0.34)",
+          badge: "border-rose-400/45 bg-rose-950/70 text-rose-200",
+          cta: "bg-rose-400 text-slate-950 hover:bg-rose-300",
+        }
       : glowMode === "calm"
-        ? { core: "#fbbf24", glow: "rgba(245,158,11,0.34)", label: "menunggu" }
-        : { core: "#22d3ee", glow: "rgba(34,211,238,0.34)", label: "normal" };
+        ? {
+            accent: "#fbbf24",
+            aura: "rgba(245,158,11,0.32)",
+            badge: "border-amber-400/45 bg-amber-950/70 text-amber-200",
+            cta: "bg-amber-400 text-slate-950 hover:bg-amber-300",
+          }
+        : {
+            accent: "#22d3ee",
+            aura: "rgba(34,211,238,0.30)",
+            badge: "border-cyan-400/45 bg-cyan-950/70 text-cyan-200",
+            cta: "bg-cyan-400 text-slate-950 hover:bg-cyan-300",
+          };
+
+  const attentionItems = useMemo(() => {
+    const items = [];
+    if (video?.waiting_approval) {
+      const target = stageItems.find((s) => s.state === "waiting");
+      items.push({
+        id: `approval-${video.waiting_approval}`,
+        type: "approval",
+        title: `Persetujuan: ${target ? target.shortName : video.waiting_approval}`,
+        detail: "Hasil tahap siap ditinjau sebelum lanjut.",
+        actionLabel: "Tinjau",
+        onAction: () => {
+          if (target) onOpenWorkspace?.(target.index);
+        },
+        secondaryLabel: "Setujui",
+        onSecondary: () => {
+          if (!busy) onApprove?.(video.waiting_approval);
+        },
+      });
+    }
+    stageItems
+      .filter((s) => s.state === "failed")
+      .forEach((s) => {
+        items.push({
+          id: `failed-${s.key}`,
+          type: "failed",
+          title: `Tahap gagal: ${s.shortName}`,
+          detail: errorCode ? `Kode: ${errorCode}` : "Periksa log tahap untuk mengulang.",
+          actionLabel: "Buka Log",
+          onAction: () => onOpenWorkspace?.(s.index),
+        });
+      });
+    return items;
+  }, [video?.waiting_approval, stageItems, errorCode, busy, onOpenWorkspace, onApprove]);
+
+  const activeAgents = stageItems.filter((s) => s.state === "running" || s.state === "waiting");
+  const doneCount = stageItems.filter((s) => s.state === "done").length;
+
+  const briefing = useMemo(() => {
+    const activeStage = stageItems.find((s) => s.state === "running");
+    const waitingStage = stageItems.find((s) => s.state === "waiting");
+    const failedStage = stageItems.find((s) => s.state === "failed");
+    const nextStage = stageItems.find((s) => s.state === "idle");
+
+    if (sleep) {
+      return {
+        headline: "Mode hemat daya aktif saat proses berat.",
+        bullets: [
+          `Progres saat ini: ${doneCount}/${stageItems.length} tahap selesai.`,
+          activeStage ? `${activeStage.shortName} sedang memproses di latar belakang.` : "Layar 3D diistirahatkan sementara.",
+        ],
+        primaryLabel: "Lihat Tahap Aktif",
+        primaryAction: () => activeStage && onOpenWorkspace?.(activeStage.index),
+      };
+    }
+
+    if (failedStage) {
+      return {
+        headline: `Hambatan terdeteksi di tahap ${failedStage.shortName}.`,
+        bullets: [
+          displayedText || message,
+          `Progres pipeline tertahan di ${doneCount}/${stageItems.length} tahap.`,
+        ],
+        primaryLabel: `Periksa ${failedStage.shortName}`,
+        primaryAction: () => onOpenWorkspace?.(failedStage.index),
+      };
+    }
+
+    if (waitingStage) {
+      return {
+        headline: `Menunggu keputusanmu untuk ${waitingStage.shortName}.`,
+        bullets: [
+          displayedText || message,
+          `Selesai ${doneCount}/${stageItems.length} tahap · Tidak ada kuota terpakai saat menunggu.`,
+        ],
+        primaryLabel: `Tinjau Hasil ${waitingStage.shortName}`,
+        primaryAction: () => onOpenWorkspace?.(waitingStage.index),
+      };
+    }
+
+    if (activeStage) {
+      return {
+        headline: `${activeStage.shortName} sedang bekerja sekarang.`,
+        bullets: [
+          displayedText || message,
+          `Tahap selesai: ${doneCount}/${stageItems.length}.`,
+        ],
+        primaryLabel: `Pantau ${activeStage.shortName}`,
+        primaryAction: () => onOpenWorkspace?.(activeStage.index),
+      };
+    }
+
+    return {
+      headline: pulse <= 1 ? greeting : "Pipeline siap untuk langkah berikutnya.",
+      bullets: [
+        pulse <= 1 ? message : (displayedText || message),
+        nextStage
+          ? `Tahap berikutnya: ${nextStage.shortName} (${doneCount}/${stageItems.length} selesai).`
+          : `Seluruh ${stageItems.length} tahap telah selesai.`,
+      ],
+      primaryLabel: nextStage ? `Jalankan ${nextStage.shortName}` : "Lihat Hasil Akhir",
+      primaryAction: () => {
+        if (busy) return;
+        if (nextStage) onAdvance?.();
+        else onOpenWorkspace?.(stageItems.length - 1);
+      },
+    };
+  }, [sleep, stageItems, doneCount, displayedText, message, pulse, greeting, busy, onOpenWorkspace, onAdvance]);
 
   const start = (event) => {
     event.preventDefault();
@@ -134,249 +297,510 @@ export default function FelisaRoom({
     onOpen?.();
   };
 
-  const handleContinue = () => {
-    if (busy) return;
-    onAdvance?.();
-  };
-
-  const handleApprove = () => {
-    if (!video?.waiting_approval || busy) return;
-    onApprove?.(video.waiting_approval);
-  };
-
-  const handleViewStage = () => {
-    let index = -1;
-    if (video?.waiting_approval) {
-      index = AGENT_STAGES.findIndex((agent) => agent.approval === video.waiting_approval);
-      if (index < 0) {
-        index = AGENT_STAGES.findIndex((agent) => agent.key === video.waiting_approval);
-      }
-    }
-    if (index < 0) {
-      index = AGENT_STAGES.findIndex((agent) => {
-        const stage = video?.stages?.[agent.key];
-        return stage?.last_run && ["queued", "running"].includes(stage.last_run.status);
-      });
-    }
-    if (index >= 0) onOpenWorkspace?.(index);
-  };
-
   if (!open) {
     return (
       <button
         onClick={openRoom}
-        className="fixed right-3 bottom-14 z-50 pointer-events-auto flex items-center gap-2 rounded-full border border-cyan-400/40 bg-slate-950/90 px-2 py-2 pr-3 shadow-lg backdrop-blur-md"
+        className="fixed right-3 bottom-14 z-50 pointer-events-auto flex items-center gap-2.5 rounded-full border border-cyan-400/40 bg-slate-950/90 px-2.5 py-2 pr-3.5 shadow-lg backdrop-blur-md hover:border-cyan-300"
         title="Buka Ruang Felisa (F)"
       >
-        <span className="grid h-9 w-9 place-items-center rounded-full border border-cyan-300/50 bg-cyan-500/15 text-sm font-bold text-cyan-100">F</span>
-        <span className="max-w-[220px] truncate text-left text-[11px] font-mono-tech text-cyan-100">
-          {video?.waiting_approval ? `Menunggu: ${video.waiting_approval}` : status === "failed" ? "Ada tahap gagal" : status === "running" ? "Produksi berjalan" : "Studio siap"}
+        <span
+          className="grid h-8 w-8 place-items-center rounded-full border text-xs font-bold"
+          style={{ borderColor: `${theme.accent}88`, background: `${theme.accent}22`, color: theme.accent }}
+        >
+          F
+        </span>
+        <span className="max-w-[230px] truncate text-left text-[11px] font-mono-tech text-slate-100">
+          {video?.waiting_approval
+            ? `Menunggu: ${video.waiting_approval}`
+            : status === "failed"
+              ? "Perlu perhatian: tahap gagal"
+              : status === "running"
+                ? "Produksi sedang berjalan"
+                : `Felisa siap (${doneCount}/${stageItems.length})`}
         </span>
       </button>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-[60] overflow-hidden bg-slate-950/28 backdrop-blur-md">
-      <div className="absolute inset-0 bg-slate-950/32" />
+    <div className="leader-room-root fixed inset-0 z-[60] flex flex-col overflow-hidden bg-slate-950/35 backdrop-blur-[2px]">
+      {/* Vignette tepi halus agar studio 3D di belakang tetap jelas namun fokus terjaga */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 30% 52%, transparent 22%, rgba(2,6,23,0.58) 78%, rgba(2,6,23,0.82) 100%)",
+        }}
+      />
 
-      <button
-        onClick={closeRoom}
-        className="fixed right-4 top-4 z-[70] rounded-lg border border-cyan-300/30 bg-slate-950/75 px-4 py-2.5 text-[11px] font-mono-tech font-bold text-cyan-100 hover:bg-slate-900"
-      >
-        Tutup Felisa → Lihat Studio Full [ESC]
-      </button>
+      {/* TOP BAR: Strip Pipeline + Tombol Tutup */}
+      <header className="relative z-20 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-slate-950/75 px-4 py-2.5 backdrop-blur-md">
+        <div className="flex flex-wrap items-center gap-1 overflow-x-auto py-0.5" aria-label="Status Pipeline">
+          {stageItems.map((item, idx) => {
+            const pillStyle =
+              item.state === "failed"
+                ? "border-rose-400/60 bg-rose-500/20 text-rose-200"
+                : item.state === "waiting"
+                  ? "border-amber-400/60 bg-amber-500/20 text-amber-200"
+                  : item.state === "running"
+                    ? "border-cyan-400/70 bg-cyan-500/25 text-cyan-100 animate-pulse"
+                    : item.state === "done"
+                      ? "border-emerald-400/35 bg-emerald-500/10 text-emerald-200/90"
+                      : "border-white/10 bg-slate-900/60 text-slate-400";
 
-      <main className="relative z-10 grid h-full grid-cols-1 items-center gap-2 px-5 pb-5 pt-16 md:grid-cols-[minmax(320px,1fr)_minmax(300px,410px)]">
-        <section className="flex h-full min-h-0 items-end justify-center md:items-center" aria-label="Potret Felisa">
+            return (
+              <React.Fragment key={item.key}>
+                <button
+                  onClick={() => onOpenWorkspace?.(item.index)}
+                  className={`rounded-md border px-2 py-1 text-[10px] font-mono-tech transition hover:brightness-125 ${pillStyle}`}
+                  title={`Buka ruang kerja ${item.shortName}`}
+                >
+                  {item.shortName}
+                </button>
+                {idx < stageItems.length - 1 && (
+                  <span className="text-[10px] text-slate-600 select-none">→</span>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={closeRoom}
+          className="ml-auto shrink-0 rounded-lg border border-cyan-300/35 bg-slate-900/90 px-3.5 py-1.5 text-[11px] font-mono-tech font-bold text-cyan-100 hover:bg-slate-800"
+        >
+          Tutup Felisa → Lihat Studio Full [ESC]
+        </button>
+      </header>
+
+      {/* MAIN STAGE: rail agen + potret + briefing, center terhadap topbar dan tab bar */}
+      <main className="leader-stage relative z-10 w-full">
+        {/* Kiri: Rail daftar agen */}
+        <aside className="leader-agent-rail" aria-label="Status 10 agen">
+          <div className="leader-agent-rail-title">
+            <span>AGEN STUDIO</span>
+            <span>{doneCount}/{stageItems.length}</span>
+          </div>
+          <div className="leader-agent-rail-list">
+            {stageItems.map((item) => {
+              const railState =
+                item.state === "failed"
+                  ? { dot: "#fb7185", text: "gagal" }
+                  : item.state === "waiting"
+                    ? { dot: "#fbbf24", text: "persetujuan" }
+                    : item.state === "running"
+                      ? { dot: "#22d3ee", text: "berjalan" }
+                      : item.state === "done"
+                        ? { dot: "#34d399", text: "selesai" }
+                        : { dot: "#64748b", text: "standby" };
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => onOpenWorkspace?.(item.index)}
+                  className="leader-agent-row"
+                  title={`Buka ruang kerja ${item.shortName}`}
+                >
+                  <span className="leader-agent-row-dot" style={{ background: railState.dot }} />
+                  <span className="leader-agent-row-name">{item.shortName}</span>
+                  <span className="leader-agent-row-status">{railState.text}</span>
+                </button>
+              );
+            })}
+          </div>
+        </aside>
+
+        {/* Tengah: Potret Felisa dengan rasio asli */}
+        <section className="felisa-figure-column" aria-label="Potret Felisa">
+          {/* Ambient Glow dinamis di belakang bahu/tubuh Felisa */}
           <div
-            className="relative h-[min(72vh,600px)] w-full max-w-[456px]"
-            style={{ background: "transparent", border: "none", boxShadow: "none" }}
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[74%] w-[82%] -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors duration-500"
+            style={{
+              background: `radial-gradient(circle, ${theme.aura} 0%, transparent 70%)`,
+              filter: "blur(26px)",
+            }}
+          />
+
+          {/* Wadah Felisa: rasio asli, tinggi penuh, tanpa crop */}
+          <div
+            className="felisa-float-stage felisa-figure"
+            style={{
+              background: "transparent",
+              border: "none",
+              boxShadow: "none",
+            }}
           >
-            <div
-              aria-hidden="true"
-              className="absolute left-1/2 z-0 origin-bottom"
+            <FelisaLayered
+              speaking={speaking}
+              level={speaking ? 0.55 : 0}
+              pulse={pulse}
+              sleep={sleep}
+              glowMode={glowMode}
+              mood={status === "failed" ? "concerned" : status === "waiting_approval" ? "thinking" : "happy"}
+              fps={24}
+              opacity={opacity}
+              onStatus={setFelisaStatus}
+              className="relative z-10"
               style={{
-                bottom: "7%",
                 width: "100%",
-                height: "68%",
-                transform: "translateX(-50%)",
-                background: `linear-gradient(to top, ${podiumPalette.glow}, transparent 72%)`,
-                clipPath: "polygon(44% 100%, 56% 100%, 88% 0, 12% 0)",
-                opacity: sleep ? 0.2 : 0.78,
-                filter: "blur(1px)",
+                height: "100%",
+                maxHeight: "none",
+                display: "block",
+                WebkitMaskImage: "linear-gradient(to bottom, #000 0%, #000 90%, transparent 100%)",
+                maskImage: "linear-gradient(to bottom, #000 0%, #000 90%, transparent 100%)",
               }}
             />
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 460 180"
-              className="absolute left-1/2 z-[1] w-[92%]"
-              style={{ bottom: "-5%", transform: "translateX(-50%)", opacity: sleep ? 0.28 : 1 }}
-            >
-              <defs>
-                <radialGradient id="felisaPodiumFill">
-                  <stop offset="0%" stopColor={podiumPalette.core} stopOpacity="0.18" />
-                  <stop offset="72%" stopColor={podiumPalette.core} stopOpacity="0.06" />
-                  <stop offset="100%" stopColor={podiumPalette.core} stopOpacity="0" />
-                </radialGradient>
-                <filter id="felisaPodiumGlow">
-                  <feGaussianBlur stdDeviation="3" />
-                </filter>
-              </defs>
-              <ellipse cx="230" cy="122" rx="170" ry="42" fill="url(#felisaPodiumFill)" />
-              <ellipse cx="230" cy="122" rx="150" ry="34" fill="none" stroke={podiumPalette.core} strokeWidth="2" opacity="0.78" />
-              <ellipse cx="230" cy="122" rx="116" ry="24" fill="none" stroke={podiumPalette.core} strokeWidth="1.5" opacity="0.58" />
-              <ellipse cx="230" cy="122" rx="78" ry="14" fill="none" stroke={podiumPalette.core} strokeWidth="1.5" opacity="0.92" />
-              <ellipse cx="230" cy="122" rx="150" ry="34" fill="none" stroke={podiumPalette.core} strokeWidth="7" opacity="0.12" filter="url(#felisaPodiumGlow)" />
-              {[42, 58, 74, 90, 106].map((y) => (
-                <line key={y} x1="88" x2="372" y1={y} y2={y} stroke={podiumPalette.core} strokeWidth="1" opacity="0.08" />
-              ))}
-            </svg>
-            <div
-              className="absolute inset-x-0 bottom-20 z-[2] h-[calc(100%-88px)]"
-              style={{ animation: "felisaFloat 4.8s ease-in-out infinite" }}
-            >
-              <FelisaLayered
-                speaking={speaking}
-                level={speaking ? 0.55 : 0}
-                pulse={pulse}
-                sleep={sleep}
-                glowMode={glowMode}
-                mood={status === "failed" ? "concerned" : status === "waiting_approval" ? "thinking" : "happy"}
-                fps={24}
-                opacity={opacity}
-                onStatus={setFelisaStatus}
-                className="relative z-[2]"
-              />
-            </div>
-            <style>{`
-              @keyframes felisaFloat {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-5px); }
-              }
-              @media (prefers-reduced-motion: reduce) {
-                .felisaFloat { animation: none !important; }
-              }
-            `}</style>
           </div>
+
+          <style>{`
+            .leader-stage {
+              --leader-topbar: 56px;
+              --leader-tabbar: 56px;
+              display: grid;
+              grid-template-columns: 260px minmax(0, 1fr) 440px;
+              gap: 32px;
+              align-items: center;
+              max-width: 1360px;
+              height: calc(100vh - var(--leader-topbar) - var(--leader-tabbar));
+              min-height: 0;
+              margin: 0 auto;
+              padding: 8px 24px 0;
+            }
+            .leader-agent-rail {
+              align-self: center;
+              max-height: calc(100% - 24px);
+              overflow: hidden;
+              border-left: 1px solid rgba(148,163,184,.12);
+              padding: 8px 8px 8px 12px;
+            }
+            .leader-agent-rail-title {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 7px;
+              color: #94a3b8;
+              font-family: "JetBrains Mono", monospace;
+              font-size: 9px;
+              letter-spacing: .08em;
+            }
+            .leader-agent-rail-list {
+              display: flex;
+              flex-direction: column;
+              gap: 3px;
+            }
+            .leader-agent-row {
+              display: grid;
+              grid-template-columns: 8px minmax(58px, 1fr) auto;
+              align-items: center;
+              gap: 8px;
+              width: 100%;
+              min-height: 38px;
+              padding: 5px 7px;
+              border: 1px solid transparent;
+              border-radius: 8px;
+              background: transparent;
+              color: #cbd5e1;
+              text-align: left;
+              cursor: pointer;
+              transition: border-color .15s ease, background .15s ease;
+            }
+            .leader-agent-row:hover {
+              border-color: rgba(34,211,238,.20);
+              background: rgba(15,23,42,.55);
+            }
+            .leader-agent-row-dot {
+              width: 7px;
+              height: 7px;
+              border-radius: 999px;
+              box-shadow: 0 0 10px currentColor;
+            }
+            .leader-agent-row-name {
+              font-size: 12px;
+              font-weight: 700;
+            }
+            .leader-agent-row-status {
+              color: #94a3b8;
+              font-family: "JetBrains Mono", monospace;
+              font-size: 8.5px;
+              text-transform: uppercase;
+            }
+            .felisa-figure-column {
+              position: relative;
+              display: flex;
+              height: 100%;
+              min-width: 0;
+              min-height: 0;
+              align-items: center;
+              justify-content: center;
+              overflow: visible;
+            }
+            .felisa-figure {
+              position: relative;
+              z-index: 10;
+              height: auto;
+              max-height: 100%;
+              width: min(100%, calc((100vh - var(--leader-topbar) - var(--leader-tabbar)) * 0.76));
+              max-width: 100%;
+              aspect-ratio: 460 / 605;
+              justify-self: center;
+            }
+            .felisa-figure canvas {
+              width: 100%;
+              height: 100%;
+              max-height: none;
+              display: block;
+            }
+            .felisa-float-stage {
+              animation: felisaFloat 5s ease-in-out infinite;
+            }
+            @keyframes felisaFloat {
+              0%, 100% { transform: translateY(0px); }
+              50% { transform: translateY(-5px); }
+            }
+            @media (prefers-reduced-motion: reduce) {
+              .felisa-float-stage { animation: none !important; }
+            }
+            @media (max-width: 1100px) {
+              .leader-stage {
+                grid-template-columns: minmax(0, 1fr) 440px;
+                max-width: 900px;
+              }
+              .leader-agent-rail {
+                display: none;
+              }
+            }
+            @media (max-width: 800px) {
+              .leader-stage {
+                grid-template-columns: 1fr;
+                height: calc(100vh - var(--leader-topbar) - var(--leader-tabbar));
+                gap: 8px;
+                overflow-y: auto;
+                padding: 8px 12px 12px;
+              }
+              .felisa-figure-column {
+                height: min(52vh, 520px);
+              }
+              .felisa-figure {
+                width: min(100%, 355px);
+                height: auto;
+                max-height: 520px;
+              }
+              .leader-stage > aside:last-of-type {
+                width: min(440px, 100%);
+                justify-self: center;
+              }
+            }
+          `}</style>
         </section>
 
-        <aside className="pointer-events-auto mb-12 rounded-2xl border border-cyan-400/20 bg-slate-950/88 p-5 text-slate-100 shadow-2xl backdrop-blur-xl md:mb-0">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <div className="text-[10px] font-mono-tech uppercase tracking-widest text-cyan-300">Studio Leader</div>
-              <h1 className="mt-1 font-heading text-xl font-bold">Felisa</h1>
+        {/* Kanan: Panel Briefing & Kontrol Pemimpin Studio */}
+        <aside className="pointer-events-auto relative rounded-2xl border border-white/15 bg-slate-950/88 p-5 text-slate-100 shadow-2xl backdrop-blur-xl">
+          {/* Header Kartu + Tombol Pengaturan Dev */}
+          <div className="mb-3.5 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <span
+                className={`rounded-full border px-2.5 py-0.5 text-[10px] font-mono-tech font-bold uppercase tracking-wider ${theme.badge}`}
+              >
+                Studio Leader
+              </span>
+              <h1 className="font-heading text-lg font-bold tracking-tight text-white">Felisa</h1>
+              {video?.title && (
+                <span className="hidden truncate text-[11px] font-mono-tech text-slate-400 sm:inline max-w-[170px]">
+                  · {video.title}
+                </span>
+              )}
             </div>
-            <span className={`h-2.5 w-2.5 rounded-full ${status === "failed" ? "bg-rose-400" : status === "waiting_approval" ? "bg-amber-400" : "bg-cyan-400"} ${status === "running" ? "animate-pulse" : ""}`} />
+
+            <button
+              onClick={() => setShowSettings((v) => !v)}
+              className="rounded-lg border border-white/10 bg-slate-900/80 px-2 py-1 text-[11px] font-mono-tech text-slate-400 hover:border-white/25 hover:text-slate-200"
+              title="Pengaturan Tampilan & Gudang"
+            >
+              ⚙
+            </button>
           </div>
+
+          {/* Drawer Pengaturan Teknis (Tersembunyi secara bawaan) */}
+          {showSettings && (
+            <div className="mb-4 rounded-xl border border-white/10 bg-slate-900/90 p-3 text-[11px] font-mono-tech text-slate-300 space-y-2.5">
+              <div className="flex items-center justify-between text-[10px] text-slate-400">
+                <span>
+                  RIG: {felisaStatus ? `${felisaStatus.activeCount}/${felisaStatus.totalCount} LAYER` : "20/20 LAYER"}
+                </span>
+                <span>{felisaStatus ? `${felisaStatus.width}×${felisaStatus.height}px` : "460×605px"}</span>
+              </div>
+              <label className="flex items-center justify-between gap-3">
+                <span>Transparansi Potret</span>
+                <input
+                  type="range"
+                  min="0.4"
+                  max="1"
+                  step="0.05"
+                  value={opacity}
+                  onChange={(e) => setOpacity(Number(e.target.value))}
+                  className="w-28 accent-cyan-400"
+                />
+              </label>
+              <div className="flex items-center justify-between pt-1 border-t border-white/10">
+                <button
+                  onClick={() => {
+                    setShowSettings(false);
+                    onOpenStorage?.();
+                  }}
+                  className="text-violet-300 hover:text-violet-200 underline underline-offset-2"
+                >
+                  Buka Gudang Proyek
+                </button>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem(NAME_KEY);
+                    setStarted(false);
+                    setShowSettings(false);
+                  }}
+                  className="text-slate-400 hover:text-slate-200"
+                >
+                  Ganti Nama
+                </button>
+              </div>
+            </div>
+          )}
 
           {!started ? (
             <form onSubmit={start} className="space-y-3">
-              <p className="text-sm leading-relaxed text-slate-200">Sebelum mulai, siapa nama kamu?</p>
+              <p className="text-sm leading-relaxed text-slate-200">
+                Sebelum mulai memimpin produksi hari ini, siapa nama panggilanmu?
+              </p>
               <input
                 value={nameDraft}
                 onChange={(event) => setNameDraft(event.target.value)}
-                placeholder="Nama"
+                placeholder="Masukkan nama..."
                 autoFocus
-                className="w-full rounded-lg border border-cyan-400/25 bg-slate-900 px-3 py-2.5 text-sm text-white outline-none focus:border-cyan-300"
+                className="w-full rounded-lg border border-cyan-400/30 bg-slate-900 px-3.5 py-2.5 text-sm text-white outline-none focus:border-cyan-300"
               />
               <button
                 type="submit"
                 disabled={!nameDraft.trim()}
                 className="w-full rounded-lg bg-cyan-400 px-4 py-2.5 text-xs font-mono-tech font-bold text-slate-950 disabled:opacity-50"
               >
-                Mulai
+                Mulai Sesi Studio
               </button>
             </form>
           ) : (
-            <div className="space-y-4">
-              <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
-                <p className="text-sm leading-relaxed">{showExplain ? `${message} ${errorCode ? "Saya sedang membandingkan masalah ini dengan templat penanganan tetap." : "Status ini berasal dari status tahapan backend yang telah dipetakan."}` : (displayedText || (pulse <= 1 ? greeting : message))}</p>
-                {video?.title && (
-                  <p className="mt-2 text-[10px] font-mono-tech text-cyan-300/75">{video.title}</p>
+            <div className="space-y-3.5">
+              {/* 1. Briefing Terstruktur (Headline + 2 Poin Singkat) */}
+              <div className="rounded-xl border border-white/10 bg-slate-900/75 p-3.5">
+                <p className="text-sm font-semibold leading-snug text-white">{briefing.headline}</p>
+                <ul className="mt-2 space-y-1 text-xs leading-relaxed text-slate-300">
+                  {briefing.bullets.map((line, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: theme.accent }} />
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+                {showExplain && (
+                  <p className="mt-2.5 border-t border-white/10 pt-2 text-[11px] text-slate-400">
+                    {errorCode
+                      ? `Diagnostik: terdeteksi pola error "${errorCode}" dari log tahap.`
+                      : "Diagnostik: status dipetakan langsung dari status tahapan Orchestrator."}
+                  </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              {/* 2. Satu Rekomendasi Utama (Tombol Penuh) + Aksi Sekunder */}
+              <div className="space-y-2">
                 <button
-                  onClick={handleContinue}
+                  onClick={briefing.primaryAction}
                   disabled={busy}
-                  className="rounded-lg border border-cyan-400/35 bg-cyan-500/12 px-3 py-2.5 text-[10px] font-mono-tech font-bold text-cyan-100 disabled:opacity-50"
+                  className={`w-full rounded-xl px-4 py-2.5 text-xs font-mono-tech font-bold shadow-md transition disabled:opacity-50 ${theme.cta}`}
                 >
-                  Lanjut
+                  {briefing.primaryLabel}
                 </button>
-                <button
-                  onClick={closeRoom}
-                  className="rounded-lg border border-white/10 bg-slate-800/70 px-3 py-2.5 text-[10px] font-mono-tech text-slate-200"
-                >
-                  Lihat studio
-                </button>
-                <button
-                  onClick={() => {
-                    setShowExplain((value) => !value);
-                    speak(errorCode ? `error:${errorCode}` : `status:${status}`, {
-                      name,
-                      errorCode,
-                      text: showExplain ? message : `${message} Status ini berasal dari status tahapan backend yang telah dipetakan.`,
-                      onText: setDisplayedText,
-                      onSpeaking: setSpeaking,
-                      duration: 3000,
-                    });
-                  }}
-                  className="rounded-lg border border-violet-400/25 bg-violet-500/10 px-3 py-2.5 text-[10px] font-mono-tech text-violet-100"
-                >
-                  Jelaskan
-                </button>
-                <button
-                  onClick={handleViewStage}
-                  className="rounded-lg border border-white/10 bg-slate-800/70 px-3 py-2.5 text-[10px] font-mono-tech text-slate-200"
-                >
-                  Buka tahap
-                </button>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={closeRoom}
+                    className="rounded-lg border border-white/10 bg-slate-900/70 px-3 py-2 text-[11px] font-mono-tech text-slate-300 hover:bg-slate-800"
+                  >
+                    Lihat Studio 3D
+                  </button>
+                  <button
+                    onClick={() => {
+                      const next = !showExplain;
+                      setShowExplain(next);
+                      speak(errorCode ? `error:${errorCode}` : `status:${status}`, {
+                        name,
+                        errorCode,
+                        text: briefing.headline,
+                        onText: setDisplayedText,
+                        onSpeaking: setSpeaking,
+                        duration: 2800,
+                      });
+                    }}
+                    className="rounded-lg border border-white/10 bg-slate-900/70 px-3 py-2 text-[11px] font-mono-tech text-slate-300 hover:bg-slate-800"
+                  >
+                    {showExplain ? "Tutup Detail" : "Detail Status"}
+                  </button>
+                </div>
               </div>
 
-              {video?.waiting_approval && (
-                <button
-                  onClick={handleApprove}
-                  disabled={busy}
-                  className="w-full rounded-lg border border-amber-400/35 bg-amber-500/15 px-3 py-2.5 text-[10px] font-mono-tech font-bold text-amber-100 disabled:opacity-50"
-                >
-                  Setujui {video.waiting_approval}
-                </button>
+              {/* 3. Daftar "Butuh Perhatianmu" (Hanya muncul bila ada approval / gagal) */}
+              {attentionItems.length > 0 && (
+                <div className="space-y-1.5">
+                  <div className="text-[10px] font-mono-tech uppercase tracking-wider text-slate-400">
+                    Butuh Perhatianmu ({attentionItems.length})
+                  </div>
+                  {attentionItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 ${
+                        item.type === "failed"
+                          ? "border-rose-400/35 bg-rose-950/35"
+                          : "border-amber-400/35 bg-amber-950/35"
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <div className="truncate text-xs font-semibold text-white">{item.title}</div>
+                        <div className="truncate text-[10px] text-slate-300">{item.detail}</div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        <button
+                          onClick={item.onAction}
+                          className="rounded-md border border-white/15 bg-slate-900/85 px-2.5 py-1 text-[10px] font-mono-tech font-bold text-slate-100 hover:bg-slate-800"
+                        >
+                          {item.actionLabel}
+                        </button>
+                        {item.secondaryLabel && (
+                          <button
+                            onClick={item.onSecondary}
+                            disabled={busy}
+                            className="rounded-md bg-amber-400 px-2.5 py-1 text-[10px] font-mono-tech font-bold text-slate-950 hover:bg-amber-300 disabled:opacity-50"
+                          >
+                            {item.secondaryLabel}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
 
-              <div
-                className="mt-1 rounded-xl border px-3 py-2.5"
-                style={{
-                  borderColor: `${podiumPalette.core}38`,
-                  background: "linear-gradient(90deg, rgba(15,23,42,.86), rgba(15,23,42,.58))",
-                  boxShadow: `inset 0 1px 0 ${podiumPalette.core}1f`,
-                }}
-              >
-                <div className="mb-2 flex items-center justify-between gap-2 text-[9px] font-mono-tech text-slate-400">
-                  <span>RIG FELISA · {felisaStatus ? `${felisaStatus.activeCount}/${felisaStatus.totalCount} LAYER` : "20/20 LAYER"}</span>
-                  {felisaStatus && <span>{felisaStatus.width}×{felisaStatus.height}px</span>}
+              {/* 4. Roster Agen Ringkas */}
+              <div className="flex items-center justify-between rounded-xl border border-white/10 bg-slate-900/50 px-3 py-2 text-[10px] font-mono-tech">
+                <div className="flex items-center gap-2 text-slate-300">
+                  <span className="h-2 w-2 rounded-full" style={{ background: theme.accent }} />
+                  <span>
+                    {activeAgents.length > 0
+                      ? `Aktif: ${activeAgents.map((a) => a.shortName).join(", ")}`
+                      : "Semua agen standby"}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                <button
-                  onClick={() => onOpenStorage?.()}
-                  className="text-[10px] font-mono-tech text-violet-200 hover:text-violet-100"
-                >
-                  Buka Gudang
-                </button>
-                <label className="ml-auto flex items-center gap-2 text-[9px] font-mono-tech text-slate-400">
-                  Transparansi
-                  <input
-                    type="range"
-                    min="0.35"
-                    max="1"
-                    step="0.05"
-                    value={opacity}
-                    onChange={(event) => setOpacity(Number(event.target.value))}
-                    className="w-20 accent-cyan-400"
-                  />
-                </label>
-                </div>
+                <span className="text-slate-400">
+                  {doneCount}/{stageItems.length} selesai
+                </span>
               </div>
             </div>
           )}
