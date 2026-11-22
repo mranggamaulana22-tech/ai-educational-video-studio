@@ -37,6 +37,7 @@ export default function FelisaLeaderPanel({ videoId, onEvent, onAction, onNaviga
   const [pendingAction, setPendingAction] = useState(null);
   const [commandBusy, setCommandBusy] = useState(false);
   const [felisaStatus, setFelisaStatus] = useState(null);
+  const [felisaOpacity, setFelisaOpacity] = useState(1);
   const sourceRef = useRef(null);
 
   useEffect(() => {
@@ -169,7 +170,7 @@ export default function FelisaLeaderPanel({ videoId, onEvent, onAction, onNaviga
           </div>
 
           <div className="mt-3 flex items-end gap-3">
-            <div className="w-[138px] h-[181px] shrink-0 rounded-xl overflow-hidden bg-slate-950/40">
+            <div className="w-[138px] h-[181px] shrink-0" style={{ background: "transparent", border: "none", boxShadow: "none" }}>
               <FelisaLayered
                 speaking={speaking}
                 level={speaking ? 0.55 : 0}
@@ -179,6 +180,7 @@ export default function FelisaLeaderPanel({ videoId, onEvent, onAction, onNaviga
                 mood={latestStatus === "failed" ? "concerned" : latestStatus === "waiting_approval" ? "thinking" : "happy"}
                 fps={24}
                 onStatus={setFelisaStatus}
+                opacity={felisaOpacity}
               />
             </div>
             {felisaStatus && (
@@ -195,6 +197,21 @@ export default function FelisaLeaderPanel({ videoId, onEvent, onAction, onNaviga
               </div>
             )}
           </div>
+
+          <label className="mt-2 flex items-center gap-2 text-[9px] font-mono-tech text-slate-400">
+            <span className="whitespace-nowrap">Transparansi Hologram</span>
+            <input
+              type="range"
+              min="0.35"
+              max="1"
+              step="0.05"
+              value={felisaOpacity}
+              onChange={(event) => setFelisaOpacity(Number(event.target.value))}
+              className="min-w-0 flex-1 accent-cyan-400 cursor-pointer"
+              aria-label="Transparansi Hologram"
+            />
+            <span className="w-8 text-right">{Math.round(felisaOpacity * 100)}%</span>
+          </label>
 
           <div className="mt-3 rounded-xl bg-slate-950/55 border border-white/7 px-3 py-2.5">
             {leaderMessage ? (

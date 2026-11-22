@@ -27,7 +27,7 @@ export default function FelisaLayered({
   baseUrl = "/models/felisa/layers",
   speaking = false, level, pulse = 0, sleep = false,
   glowMode = "normal", mood = null, amp = 1, fps = 30,
-  className, style, onStatus,
+  className, style, onStatus, opacity = 1,
 }) {
   const canvasRef = useRef(null);
   const rigRef = useRef(null);
@@ -104,6 +104,9 @@ export default function FelisaLayered({
         maxHeight: "600px",
         aspectRatio: `${FELISA_NATIVE_WIDTH} / ${FELISA_NATIVE_HEIGHT}`,
         display: "block",
+        opacity,
+        WebkitMaskImage: "radial-gradient(ellipse 50% 54% at 50% 46%, #000 58%, transparent 100%)",
+        maskImage: "radial-gradient(ellipse 50% 54% at 50% 46%, #000 58%, transparent 100%)",
         ...style,
       }}
     />
