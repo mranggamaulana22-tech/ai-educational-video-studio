@@ -3,6 +3,7 @@ import FelisaLayered from "./FelisaLayered.jsx";
 import { api } from "./api.js";
 import { AGENT_STAGES } from "./agentsConfig.js";
 import { getGreeting, getStatusLine } from "./felisaLines.js";
+import { speak } from "./felisaVoice.js";
 
 const NAME_KEY = "felisaUserName";
 const ROOM_KEY = "felisaRoomOpen";
@@ -39,6 +40,9 @@ export default function FelisaRoom({
   const [pulse, setPulse] = useState(0);
   const [showExplain, setShowExplain] = useState(false);
   const [opacity, setOpacity] = useState(1);
+  const [speaking, setSpeaking] = useState(false);
+  const [felisaStatus, setFelisaStatus] = useState(null);
+  const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
     localStorage.setItem(ROOM_KEY, open ? "open" : "closed");
@@ -91,6 +95,20 @@ export default function FelisaRoom({
   const message = getStatusLine(status, name, errorCode);
   const greeting = getGreeting(name);
 
+  useEffect(() => {
+    if (!started) return;
+    const initialText = pulse <= 1 ? greeting : message;
+    setDisplayedText(initialText);
+  }, [started, pulse, greeting, message]);
+
+  const podiumPalette = sleep
+    ? { core: "#64748b", glow: "rgba(100,116,139,0.28)", label: "tidur" }
+    : glowMode === "flicker"
+      ? { core: "#fb7185", glow: "rgba(244,63,94,0.36)", label: "gagal" }
+      : glowMode === "calm"
+        ? { core: "#fbbf24", glow: "rgba(245,158,11,0.34)", label: "menunggu" }
+        : { core: "#22d3ee", glow: "rgba(34,211,238,0.34)", label: "normal" };
+
   const start = (event) => {
     event.preventDefault();
     const cleanName = nameDraft.trim();
@@ -98,6 +116,12 @@ export default function FelisaRoom({
     localStorage.setItem(NAME_KEY, cleanName);
     setName(cleanName);
     setStarted(true);
+    speak("greeting", {
+      name: cleanName,
+      onText: setDisplayedText,
+      onSpeaking: setSpeaking,
+      duration: 3200,
+    });
   };
 
   const closeRoom = () => {
@@ -165,16 +189,60 @@ export default function FelisaRoom({
 
       <main className="relative z-10 grid h-full grid-cols-1 items-center gap-2 px-5 pb-5 pt-16 md:grid-cols-[minmax(320px,1fr)_minmax(300px,410px)]">
         <section className="flex h-full min-h-0 items-end justify-center md:items-center" aria-label="Potret Felisa">
-          <div className="h-[min(72vh,600px)] w-full max-w-[456px]" style={{ background: "transparent", border: "none", boxShadow: "none" }}>
+          <div
+            className="relative h-[min(72vh,600px)] w-full max-w-[456px]"
+            style={{ background: "transparent", border: "none", boxShadow: "none" }}
+          >
+            <div
+              aria-hidden="true"
+              className="absolute left-1/2 z-0 origin-bottom"
+              style={{
+                bottom: "7%",
+                width: "82%",
+                height: "58%",
+                transform: "translateX(-50%)",
+                background: `linear-gradient(to top, ${podiumPalette.glow}, transparent 72%)`,
+                clipPath: "polygon(43% 0, 57% 0, 88% 100%, 12% 100%)",
+                opacity: sleep ? 0.2 : 0.78,
+                filter: "blur(1px)",
+              }}
+            />
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 460 180"
+              className="absolute left-1/2 z-[1] w-[92%]"
+              style={{ bottom: "2%", transform: "translateX(-50%)", opacity: sleep ? 0.28 : 1 }}
+            >
+              <defs>
+                <radialGradient id="felisaPodiumFill">
+                  <stop offset="0%" stopColor={podiumPalette.core} stopOpacity="0.18" />
+                  <stop offset="72%" stopColor={podiumPalette.core} stopOpacity="0.06" />
+                  <stop offset="100%" stopColor={podiumPalette.core} stopOpacity="0" />
+                </radialGradient>
+                <filter id="felisaPodiumGlow">
+                  <feGaussianBlur stdDeviation="3" />
+                </filter>
+              </defs>
+              <ellipse cx="230" cy="122" rx="170" ry="42" fill="url(#felisaPodiumFill)" />
+              <ellipse cx="230" cy="122" rx="150" ry="34" fill="none" stroke={podiumPalette.core} strokeWidth="2" opacity="0.78" />
+              <ellipse cx="230" cy="122" rx="116" ry="24" fill="none" stroke={podiumPalette.core} strokeWidth="1.5" opacity="0.58" />
+              <ellipse cx="230" cy="122" rx="78" ry="14" fill="none" stroke={podiumPalette.core} strokeWidth="1.5" opacity="0.92" />
+              <ellipse cx="230" cy="122" rx="150" ry="34" fill="none" stroke={podiumPalette.core} strokeWidth="7" opacity="0.12" filter="url(#felisaPodiumGlow)" />
+              {[42, 58, 74, 90, 106].map((y) => (
+                <line key={y} x1="88" x2="372" y1={y} y2={y} stroke={podiumPalette.core} strokeWidth="1" opacity="0.08" />
+              ))}
+            </svg>
             <FelisaLayered
-              speaking={false}
-              level={0}
+              speaking={speaking}
+              level={speaking ? 0.55 : 0}
               pulse={pulse}
               sleep={sleep}
               glowMode={glowMode}
               mood={status === "failed" ? "concerned" : status === "waiting_approval" ? "thinking" : "happy"}
               fps={24}
               opacity={opacity}
+              onStatus={setFelisaStatus}
+              className="relative z-[2]"
             />
           </div>
         </section>
@@ -209,7 +277,7 @@ export default function FelisaRoom({
           ) : (
             <div className="space-y-4">
               <div className="rounded-xl border border-white/10 bg-slate-900/70 p-4">
-                <p className="text-sm leading-relaxed">{showExplain ? `${message} ${errorCode ? "Saya sedang membandingkan masalah ini dengan templat penanganan tetap." : "Status ini berasal dari status tahapan backend yang telah dipetakan."}` : (pulse <= 1 ? greeting : message)}</p>
+                <p className="text-sm leading-relaxed">{showExplain ? `${message} ${errorCode ? "Saya sedang membandingkan masalah ini dengan templat penanganan tetap." : "Status ini berasal dari status tahapan backend yang telah dipetakan."}` : (displayedText || (pulse <= 1 ? greeting : message))}</p>
                 {video?.title && (
                   <p className="mt-2 text-[10px] font-mono-tech text-cyan-300/75">{video.title}</p>
                 )}
@@ -230,7 +298,17 @@ export default function FelisaRoom({
                   Lihat studio
                 </button>
                 <button
-                  onClick={() => setShowExplain((value) => !value)}
+                  onClick={() => {
+                    setShowExplain((value) => !value);
+                    speak(errorCode ? `error:${errorCode}` : `status:${status}`, {
+                      name,
+                      errorCode,
+                      text: showExplain ? message : `${message} Status ini berasal dari status tahapan backend yang telah dipetakan.`,
+                      onText: setDisplayedText,
+                      onSpeaking: setSpeaking,
+                      duration: 3000,
+                    });
+                  }}
                   className="rounded-lg border border-violet-400/25 bg-violet-500/10 px-3 py-2.5 text-[10px] font-mono-tech text-violet-100"
                 >
                   Jelaskan
@@ -253,7 +331,19 @@ export default function FelisaRoom({
                 </button>
               )}
 
-              <div className="flex items-center gap-2 border-t border-white/8 pt-3">
+              <div
+                className="mt-1 rounded-xl border px-3 py-2.5"
+                style={{
+                  borderColor: `${podiumPalette.core}38`,
+                  background: "linear-gradient(90deg, rgba(15,23,42,.86), rgba(15,23,42,.58))",
+                  boxShadow: `inset 0 1px 0 ${podiumPalette.core}1f`,
+                }}
+              >
+                <div className="mb-2 flex items-center justify-between gap-2 text-[9px] font-mono-tech text-slate-400">
+                  <span>RIG FELISA · {felisaStatus ? `${felisaStatus.activeCount}/${felisaStatus.totalCount} LAYER` : "20/20 LAYER"}</span>
+                  {felisaStatus && <span>{felisaStatus.width}×{felisaStatus.height}px</span>}
+                </div>
+                <div className="flex items-center gap-2">
                 <button
                   onClick={() => onOpenStorage?.()}
                   className="text-[10px] font-mono-tech text-violet-200 hover:text-violet-100"
@@ -272,6 +362,7 @@ export default function FelisaRoom({
                     className="w-20 accent-cyan-400"
                   />
                 </label>
+                </div>
               </div>
             </div>
           )}

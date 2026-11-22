@@ -46,3 +46,18 @@ export function getStatusLine(status, name, errorCode) {
   const seed = String(name || "felisa").length + choices.length;
   return choices[seed % choices.length];
 }
+
+export function resolveFelisaLine(lineId, context = {}) {
+  if (!lineId) return context.text || "";
+  if (lineId === "greeting") return getGreeting(context.name || "");
+  if (lineId.startsWith("status:")) {
+    return getStatusLine(lineId.slice(7), context.name || "", context.errorCode);
+  }
+  if (lineId.startsWith("error:")) {
+    return ERROR_LINES[lineId.slice(6)] || context.text || "Terjadi kendala yang perlu diperiksa.";
+  }
+  if (lineId === "explain") {
+    return context.text || "Saya menjelaskan status produksi berdasarkan status tahapan yang sudah dipetakan.";
+  }
+  return context.text || "";
+}
