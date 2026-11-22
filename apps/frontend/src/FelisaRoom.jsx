@@ -3,7 +3,18 @@ import FelisaLayered from "./FelisaLayered.jsx";
 import { api } from "./api.js";
 import { AGENT_STAGES } from "./agentsConfig.js";
 import { getGreeting, getStatusLine } from "./felisaLines.js";
-import { speak } from "./felisaVoice.js";
+import {
+  getFelisaLang,
+  getFelisaVoice,
+  getFelisaVoiceOptions,
+  isFelisaMuted,
+  previewVoice,
+  setFelisaLang,
+  setFelisaMuted,
+  setFelisaVoice,
+  speak,
+  stopSpeaking,
+} from "./felisaVoice.js";
 
 const NAME_KEY = "felisaUserName";
 const ROOM_KEY = "felisaRoomOpen";
@@ -54,12 +65,35 @@ export default function FelisaRoom({
   const [showSettings, setShowSettings] = useState(false);
   const [opacity, setOpacity] = useState(1);
   const [speaking, setSpeaking] = useState(false);
+  const [audioLevel, setAudioLevel] = useState(0);
+  const [muted, setMuted] = useState(() => isFelisaMuted());
+  const [felisaLang, setFelisaLangState] = useState(() => getFelisaLang());
+  const [felisaVoice, setFelisaVoiceState] = useState(() => getFelisaVoice());
+  const [felisaVoiceOptions, setFelisaVoiceOptions] = useState([]);
   const [felisaStatus, setFelisaStatus] = useState(null);
   const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
+    let alive = true;
+    getFelisaVoiceOptions()
+      .then((options) => {
+        if (alive) setFelisaVoiceOptions(options);
+      })
+      .catch(() => {
+        if (alive) setFelisaVoiceOptions([]);
+      });
+    return () => { alive = false; };
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem(ROOM_KEY, open ? "open" : "closed");
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      stopSpeaking();
+    };
+  }, []);
 
   useEffect(() => {
     if (!open || !video?.id) return undefined;
@@ -128,8 +162,8 @@ export default function FelisaRoom({
 
   const errorCode = detectErrorCode(video);
   const glowMode = status === "failed" ? "flicker" : status === "waiting_approval" ? "calm" : "normal";
-  const message = getStatusLine(status, name, errorCode);
-  const greeting = getGreeting(name);
+  const message = getStatusLine(status, name, errorCode, felisaLang);
+  const greeting = getGreeting(name, felisaLang);
 
   useEffect(() => {
     if (!started) return;
@@ -209,54 +243,72 @@ export default function FelisaRoom({
 
     if (sleep) {
       return {
-        headline: "Mode hemat daya aktif saat proses berat.",
+        headline: felisaLang === "en"
+          ? "Power-saving mode is active during heavy processing."
+          : "Mode hemat daya aktif saat proses berat.",
         bullets: [
-          `Progres saat ini: ${doneCount}/${stageItems.length} tahap selesai.`,
-          activeStage ? `${activeStage.shortName} sedang memproses di latar belakang.` : "Layar 3D diistirahatkan sementara.",
+          felisaLang === "en"
+            ? `Current progress: ${doneCount}/${stageItems.length} stages complete.`
+            : `Progres saat ini: ${doneCount}/${stageItems.length} tahap selesai.`,
+          activeStage
+            ? (felisaLang === "en"
+              ? `${activeStage.shortName} is processing in the background.`
+              : `${activeStage.shortName} sedang memproses di latar belakang.`)
+            : (felisaLang === "en" ? "The 3D view is resting temporarily." : "Layar 3D diistirahatkan sementara."),
         ],
-        primaryLabel: "Lihat Tahap Aktif",
+        primaryLabel: felisaLang === "en" ? "View Active Stage" : "Lihat Tahap Aktif",
         primaryAction: () => activeStage && onOpenWorkspace?.(activeStage.index),
       };
     }
 
     if (failedStage) {
       return {
-        headline: `Hambatan terdeteksi di tahap ${failedStage.shortName}.`,
+        headline: felisaLang === "en"
+          ? `An issue was detected in the ${failedStage.shortName} stage.`
+          : `Hambatan terdeteksi di tahap ${failedStage.shortName}.`,
         bullets: [
           displayedText || message,
-          `Progres pipeline tertahan di ${doneCount}/${stageItems.length} tahap.`,
+          felisaLang === "en"
+            ? `Pipeline progress is paused at ${doneCount}/${stageItems.length} stages.`
+            : `Progres pipeline tertahan di ${doneCount}/${stageItems.length} tahap.`,
         ],
-        primaryLabel: `Periksa ${failedStage.shortName}`,
+        primaryLabel: felisaLang === "en" ? `Review ${failedStage.shortName}` : `Periksa ${failedStage.shortName}`,
         primaryAction: () => onOpenWorkspace?.(failedStage.index),
       };
     }
 
     if (waitingStage) {
       return {
-        headline: `Menunggu keputusanmu untuk ${waitingStage.shortName}.`,
+        headline: felisaLang === "en"
+          ? `Waiting for your decision on ${waitingStage.shortName}.`
+          : `Menunggu keputusanmu untuk ${waitingStage.shortName}.`,
         bullets: [
           displayedText || message,
           `Selesai ${doneCount}/${stageItems.length} tahap · Tidak ada kuota terpakai saat menunggu.`,
         ],
-        primaryLabel: `Tinjau Hasil ${waitingStage.shortName}`,
+        primaryLabel: felisaLang === "en" ? `Review ${waitingStage.shortName}` : `Tinjau Hasil ${waitingStage.shortName}`,
         primaryAction: () => onOpenWorkspace?.(waitingStage.index),
       };
     }
 
     if (activeStage) {
       return {
-        headline: `${activeStage.shortName} sedang bekerja sekarang.`,
+        headline: felisaLang === "en"
+          ? `${activeStage.shortName} is working now.`
+          : `${activeStage.shortName} sedang bekerja sekarang.`,
         bullets: [
           displayedText || message,
           `Tahap selesai: ${doneCount}/${stageItems.length}.`,
         ],
-        primaryLabel: `Pantau ${activeStage.shortName}`,
+        primaryLabel: felisaLang === "en" ? `Monitor ${activeStage.shortName}` : `Pantau ${activeStage.shortName}`,
         primaryAction: () => onOpenWorkspace?.(activeStage.index),
       };
     }
 
     return {
-      headline: pulse <= 1 ? greeting : "Pipeline siap untuk langkah berikutnya.",
+      headline: pulse <= 1
+        ? greeting
+        : (felisaLang === "en" ? "The pipeline is ready for the next step." : "Pipeline siap untuk langkah berikutnya."),
       bullets: [
         pulse <= 1 ? message : (displayedText || message),
         nextStage
@@ -270,7 +322,7 @@ export default function FelisaRoom({
         else onOpenWorkspace?.(stageItems.length - 1);
       },
     };
-  }, [sleep, stageItems, doneCount, displayedText, message, pulse, greeting, busy, onOpenWorkspace, onAdvance]);
+  }, [sleep, stageItems, doneCount, displayedText, message, pulse, greeting, felisaLang, busy, onOpenWorkspace, onAdvance]);
 
   const start = (event) => {
     event.preventDefault();
@@ -281,13 +333,46 @@ export default function FelisaRoom({
     setStarted(true);
     speak("greeting", {
       name: cleanName,
+      lang: felisaLang,
+      voice: felisaVoice,
       onText: setDisplayedText,
       onSpeaking: setSpeaking,
+      onLevel: setAudioLevel,
       duration: 3200,
     });
   };
 
+  const replayBriefing = () => {
+    const lineOptions = {
+      name,
+      errorCode,
+      lang: felisaLang,
+      voice: felisaVoice,
+      text: displayedText,
+      onText: setDisplayedText,
+      onSpeaking: setSpeaking,
+      onLevel: setAudioLevel,
+    };
+
+    if (errorCode) {
+      speak(`error:${errorCode}`, lineOptions);
+    } else if (pulse <= 1) {
+      speak("greeting", lineOptions);
+    } else {
+      speak(`status:${status}`, lineOptions);
+    }
+  };
+
+  const toggleMute = () => {
+    const nextMuted = setFelisaMuted(!muted);
+    setMuted(nextMuted);
+    if (nextMuted) setAudioLevel(0);
+  };
+
   const closeRoom = () => {
+    stopSpeaking();
+    setSpeaking(false);
+    setAudioLevel(0);
     localStorage.setItem(ROOM_KEY, "closed");
     onClose();
   };
@@ -466,7 +551,7 @@ export default function FelisaRoom({
           >
             <FelisaLayered
               speaking={speaking}
-              level={speaking ? 0.55 : 0}
+              level={audioLevel}
               pulse={pulse}
               sleep={sleep}
               glowMode={glowMode}
@@ -706,6 +791,16 @@ export default function FelisaRoom({
                 Studio Leader
               </span>
               <h1 className="font-heading text-lg font-bold tracking-tight text-white">Felisa</h1>
+              <button
+                type="button"
+                onClick={replayBriefing}
+                disabled={muted}
+                className="grid h-7 w-7 place-items-center rounded-full border border-cyan-400/30 bg-slate-900/80 text-sm text-cyan-200 hover:border-cyan-300/60 disabled:opacity-40"
+                title={muted ? "Suara Felisa dibisukan" : "Putar ulang briefing Felisa"}
+                aria-label="Putar ulang briefing Felisa"
+              >
+                🔊
+              </button>
               {video?.title && (
                 <span className="hidden truncate text-[11px] font-mono-tech text-slate-400 sm:inline max-w-[170px]">
                   · {video.title}
@@ -713,13 +808,24 @@ export default function FelisaRoom({
               )}
             </div>
 
-            <button
-              onClick={() => setShowSettings((v) => !v)}
-              className="rounded-lg border border-white/10 bg-slate-900/80 px-2 py-1 text-[11px] font-mono-tech text-slate-400 hover:border-white/25 hover:text-slate-200"
-              title="Pengaturan Tampilan & Gudang"
-            >
-              ⚙
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={toggleMute}
+                className="rounded-lg border border-white/10 bg-slate-900/80 px-2 py-1 text-[11px] font-mono-tech text-slate-300 hover:border-white/25"
+                title={muted ? "Aktifkan suara Felisa" : "Bisukan suara Felisa"}
+                aria-label={muted ? "Suara Aktif" : "Bisukan"}
+              >
+                {muted ? "🔇" : "🔊"} {muted ? "Suara Aktif" : "Bisukan"}
+              </button>
+              <button
+                onClick={() => setShowSettings((v) => !v)}
+                className="rounded-lg border border-white/10 bg-slate-900/80 px-2 py-1 text-[11px] font-mono-tech text-slate-400 hover:border-white/25 hover:text-slate-200"
+                title="Pengaturan Tampilan & Gudang"
+              >
+                ⚙
+              </button>
+            </div>
           </div>
 
           {/* Drawer Pengaturan Teknis (Tersembunyi secara bawaan) */}
@@ -743,6 +849,60 @@ export default function FelisaRoom({
                   className="w-28 accent-cyan-400"
                 />
               </label>
+              <label className="flex items-center justify-between gap-3">
+                <span>Bahasa Felisa</span>
+                <select
+                  value={felisaLang}
+                  onChange={(event) => {
+                    const nextLang = setFelisaLang(event.target.value);
+                    setFelisaLangState(nextLang);
+                    setDisplayedText(nextLang === "en"
+                      ? getStatusLine(status, name, errorCode, "en")
+                      : getStatusLine(status, name, errorCode, "id"));
+                  }}
+                  className="rounded-md border border-white/10 bg-slate-950 px-2 py-1 text-slate-200"
+                >
+                  <option value="id">Indonesia</option>
+                  <option value="en">English</option>
+                </select>
+              </label>
+              <div className="flex items-center justify-between gap-3">
+                <label className="flex items-center gap-2">
+                  <span>Suara Felisa</span>
+                  <select
+                    value={felisaVoice}
+                    onChange={(event) => setFelisaVoiceState(setFelisaVoice(event.target.value))}
+                    className="rounded-md border border-white/10 bg-slate-950 px-2 py-1 text-slate-200"
+                  >
+                    {felisaVoiceOptions.map((option) => (
+                      <option key={option.voice} value={option.voice}>
+                        {option.label}{option.status === "preview_only" ? " (belum lengkap)" : ""}
+                      </option>
+                    ))}
+                    {felisaVoiceOptions.length === 0 && (
+                      <option value="Leda">Belum ada preview Gemini</option>
+                    )}
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => previewVoice({
+                    lang: felisaLang,
+                    voice: felisaVoice,
+                    onSpeaking: setSpeaking,
+                    onLevel: setAudioLevel,
+                  })}
+                  disabled={muted}
+                  className="shrink-0 rounded-md border border-cyan-400/30 bg-cyan-950/60 px-2 py-1 text-cyan-200 hover:border-cyan-300/60 disabled:opacity-40"
+                >
+                  Preview
+                </button>
+              </div>
+              {felisaVoiceOptions.find((option) => option.voice === felisaVoice)?.status === "preview_only" && (
+                <p className="mt-1 text-[10px] text-slate-400">
+                  Buat set lengkap: jalankan generator dengan FELISA_VOICE={felisaVoice}
+                </p>
+              )}
               <div className="flex items-center justify-between pt-1 border-t border-white/10">
                 <button
                   onClick={() => {
@@ -755,6 +915,9 @@ export default function FelisaRoom({
                 </button>
                 <button
                   onClick={() => {
+                    stopSpeaking();
+                    setSpeaking(false);
+                    setAudioLevel(0);
                     localStorage.removeItem(NAME_KEY);
                     setStarted(false);
                     setShowSettings(false);
@@ -784,7 +947,7 @@ export default function FelisaRoom({
                 disabled={!nameDraft.trim()}
                 className="w-full rounded-lg bg-cyan-400 px-4 py-2.5 text-xs font-mono-tech font-bold text-slate-950 disabled:opacity-50"
               >
-                Mulai Sesi Studio
+                Mulai
               </button>
             </form>
           ) : (
@@ -830,12 +993,15 @@ export default function FelisaRoom({
                     onClick={() => {
                       const next = !showExplain;
                       setShowExplain(next);
-                      speak(errorCode ? `error:${errorCode}` : `status:${status}`, {
+                      speak("explain", {
                         name,
                         errorCode,
+                        lang: felisaLang,
+                        voice: felisaVoice,
                         text: briefing.headline,
                         onText: setDisplayedText,
                         onSpeaking: setSpeaking,
+                        onLevel: setAudioLevel,
                         duration: 2800,
                       });
                     }}

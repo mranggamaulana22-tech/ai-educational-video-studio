@@ -23,33 +23,19 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "apps" / "frontend" / "public" / "audio" / "felisa"
 STYLE_VERSION = "felisa-style-v1"
 
-VOICES = {
-    "ava": {
-        "name": "en-US-AvaMultilingualNeural",
-        "label": "Ava — Hangat & Ekspresif",
-    },
-    "emma": {
-        "name": "en-US-EmmaMultilingualNeural",
-        "label": "Emma — Lembut & Natural",
-    },
-    "jenny": {
-        "name": "en-US-JennyMultilingualNeural",
-        "label": "Jenny — Jelas & Bersahabat",
-    },
-    "xiaoxiao": {"name": "zh-CN-XiaoxiaoMultilingualNeural", "label": "Xiaoxiao — Halus & Muda"},
-    "aria": {"name": "en-US-AriaNeural", "label": "Aria — Ceria & Dinamis"},
-    "michelle": {"name": "en-US-MichelleNeural", "label": "Michelle — Hangat & Profesional"},
-    "sara": {"name": "en-US-SaraNeural", "label": "Sara — Ceria & Jelas"},
+GEMINI_VOICES = (
+    "Zephyr", "Puck", "Charon", "Kore", "Fenrir", "Leda", "Orus", "Aoede",
+    "Callirrhoe", "Autonoe", "Enceladus", "Iapetus", "Umbriel", "Algieba",
+    "Despina", "Erinome", "Algenib", "Rasalgethi", "Laomedeia", "Achernar",
+    "Alnilam", "Schedar", "Gacrux", "Pulcherrima", "Achird", "Zubenelgenubi",
+    "Vindemiatrix", "Sadachbia", "Sadaltager", "Sulafat",
+)
+
+AZURE_VOICES = {
+    "ava": {"name": "en-US-AvaMultilingualNeural", "label": "Ava — Hangat & Ekspresif"},
+    "emma": {"name": "en-US-EmmaMultilingualNeural", "label": "Emma — Lembut & Natural"},
+    "jenny": {"name": "en-US-JennyMultilingualNeural", "label": "Jenny — Jelas & Bersahabat"},
     "gadis": {"name": "id-ID-GadisNeural", "label": "Gadis — Alami & Lokal"},
-    "serena": {"name": "en-US-SerenaMultilingualNeural", "label": "Serena — Empatik & Ekspresif"},
-    "phoebe": {"name": "en-US-PhoebeMultilingualNeural", "label": "Phoebe — Hangat & Tenang"},
-    "nancy": {"name": "en-US-NancyMultilingualNeural", "label": "Nancy — Ceria & Humoris"},
-    "evelyn": {"name": "en-US-EvelynMultilingualNeural", "label": "Evelyn — Elegan & Natural"},
-    "cora": {"name": "en-US-CoraNeural", "label": "Cora — Jelas & Profesional"},
-    "lola": {"name": "en-US-LolaNeural", "label": "Lola — Ceria & Muda"},
-    "ada": {"name": "en-GB-AdaMultilingualNeural", "label": "Ada — Ramah & Modern"},
-    "nova": {"name": "en-US-NovaTurboMultilingualNeural", "label": "Nova — Cepat & Enerjik"},
-    "shimmer": {"name": "en-US-ShimmerTurboMultilingualNeural", "label": "Shimmer — Dinamis & Cerah"},
 }
 
 LANGUAGES = {
@@ -255,13 +241,22 @@ def main():
     parser.add_argument("--force", action="store_true", help="Buat ulang meski cache cocok")
     parser.add_argument("--only", help="Hanya buat satu line id")
     parser.add_argument("--lang", nargs="+", choices=tuple(LANGUAGES), default=list(LANGUAGES))
-    parser.add_argument("--voice", nargs="+", choices=tuple(VOICES), default=["ava"])
+    parser.add_argument("--voice", nargs="+", default=None)
+    parser.add_argument("--previews", help="Daftar voice Gemini dipisah koma")
     args = parser.parse_args()
 
     provider = read_setting("TTS_PROVIDER", default="gemini").lower()
     if provider not in ("gemini", "azure"):
         print("Gagal: TTS_PROVIDER harus gemini atau azure.")
         return 2
+
+    if args.previews:
+        preview_voices = [voice.strip() for voice in args.previews.split(",") if voice.strip()]
+        invalid = [voice for voice in preview_voices if voice not in GEMINI_VOICES]
+        if invalid:
+            print("Gagal: voice Gemini tidak dikenal: " + ", ".join(invalid))
+            return 2
+        provider = "gemini"
 
     felisa_voice = read_setting("FELISA_VOICE", default="Leda")
     felisa_style = read_setting(
@@ -300,21 +295,93 @@ def main():
     texts = existing_manifest.get("text", {})
     text_hashes = existing_manifest.get("text_hashes", {})
     generation_hashes = existing_manifest.get("generation_hashes", {})
+    voice_statuses = existing_manifest.get("voice_statuses", {})
+    voice_formats = existing_manifest.get("voice_formats", {})
+    voice_previews = existing_manifest.get("voice_previews", {})
     generated = 0
     skipped = 0
     stopped = False
 
-    for lang in args.lang:
+    if args.previews:
+        felisa_style = read_setting(
+            "FELISA_STYLE",
+            default="Bacakan dalam Bahasa Indonesia dengan nada ramah, hangat, dan tempo santai.",
+        )
+        preview_text = "Hai, aku Felisa. Aku siap membantu kamu dengan suara yang hangat dan santai."
+        for voice_name in preview_voices:
+            lang = "id"
+            voice_statuses.setdefault(lang, {})
+            voice_formats.setdefault(lang, {})
+            voice_previews.setdefault(lang, {})
+            voice_dir = OUTPUT_DIR / lang / voice_name
+            voice_dir.mkdir(parents=True, exist_ok=True)
+            output = voice_dir / f"preview-{voice_name}.wav"
+            text_digest = text_hash(preview_text)
+            generation_digest = generation_hash("gemini", voice_name, felisa_style)
+
+            cache_matches = (
+                output.exists()
+                and text_hashes.setdefault(lang, {}).setdefault(voice_name, {}).get("preview") == text_digest
+                and generation_hashes.setdefault(lang, {}).setdefault(voice_name, {}).get("preview") == generation_digest
+            )
+            if cache_matches and not args.force:
+                skipped += 1
+                voice_formats[lang][voice_name] = "wav"
+                voice_previews[lang][voice_name] = output.name
+                if voice_statuses[lang].get(voice_name) != "complete":
+                    voice_statuses[lang][voice_name] = "preview_only"
+                continue
+
+            try:
+                synthesize_gemini(preview_text, voice_name, felisa_style, output)
+            except RuntimeError as error:
+                code = str(error)
+                if code in ("rate_limited", "quota_exhausted"):
+                    print(f"Berhenti: {code}. Preview yang belum jadi dapat dilanjutkan saat dijalankan lagi.")
+                else:
+                    print(f"Gagal: preview {voice_name}: {code}")
+                stopped = True
+                break
+
+            text_hashes[lang][voice_name]["preview"] = text_digest
+            generation_hashes[lang][voice_name]["preview"] = generation_digest
+            voice_formats[lang][voice_name] = "wav"
+            voice_previews[lang][voice_name] = output.name
+            if voice_statuses[lang].get(voice_name) != "complete":
+                voice_statuses[lang][voice_name] = "preview_only"
+            generated += 1
+            print(f"[OK] {lang}/{voice_name}/{output.name}")
+
+    if not args.previews:
+        if args.voice is None:
+            selected_voices = [felisa_voice] if provider == "gemini" else ["ava"]
+        else:
+            selected_voices = args.voice
+        if provider == "gemini":
+            invalid = [voice for voice in selected_voices if voice not in GEMINI_VOICES]
+            if invalid:
+                print("Gagal: voice Gemini tidak dikenal: " + ", ".join(invalid))
+                return 2
+        else:
+            invalid = [voice for voice in selected_voices if voice not in AZURE_VOICES]
+            if invalid:
+                print("Gagal: voice Azure tidak dikenal: " + ", ".join(invalid))
+                return 2
+
+    for lang in args.lang if not args.previews else []:
         files.setdefault(lang, {})
         texts.setdefault(lang, {})
         text_hashes.setdefault(lang, {})
         generation_hashes.setdefault(lang, {})
         texts[lang] = dict(LINES[lang])
 
-        for legacy_voice in args.voice:
+        for legacy_voice in selected_voices:
             files[lang].setdefault(legacy_voice, {})
             text_hashes[lang].setdefault(legacy_voice, {})
             generation_hashes[lang].setdefault(legacy_voice, {})
+            voice_statuses.setdefault(lang, {})
+            voice_formats.setdefault(lang, {})
+            voice_formats[lang][legacy_voice] = extension
             for line_id in LINES[lang]:
                 files[lang][legacy_voice][line_id] = f"{line_id}.{extension}"
             files[lang][legacy_voice]["preview"] = f"preview.{extension}"
@@ -333,7 +400,7 @@ def main():
             for line_id, text in line_items.items():
                 output = voice_dir / f"{line_id}.{extension}"
                 text_digest = text_hash(text)
-                voice_name = VOICES[legacy_voice]["name"] if provider == "azure" else felisa_voice
+                voice_name = AZURE_VOICES[legacy_voice]["name"] if provider == "azure" else legacy_voice
                 generation_digest = generation_hash(
                     provider,
                     voice_name,
@@ -381,21 +448,33 @@ def main():
         if stopped:
             break
 
+    if not args.previews and not stopped and args.only is None:
+        for lang in args.lang:
+            voice_statuses.setdefault(lang, {})
+            for selected_voice in selected_voices:
+                voice_statuses[lang][selected_voice] = "complete"
+
     manifest = {
-        "format": extension,
+        "format": "wav",
+        "voice_formats": voice_formats,
+        "voice_statuses": voice_statuses,
+        "voice_previews": voice_previews,
         "languages": LANGUAGES,
-        "voices": VOICES,
+        "voices": {
+            **AZURE_VOICES,
+            **{voice: {"name": voice, "label": voice} for voice in GEMINI_VOICES},
+        },
         "text": texts,
         "files": files,
         "text_hashes": text_hashes,
         "generation_hashes": generation_hashes,
         "style_version": STYLE_VERSION,
-        "voice": felisa_voice if provider == "gemini" else VOICES["ava"]["name"],
+        "voice": felisa_voice if provider == "gemini" else AZURE_VOICES["ava"]["name"],
         "lines": {
             line_id: {
                 "file": f"{line_id}.{extension}",
                 "text": LINES["id"][line_id],
-                "voice": felisa_voice if provider == "gemini" else VOICES["ava"]["name"],
+                "voice": felisa_voice if provider == "gemini" else AZURE_VOICES["ava"]["name"],
             }
             for line_id in LINES["id"]
         },
