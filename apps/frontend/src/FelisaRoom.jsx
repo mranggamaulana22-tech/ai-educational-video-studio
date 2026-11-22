@@ -499,9 +499,12 @@ export default function FelisaRoom({
               width: 100%;
               min-height: 38px;
               padding: 5px 7px;
-              border: 1px solid transparent;
+              border: 1px solid rgba(148,163,184,.18);
               border-radius: 8px;
-              background: transparent;
+              background: rgba(15,23,42,.88);
+              box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 6px 16px rgba(2,6,23,.24);
+              backdrop-filter: blur(10px);
+              -webkit-backdrop-filter: blur(10px);
               color: #cbd5e1;
               text-align: left;
               cursor: pointer;
