@@ -880,7 +880,7 @@ export default function FelisaRoom({
                       </option>
                     ))}
                     {felisaVoiceOptions.length === 0 && (
-                      <option value="Leda">Belum ada preview Gemini</option>
+                      <option value="Leda">Belum ada suara tersedia</option>
                     )}
                   </select>
                 </label>

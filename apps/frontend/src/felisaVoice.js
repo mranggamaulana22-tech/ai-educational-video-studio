@@ -11,6 +11,8 @@ const GEMINI_VOICES = [
   "Alnilam", "Schedar", "Gacrux", "Pulcherrima", "Achird", "Zubenelgenubi",
   "Vindemiatrix", "Sadachbia", "Sadaltager", "Sulafat",
 ];
+const ELEVENLABS_VOICE = "ElevenLabs";
+const VALID_VOICES = [...GEMINI_VOICES, ELEVENLABS_VOICE];
 
 let manifestPromise = null;
 let audioContext = null;
@@ -49,11 +51,11 @@ export function setFelisaLang(lang) {
 
 export function getFelisaVoice() {
   const voice = storageGet(VOICE_KEY, "Leda");
-  return GEMINI_VOICES.includes(voice) ? voice : "Leda";
+  return VALID_VOICES.includes(voice) ? voice : "Leda";
 }
 
 export function setFelisaVoice(voice) {
-  const value = GEMINI_VOICES.includes(voice) ? voice : "Leda";
+  const value = VALID_VOICES.includes(voice) ? voice : "Leda";
   storageSet(VOICE_KEY, value);
   return value;
 }
@@ -81,16 +83,19 @@ async function loadManifest() {
 export async function getFelisaVoiceOptions(lang = getFelisaLang()) {
   const manifest = await loadManifest();
   const selectedLang = lang === "en" ? "en" : "id";
-  return GEMINI_VOICES
+  const candidateVoices = [...GEMINI_VOICES, ELEVENLABS_VOICE];
+  return candidateVoices
     .map((voice) => {
-      const previewFile = manifest?.voice_previews?.[selectedLang]?.[voice];
-      if (!previewFile) return null;
+      const format = manifest?.voice_formats?.[selectedLang]?.[voice];
+      const previewFile = manifest?.voice_previews?.[selectedLang]?.[voice]
+        || manifest?.files?.[selectedLang]?.[voice]?.preview;
+      if (!previewFile && !format && !manifest?.voice_statuses?.[selectedLang]?.[voice]) return null;
       return {
         voice,
-        label: voice,
+        label: manifest?.voices?.[voice]?.label || voice,
         status: manifest?.voice_statuses?.[selectedLang]?.[voice] === "complete" ? "complete" : "preview_only",
         previewFile,
-        format: manifest?.voice_formats?.[selectedLang]?.[voice] || "wav",
+        format: format || (previewFile?.toLowerCase().endsWith(".mp3") ? "mp3" : "wav"),
       };
     })
     .filter(Boolean);
@@ -164,7 +169,11 @@ function findLineId(manifest, lineId, options) {
 function findManifestLine(manifest, lang, voice, resolvedLineId) {
   const mapped = manifest?.files?.[lang]?.[voice]?.[resolvedLineId];
   if (typeof mapped === "string") {
-    return { file: mapped, text: manifest?.text?.[lang]?.[resolvedLineId] || "" };
+    const format = manifest?.voice_formats?.[lang]?.[voice];
+    const file = /\.[a-z0-9]+$/i.test(mapped)
+      ? mapped
+      : `${mapped}.${format || "wav"}`;
+    return { file, text: manifest?.text?.[lang]?.[resolvedLineId] || "" };
   }
   if (resolvedLineId && manifest?.lines?.[resolvedLineId]?.file) {
     return manifest.lines[resolvedLineId];
@@ -259,7 +268,9 @@ export async function speak(lineId, options = {}) {
     const fallbackStatus = manifest?.voice_statuses?.[lang]?.[fallbackVoice];
     voice = fallbackStatus === "complete"
       ? fallbackVoice
-      : GEMINI_VOICES.find((candidate) => manifest?.voice_statuses?.[lang]?.[candidate] === "complete") || "";
+      : [ELEVENLABS_VOICE, ...GEMINI_VOICES].find(
+          (candidate) => manifest?.voice_statuses?.[lang]?.[candidate] === "complete",
+        ) || "";
   } else {
     storageSet("felisaCompleteVoice", selectedVoice);
   }
@@ -284,7 +295,7 @@ export async function speak(lineId, options = {}) {
 
 export async function previewVoice({ lang = getFelisaLang(), voice = getFelisaVoice(), onSpeaking, onLevel } = {}) {
   const selectedLang = lang === "en" ? "en" : "id";
-  const selectedVoice = GEMINI_VOICES.includes(voice) ? voice : "Leda";
+  const selectedVoice = VALID_VOICES.includes(voice) ? voice : "Leda";
   const manifest = await loadManifest();
   const previewFile = manifest?.voice_previews?.[selectedLang]?.[selectedVoice]
     || manifest?.files?.[selectedLang]?.[selectedVoice]?.preview;
@@ -293,7 +304,11 @@ export async function previewVoice({ lang = getFelisaLang(), voice = getFelisaVo
     onLevel?.(0);
     return false;
   }
-  await playUrl(`/audio/felisa/${selectedLang}/${selectedVoice}/${previewFile}`, {
+  const format = manifest?.voice_formats?.[selectedLang]?.[selectedVoice];
+  const file = /\.[a-z0-9]+$/i.test(previewFile)
+    ? previewFile
+    : `${previewFile}.${format || "wav"}`;
+  await playUrl(`/audio/felisa/${selectedLang}/${selectedVoice}/${file}`, {
     onSpeaking,
     onLevel,
   });
