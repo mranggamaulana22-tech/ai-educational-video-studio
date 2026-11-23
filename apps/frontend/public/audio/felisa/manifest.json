@@ -1,0 +1,1195 @@
+{
+  "format": "wav",
+  "voice_formats": {
+    "id": {
+      "Leda": "wav",
+      "Kore": "wav",
+      "Aoede": "wav",
+      "Sulafat": "wav",
+      "Zephyr": "wav",
+      "ElevenLabs": "mp3"
+    },
+    "en": {
+      "Leda": "wav",
+      "ElevenLabs": "mp3"
+    }
+  },
+  "voice_statuses": {
+    "id": {
+      "Leda": "preview_only",
+      "Kore": "preview_only",
+      "Aoede": "preview_only",
+      "Sulafat": "preview_only",
+      "Zephyr": "preview_only",
+      "ElevenLabs": "complete"
+    },
+    "en": {
+      "ElevenLabs": "complete"
+    }
+  },
+  "voice_previews": {
+    "id": {
+      "Leda": "preview-Leda.wav",
+      "Kore": "preview-Kore.wav",
+      "Aoede": "preview-Aoede.wav",
+      "Sulafat": "preview-Sulafat.wav",
+      "Zephyr": "preview-Zephyr.wav"
+    }
+  },
+  "languages": {
+    "id": {
+      "label": "Indonesia",
+      "locale": "id-ID"
+    },
+    "en": {
+      "label": "English",
+      "locale": "en-US"
+    }
+  },
+  "voices": {
+    "ava": {
+      "name": "en-US-AvaMultilingualNeural",
+      "label": "Ava — Hangat & Ekspresif"
+    },
+    "emma": {
+      "name": "en-US-EmmaMultilingualNeural",
+      "label": "Emma — Lembut & Natural"
+    },
+    "jenny": {
+      "name": "en-US-JennyMultilingualNeural",
+      "label": "Jenny — Jelas & Bersahabat"
+    },
+    "gadis": {
+      "name": "id-ID-GadisNeural",
+      "label": "Gadis — Alami & Lokal"
+    },
+    "Zephyr": {
+      "name": "Zephyr",
+      "label": "Zephyr"
+    },
+    "Puck": {
+      "name": "Puck",
+      "label": "Puck"
+    },
+    "Charon": {
+      "name": "Charon",
+      "label": "Charon"
+    },
+    "Kore": {
+      "name": "Kore",
+      "label": "Kore"
+    },
+    "Fenrir": {
+      "name": "Fenrir",
+      "label": "Fenrir"
+    },
+    "Leda": {
+      "name": "Leda",
+      "label": "Leda"
+    },
+    "Orus": {
+      "name": "Orus",
+      "label": "Orus"
+    },
+    "Aoede": {
+      "name": "Aoede",
+      "label": "Aoede"
+    },
+    "Callirrhoe": {
+      "name": "Callirrhoe",
+      "label": "Callirrhoe"
+    },
+    "Autonoe": {
+      "name": "Autonoe",
+      "label": "Autonoe"
+    },
+    "Enceladus": {
+      "name": "Enceladus",
+      "label": "Enceladus"
+    },
+    "Iapetus": {
+      "name": "Iapetus",
+      "label": "Iapetus"
+    },
+    "Umbriel": {
+      "name": "Umbriel",
+      "label": "Umbriel"
+    },
+    "Algieba": {
+      "name": "Algieba",
+      "label": "Algieba"
+    },
+    "Despina": {
+      "name": "Despina",
+      "label": "Despina"
+    },
+    "Erinome": {
+      "name": "Erinome",
+      "label": "Erinome"
+    },
+    "Algenib": {
+      "name": "Algenib",
+      "label": "Algenib"
+    },
+    "Rasalgethi": {
+      "name": "Rasalgethi",
+      "label": "Rasalgethi"
+    },
+    "Laomedeia": {
+      "name": "Laomedeia",
+      "label": "Laomedeia"
+    },
+    "Achernar": {
+      "name": "Achernar",
+      "label": "Achernar"
+    },
+    "Alnilam": {
+      "name": "Alnilam",
+      "label": "Alnilam"
+    },
+    "Schedar": {
+      "name": "Schedar",
+      "label": "Schedar"
+    },
+    "Gacrux": {
+      "name": "Gacrux",
+      "label": "Gacrux"
+    },
+    "Pulcherrima": {
+      "name": "Pulcherrima",
+      "label": "Pulcherrima"
+    },
+    "Achird": {
+      "name": "Achird",
+      "label": "Achird"
+    },
+    "Zubenelgenubi": {
+      "name": "Zubenelgenubi",
+      "label": "Zubenelgenubi"
+    },
+    "Vindemiatrix": {
+      "name": "Vindemiatrix",
+      "label": "Vindemiatrix"
+    },
+    "Sadachbia": {
+      "name": "Sadachbia",
+      "label": "Sadachbia"
+    },
+    "Sadaltager": {
+      "name": "Sadaltager",
+      "label": "Sadaltager"
+    },
+    "Sulafat": {
+      "name": "Sulafat",
+      "label": "Sulafat"
+    },
+    "ElevenLabs": {
+      "name": "ElevenLabs",
+      "label": "ElevenLabs"
+    }
+  },
+  "text": {
+    "id": {
+      "greeting_pagi": "Hai, aku Felisa. Selamat pagi. Hari ini kita mau ngapain?",
+      "greeting_siang": "Hai, aku Felisa. Selamat siang. Hari ini kita mau ngapain?",
+      "greeting_sore": "Hai, aku Felisa. Selamat sore. Hari ini kita mau ngapain?",
+      "greeting_malam": "Hai, aku Felisa. Selamat malam. Hari ini kita mau ngapain?",
+      "status_running_v1": "Saya sedang mengerjakan tahap produksi. Pantau perkembangannya di studio ya.",
+      "status_running_v2": "Tahap ini masih berjalan. Saya tetap memantau pembaruan untuk kita.",
+      "status_completed_v1": "Tahap produksi sudah selesai. Hasilnya siap ditinjau atau kita lanjutkan.",
+      "status_completed_v2": "Satu tahap sudah selesai. Kita bisa lanjut ke langkah berikutnya.",
+      "status_failed_v1": "Tahap produksi belum berhasil. Kita bisa cek penyebabnya bersama.",
+      "status_failed_v2": "Ada kendala di proses terakhir. Ringkasannya sudah siap untuk kita periksa.",
+      "status_waiting_approval_v1": "Produksi sudah sampai tahap persetujuan. Keputusan ada di layar ini.",
+      "status_waiting_approval_v2": "Tahap ini menunggu persetujuanmu sebelum bisa melanjutkan.",
+      "error_rate_limited": "Permintaan sedang dibatasi. Tunggu sebentar, lalu kita coba lagi.",
+      "error_quota_exhausted": "Kuota layanan sudah habis. Periksa penggunaan atau penyedia dulu sebelum melanjutkan.",
+      "error_invalid_output": "Hasilnya belum lolos pemeriksaan. Perlu diperbaiki atau dijalankan ulang.",
+      "error_interrupted": "Proses terputus sebelum selesai. Jalankan tahap ini lagi untuk melanjutkan.",
+      "explain_status": "Aku menjelaskan status produksi berdasarkan tahapan yang sudah dipetakan."
+    },
+    "en": {
+      "greeting_pagi": "Hi, I am Felisa. Good morning. What should we work on today?",
+      "greeting_siang": "Hi, I am Felisa. Good afternoon. What should we work on today?",
+      "greeting_sore": "Hi, I am Felisa. Good afternoon. What should we work on today?",
+      "greeting_malam": "Hi, I am Felisa. Good evening. What should we work on today?",
+      "status_running_v1": "I am working on the production stage. Please watch its progress in the studio.",
+      "status_running_v2": "The current stage is still running. I am monitoring every update.",
+      "status_completed_v1": "The production stage is complete. The result is ready to review or continue.",
+      "status_completed_v2": "One stage is complete. We can continue to the next step.",
+      "status_failed_v1": "The production stage was not successful. Let's review what went wrong.",
+      "status_failed_v2": "There is a problem in the last process. The summary is ready for us to check.",
+      "status_waiting_approval_v1": "Production is ready for approval. The decision is on this screen.",
+      "status_waiting_approval_v2": "This stage is waiting for your approval before it can continue.",
+      "error_rate_limited": "The request is being limited. Please wait a moment, then try again.",
+      "error_quota_exhausted": "The service quota is exhausted. Check usage or provider settings before continuing.",
+      "error_invalid_output": "The result did not pass validation. It needs to be fixed or run again.",
+      "error_interrupted": "The process stopped before completion. Run this stage again to continue.",
+      "explain_status": "I explain the production status based on the mapped stage information."
+    }
+  },
+  "files": {
+    "id": {
+      "ava": {
+        "greeting_pagi": "greeting_pagi.wav",
+        "greeting_siang": "greeting_siang.wav",
+        "greeting_sore": "greeting_sore.wav",
+        "greeting_malam": "greeting_malam.wav",
+        "status_running_v1": "status_running_v1.wav",
+        "status_running_v2": "status_running_v2.wav",
+        "status_completed_v1": "status_completed_v1.wav",
+        "status_completed_v2": "status_completed_v2.wav",
+        "status_failed_v1": "status_failed_v1.wav",
+        "status_failed_v2": "status_failed_v2.wav",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.wav",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.wav",
+        "error_rate_limited": "error_rate_limited.wav",
+        "error_quota_exhausted": "error_quota_exhausted.wav",
+        "error_invalid_output": "error_invalid_output.wav",
+        "error_interrupted": "error_interrupted.wav",
+        "explain_status": "explain_status.wav",
+        "preview": "preview.wav"
+      },
+      "emma": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "jenny": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "xiaoxiao": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "aria": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "michelle": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "sara": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "gadis": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "nancy": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "evelyn": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "cora": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "shimmer": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "serena": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "phoebe": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "lola": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "ada": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "nova": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "Leda": {
+        "greeting_pagi": "greeting_pagi.wav",
+        "greeting_siang": "greeting_siang.wav",
+        "greeting_sore": "greeting_sore.wav",
+        "greeting_malam": "greeting_malam.wav",
+        "status_running_v1": "status_running_v1.wav",
+        "status_running_v2": "status_running_v2.wav",
+        "status_completed_v1": "status_completed_v1.wav",
+        "status_completed_v2": "status_completed_v2.wav",
+        "status_failed_v1": "status_failed_v1.wav",
+        "status_failed_v2": "status_failed_v2.wav",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.wav",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.wav",
+        "error_rate_limited": "error_rate_limited.wav",
+        "error_quota_exhausted": "error_quota_exhausted.wav",
+        "error_invalid_output": "error_invalid_output.wav",
+        "error_interrupted": "error_interrupted.wav",
+        "explain_status": "explain_status.wav",
+        "preview": "preview.wav"
+      },
+      "ElevenLabs": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3",
+        "preview": "preview.mp3"
+      }
+    },
+    "en": {
+      "ava": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "emma": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "jenny": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "xiaoxiao": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "aria": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "michelle": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "sara": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "gadis": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "nancy": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "evelyn": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "cora": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "shimmer": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "serena": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "phoebe": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "lola": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "ada": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "nova": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3"
+      },
+      "Leda": {
+        "greeting_pagi": "greeting_pagi.wav",
+        "greeting_siang": "greeting_siang.wav",
+        "greeting_sore": "greeting_sore.wav",
+        "greeting_malam": "greeting_malam.wav",
+        "status_running_v1": "status_running_v1.wav",
+        "status_running_v2": "status_running_v2.wav",
+        "status_completed_v1": "status_completed_v1.wav",
+        "status_completed_v2": "status_completed_v2.wav",
+        "status_failed_v1": "status_failed_v1.wav",
+        "status_failed_v2": "status_failed_v2.wav",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.wav",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.wav",
+        "error_rate_limited": "error_rate_limited.wav",
+        "error_quota_exhausted": "error_quota_exhausted.wav",
+        "error_invalid_output": "error_invalid_output.wav",
+        "error_interrupted": "error_interrupted.wav",
+        "explain_status": "explain_status.wav",
+        "preview": "preview.wav"
+      },
+      "ElevenLabs": {
+        "greeting_pagi": "greeting_pagi.mp3",
+        "greeting_siang": "greeting_siang.mp3",
+        "greeting_sore": "greeting_sore.mp3",
+        "greeting_malam": "greeting_malam.mp3",
+        "status_running_v1": "status_running_v1.mp3",
+        "status_running_v2": "status_running_v2.mp3",
+        "status_completed_v1": "status_completed_v1.mp3",
+        "status_completed_v2": "status_completed_v2.mp3",
+        "status_failed_v1": "status_failed_v1.mp3",
+        "status_failed_v2": "status_failed_v2.mp3",
+        "status_waiting_approval_v1": "status_waiting_approval_v1.mp3",
+        "status_waiting_approval_v2": "status_waiting_approval_v2.mp3",
+        "error_rate_limited": "error_rate_limited.mp3",
+        "error_quota_exhausted": "error_quota_exhausted.mp3",
+        "error_invalid_output": "error_invalid_output.mp3",
+        "error_interrupted": "error_interrupted.mp3",
+        "explain_status": "explain_status.mp3",
+        "preview": "preview.mp3"
+      }
+    }
+  },
+  "text_hashes": {
+    "id": {
+      "ava": {
+        "greeting_pagi": "4baa6e9403924647d1b8e5f942ca5a8b48739cf7ad1ecbf37dd4f158e95d87a4"
+      },
+      "Leda": {
+        "preview": "002ca3aa4b3e49dbd4016c932c7ce396b47c7426e14e4224821c84f79f6d29f6",
+        "greeting_pagi": "4baa6e9403924647d1b8e5f942ca5a8b48739cf7ad1ecbf37dd4f158e95d87a4"
+      },
+      "Kore": {
+        "preview": "002ca3aa4b3e49dbd4016c932c7ce396b47c7426e14e4224821c84f79f6d29f6"
+      },
+      "Aoede": {
+        "preview": "002ca3aa4b3e49dbd4016c932c7ce396b47c7426e14e4224821c84f79f6d29f6"
+      },
+      "Sulafat": {
+        "preview": "002ca3aa4b3e49dbd4016c932c7ce396b47c7426e14e4224821c84f79f6d29f6"
+      },
+      "Zephyr": {
+        "preview": "002ca3aa4b3e49dbd4016c932c7ce396b47c7426e14e4224821c84f79f6d29f6"
+      },
+      "ElevenLabs": {
+        "preview": "011f7c5418d1dbd82dbce4bf649d15ac461fd1d268e04f17b3114f00954e5b1e",
+        "greeting_pagi": "4baa6e9403924647d1b8e5f942ca5a8b48739cf7ad1ecbf37dd4f158e95d87a4",
+        "greeting_siang": "b0a9632a8efca03d1cb73bf764b78ce15219cf975001bc2ea744852f00acbb85",
+        "greeting_sore": "aea8a52e5639e7c3d1f634eaee5397d5f199cf173bc65c47b562bfd280e6ec49",
+        "greeting_malam": "298a84db2fe0cffe112f847204590ca84b9c3580222d46812c532b3adac74adb",
+        "status_completed_v1": "60f760fdd10a70308f3f02045e11c739b8668724f05423a2677aa19e1f77de84",
+        "status_completed_v2": "b45abd510634c4f9acb2e09227d851f161b798ad9f8419fae48e9d8c6854a50a",
+        "status_waiting_approval_v1": "79a91f81bb758b8189f4b4bc4180406bec5235236a93ac65643688743fc12f2e",
+        "status_waiting_approval_v2": "1191bc7241dd21bedc9996498616dd0cfa7bd8d4a691d80f775b7ab0ef2b2569",
+        "error_rate_limited": "f0e1be4070c08950df2fd3d7c9a70c1eb7e49dc443b63e52e64457a90ad8a067",
+        "error_quota_exhausted": "90f37d49427dfd808a55225c9c73cf7aa8ca746e16e1b2025f7e4b814bad5c2a",
+        "error_invalid_output": "c0ae85bce444583b9b5a492f6055b8d19e39889f5783a22ca19a97613db0f99f",
+        "error_interrupted": "03fb8d6399b49bdb5c8af26e1822535c42c5de14bd8d62cdcb26c75750018e8d",
+        "status_running_v1": "46f3bbbd60410c0bad5c1cba3c2741f114e7af485d37376b774a7c4f1b1e93fd",
+        "status_running_v2": "8f38e14cde8269c4d3e4ada80432628f1eb16f1cd4173e89c87f5ed37f14ef05",
+        "status_failed_v1": "1f5c20ba4881ef78e8a3f56bcb42e7ed2d29c1f8d50e7eaf17495f54216c907c",
+        "status_failed_v2": "6a97bfc4ffef157b060ea2cb1a5bd7cc2f1a8677c11d3c50012f1352a461516b",
+        "explain_status": "fef92724962890be195bb6bb1529e0a412e731de020eb2b3183fc8e74380fcbe"
+      }
+    },
+    "en": {
+      "Leda": {
+        "greeting_pagi": "12fb22b498e22b6409de24ccc0adced91522d3375faa950a8a498a055f13107c",
+        "greeting_siang": "9185466a7a2243429fe394652e4700ff44cc2eb6425e42ea43a657e88b7a1c4a",
+        "greeting_sore": "9185466a7a2243429fe394652e4700ff44cc2eb6425e42ea43a657e88b7a1c4a",
+        "preview": "4ee0a2a3d1f2f2f257ff12438fe6ad7d558fd9a8ccee109d59e0252ba1319e29"
+      },
+      "ElevenLabs": {
+        "greeting_pagi": "12fb22b498e22b6409de24ccc0adced91522d3375faa950a8a498a055f13107c",
+        "preview": "4ee0a2a3d1f2f2f257ff12438fe6ad7d558fd9a8ccee109d59e0252ba1319e29",
+        "greeting_siang": "9185466a7a2243429fe394652e4700ff44cc2eb6425e42ea43a657e88b7a1c4a",
+        "greeting_sore": "9185466a7a2243429fe394652e4700ff44cc2eb6425e42ea43a657e88b7a1c4a",
+        "greeting_malam": "b63819565586ab0ff0fd44156bac9d546cef2d4c9ba1d8d0dd494d0da76b8fbb",
+        "status_completed_v1": "45d363ee0d780dfe26585af0e809b9f7c3cacb4676e1b6d296b78a884f5d9255",
+        "status_completed_v2": "50128172ab92d39561d509258183dd9ca9ffb9f78a35d607ea697f177afe203d",
+        "status_waiting_approval_v1": "8df03ed5cd5fb22a38811ec3cc45259ffec54ec5bbcfa82ba77ab53093771669",
+        "status_waiting_approval_v2": "6341fa81bec0a34bde37e7e7bd4b4d6517a14d46f7ceb3d24dd0c980893f2876",
+        "error_rate_limited": "eb6e229427c8d8c57cdae82389fc89afe01349e6ba3056c382e7f1bb8d8bb61f",
+        "error_quota_exhausted": "d1b9e4c42bed34bcfb832340ee123165c753a14a295c36cf76851c3193331a73",
+        "error_invalid_output": "868f8425aebae230ea25b88862e2b3a47bd83b24ee6016e6752c6a12bf2f0e28",
+        "error_interrupted": "a96f1d36fab5d0e5c6291fb12ba1b0cf27915def389588e874997a75048e07de",
+        "status_running_v1": "ba1dd3d81425f0f9a60ce62d6eb1f9d2de76ea8272977af975927df9ca323c0e",
+        "status_running_v2": "adecfd50a582186bf53bc9ecbef2dc9fd087b41035af0a58e6d93cc21baeb5f4",
+        "status_failed_v1": "c48dca4d079ddc04711176bc40e8c488c728d9f1450478e9938d9137710f9b4a",
+        "status_failed_v2": "a8423c059f06fb1ee5e0c474ca364f716b8115e2220a3ece125e577fce7b9beb",
+        "explain_status": "9085b0d2c308ffd3d9ebbfd1dc57733d4d420ef7321d28742e0bd6e09a6a7283"
+      }
+    }
+  },
+  "generation_hashes": {
+    "id": {
+      "ava": {
+        "greeting_pagi": "0d9807a12bc26ce4c10a0836a4a21cb0e37716f55a673a396daefe0f81b4df2f"
+      },
+      "Leda": {
+        "preview": "b0e3bff78a57ab05c5bc6d8e4309c0a3367f521395a50f8073a5762a8b9f93fe",
+        "greeting_pagi": "b0e3bff78a57ab05c5bc6d8e4309c0a3367f521395a50f8073a5762a8b9f93fe"
+      },
+      "Kore": {
+        "preview": "8fb422e2f16574eb3921f76319d85b8fbbdee60f67d537ceb4415cef3a924370"
+      },
+      "Aoede": {
+        "preview": "df4f0989bfbd7d82549ef23f16061cf9c4ecf54928b206502616af03e14bed25"
+      },
+      "Sulafat": {
+        "preview": "aee6a2ce0f0396181097a5808ece1cddc520390fc65c0b09b590a682ff824098"
+      },
+      "Zephyr": {
+        "preview": "ef4e16b6be200740ac9aa6dcfd7d06c886f4856edd9dcd4a4710ef36126b65f4"
+      },
+      "ElevenLabs": {
+        "preview": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "greeting_pagi": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "greeting_siang": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "greeting_sore": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "greeting_malam": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_completed_v1": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_completed_v2": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_waiting_approval_v1": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_waiting_approval_v2": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "error_rate_limited": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "error_quota_exhausted": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "error_invalid_output": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "error_interrupted": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_running_v1": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_running_v2": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_failed_v1": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_failed_v2": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "explain_status": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657"
+      }
+    },
+    "en": {
+      "Leda": {
+        "greeting_pagi": "b9a1faa0b58a33fd18008e80fb4dddbdaf2838cccc9d2d0c41c67e0b3b06b544",
+        "greeting_siang": "b9a1faa0b58a33fd18008e80fb4dddbdaf2838cccc9d2d0c41c67e0b3b06b544",
+        "greeting_sore": "b9a1faa0b58a33fd18008e80fb4dddbdaf2838cccc9d2d0c41c67e0b3b06b544",
+        "preview": "b9a1faa0b58a33fd18008e80fb4dddbdaf2838cccc9d2d0c41c67e0b3b06b544"
+      },
+      "ElevenLabs": {
+        "greeting_pagi": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "preview": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "greeting_siang": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "greeting_sore": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "greeting_malam": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_completed_v1": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_completed_v2": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_waiting_approval_v1": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_waiting_approval_v2": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "error_rate_limited": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "error_quota_exhausted": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "error_invalid_output": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "error_interrupted": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_running_v1": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_running_v2": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_failed_v1": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "status_failed_v2": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657",
+        "explain_status": "a5aaacd1ff005e15f7c561abcaa99a1d78d72b647137e3159e2b84370a629657"
+      }
+    }
+  },
+  "style_version": "felisa-style-v1",
+  "voice": "ElevenLabs",
+  "lines": {
+    "greeting_pagi": {
+      "file": "greeting_pagi.mp3",
+      "text": "Hai, aku Felisa. Selamat pagi. Hari ini kita mau ngapain?",
+      "voice": "ElevenLabs"
+    },
+    "greeting_siang": {
+      "file": "greeting_siang.mp3",
+      "text": "Hai, aku Felisa. Selamat siang. Hari ini kita mau ngapain?",
+      "voice": "ElevenLabs"
+    },
+    "greeting_sore": {
+      "file": "greeting_sore.mp3",
+      "text": "Hai, aku Felisa. Selamat sore. Hari ini kita mau ngapain?",
+      "voice": "ElevenLabs"
+    },
+    "greeting_malam": {
+      "file": "greeting_malam.mp3",
+      "text": "Hai, aku Felisa. Selamat malam. Hari ini kita mau ngapain?",
+      "voice": "ElevenLabs"
+    },
+    "status_running_v1": {
+      "file": "status_running_v1.mp3",
+      "text": "Saya sedang mengerjakan tahap produksi. Pantau perkembangannya di studio ya.",
+      "voice": "ElevenLabs"
+    },
+    "status_running_v2": {
+      "file": "status_running_v2.mp3",
+      "text": "Tahap ini masih berjalan. Saya tetap memantau pembaruan untuk kita.",
+      "voice": "ElevenLabs"
+    },
+    "status_completed_v1": {
+      "file": "status_completed_v1.mp3",
+      "text": "Tahap produksi sudah selesai. Hasilnya siap ditinjau atau kita lanjutkan.",
+      "voice": "ElevenLabs"
+    },
+    "status_completed_v2": {
+      "file": "status_completed_v2.mp3",
+      "text": "Satu tahap sudah selesai. Kita bisa lanjut ke langkah berikutnya.",
+      "voice": "ElevenLabs"
+    },
+    "status_failed_v1": {
+      "file": "status_failed_v1.mp3",
+      "text": "Tahap produksi belum berhasil. Kita bisa cek penyebabnya bersama.",
+      "voice": "ElevenLabs"
+    },
+    "status_failed_v2": {
+      "file": "status_failed_v2.mp3",
+      "text": "Ada kendala di proses terakhir. Ringkasannya sudah siap untuk kita periksa.",
+      "voice": "ElevenLabs"
+    },
+    "status_waiting_approval_v1": {
+      "file": "status_waiting_approval_v1.mp3",
+      "text": "Produksi sudah sampai tahap persetujuan. Keputusan ada di layar ini.",
+      "voice": "ElevenLabs"
+    },
+    "status_waiting_approval_v2": {
+      "file": "status_waiting_approval_v2.mp3",
+      "text": "Tahap ini menunggu persetujuanmu sebelum bisa melanjutkan.",
+      "voice": "ElevenLabs"
+    },
+    "error_rate_limited": {
+      "file": "error_rate_limited.mp3",
+      "text": "Permintaan sedang dibatasi. Tunggu sebentar, lalu kita coba lagi.",
+      "voice": "ElevenLabs"
+    },
+    "error_quota_exhausted": {
+      "file": "error_quota_exhausted.mp3",
+      "text": "Kuota layanan sudah habis. Periksa penggunaan atau penyedia dulu sebelum melanjutkan.",
+      "voice": "ElevenLabs"
+    },
+    "error_invalid_output": {
+      "file": "error_invalid_output.mp3",
+      "text": "Hasilnya belum lolos pemeriksaan. Perlu diperbaiki atau dijalankan ulang.",
+      "voice": "ElevenLabs"
+    },
+    "error_interrupted": {
+      "file": "error_interrupted.mp3",
+      "text": "Proses terputus sebelum selesai. Jalankan tahap ini lagi untuk melanjutkan.",
+      "voice": "ElevenLabs"
+    },
+    "explain_status": {
+      "file": "explain_status.mp3",
+      "text": "Aku menjelaskan status produksi berdasarkan tahapan yang sudah dipetakan.",
+      "voice": "ElevenLabs"
+    }
+  }
+}

@@ -4,6 +4,9 @@ Usage:
   .\.venv-audio\Scripts\python.exe tools\generate_felisa_voice.py --only greeting_pagi --lang id
   .\.venv-audio\Scripts\python.exe tools\generate_felisa_voice.py --only status_running_v1 --lang id
   .\.venv-audio\Scripts\python.exe tools\generate_felisa_voice.py --force
+
+TTS_PROVIDER=gemini | azure | elevenlabs (elevenlabs: ELEVENLABS_API_KEY, ELEVENLABS_VOICE_ID,
+opsional ELEVENLABS_VOICE_ID_ID / ELEVENLABS_VOICE_ID_EN / ELEVENLABS_MODEL).
 """
 
 import argparse
@@ -17,6 +20,7 @@ import tempfile
 import re
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -162,11 +166,36 @@ def ssml(text, line_id, lang, voice_name):
 
 def classify_tts_error(detail):
     lower = detail.lower()
+    compact = lower.replace(" ", "").replace("_", "").replace("-", "")
+    # Gemini menyebut jenis batas yang terlewati (PerDay / PerMinute) di badan error 429.
+    if "perday" in compact or "daily" in lower:
+        return "quota_exhausted"
+    if "perminute" in compact:
+        return "rate_limited"
     if "quota" in lower or "resource exhausted" in lower or "billing" in lower:
         return "quota_exhausted"
     if "429" in lower or "rate limit" in lower or "too many requests" in lower:
         return "rate_limited"
+    if (
+        "timed out" in lower
+        or "timeout" in lower
+        or "tidak bisa menghubungi" in lower
+        or "connection" in lower
+        or "koneksi terputus" in lower
+    ):
+        return "network_error"
     return ""
+
+
+def get_tts_timeout():
+    try:
+        return max(10.0, float(read_setting("FELISA_TTS_TIMEOUT_SECONDS", default="90")))
+    except ValueError:
+        return 90.0
+
+
+NETWORK_RETRIES = 2
+NETWORK_RETRY_PAUSE = 10
 
 
 def parse_retry_seconds(detail):
@@ -208,32 +237,85 @@ def synthesize_azure(subscription_key, region, text, line_id, lang, voice_name, 
     output.write_bytes(audio)
 
 
+ELEVENLABS_VOICE_KEY = "ElevenLabs"
+ELEVENLABS_DEFAULT_MODEL = "eleven_multilingual_v2"
+
+
+def elevenlabs_voice_id(lang):
+    return read_setting(f"ELEVENLABS_VOICE_ID_{lang.upper()}") or read_setting("ELEVENLABS_VOICE_ID")
+
+
+def elevenlabs_model():
+    return read_setting("ELEVENLABS_MODEL", default=ELEVENLABS_DEFAULT_MODEL)
+
+
+def synthesize_elevenlabs(api_key, voice_id, model, text, output, timeout=None):
+    """Satu kalimat -> MP3 lewat ElevenLabs REST (POST /v1/text-to-speech/{voice_id})."""
+    timeout = timeout or get_tts_timeout()
+    url = (
+        "https://api.elevenlabs.io/v1/text-to-speech/"
+        + urllib.parse.quote(voice_id, safe="")
+        + "?output_format=mp3_44100_128"
+    )
+    request = urllib.request.Request(
+        url,
+        data=json.dumps({"text": text, "model_id": model}).encode("utf-8"),
+        method="POST",
+        headers={
+            "xi-api-key": api_key,
+            "Content-Type": "application/json",
+            "Accept": "audio/mpeg",
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            audio = response.read()
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode("utf-8", "replace")[:800]
+        code = classify_tts_error(f"{error.code} {detail}")
+        raise RuntimeError(f"{code or 'elevenlabs_http_error'}|ElevenLabs HTTP {error.code}: {detail}")
+    except urllib.error.URLError as error:
+        raise RuntimeError(f"network_error|{error.reason}")
+    except (TimeoutError, OSError) as error:
+        raise RuntimeError(f"network_error|timeout/jaringan ({type(error).__name__})")
+    if not audio:
+        raise RuntimeError("elevenlabs_empty_response")
+    output.write_bytes(audio)
+
+
 def synthesize_gemini(text, voice, style, output):
     script = ROOT / "tools" / "tts_gemini.py"
     if not script.exists():
         raise RuntimeError("Gemini TTS module tidak ditemukan: tools/tts_gemini.py")
     temp_path = None
+    timeout = get_tts_timeout()
     try:
         with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", encoding="utf-8", delete=False) as temp:
             temp.write(text)
             temp_path = Path(temp.name)
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(script),
-                str(temp_path),
-                str(output),
-                "--voice",
-                voice,
-                "--style",
-                style,
-            ],
-            cwd=str(ROOT),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-        )
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(script),
+                    str(temp_path),
+                    str(output),
+                    "--voice",
+                    voice,
+                    "--style",
+                    style,
+                    "--timeout",
+                    f"{timeout:g}",
+                ],
+                cwd=str(ROOT),
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=timeout + 30,
+            )
+        except subprocess.TimeoutExpired:
+            raise RuntimeError(f"network_error|timeout setelah {timeout:g} detik")
     finally:
         if temp_path is not None:
             try:
@@ -259,31 +341,45 @@ def synthesize_gemini_with_retry(
     sleep_fn=time.sleep,
     call_state=None,
     max_calls=None,
+    synth_fn=None,
 ):
-    """Coba satu kalimat maksimal 3 kali untuk rate limit per menit."""
+    """Satu kalimat: rate limit dicoba maks 3 kali (backoff), timeout/jaringan maks 2 kali ulang.
+
+    Setiap percobaan dihitung ke --max-calls.
+    """
     backoff = (30, 60, 90)
-    for attempt in range(1, 4):
+    rate_attempts = 0
+    network_retries = 0
+    prefix = f"{progress} " if progress else ""
+    while True:
         if call_state is not None and max_calls is not None:
             if call_state["attempts"] >= max_calls or call_state["successes"] >= max_calls:
                 raise RuntimeError("max_calls_exhausted|Batas panggilan Gemini untuk satu run sudah tercapai.")
             call_state["attempts"] += 1
         try:
-            synthesize_gemini(text, voice, style, output)
+            (synth_fn or synthesize_gemini)(text, voice, style, output)
             return
         except RuntimeError as error:
             raw = str(error)
             code = raw.split("|", 1)[0]
             detail = raw.split("|", 1)[1] if "|" in raw else raw
             if code == "quota_exhausted":
-                raise RuntimeError("quota_exhausted|Kuota harian Gemini sudah habis. Berhenti; coba lagi setelah kuota diperbarui.")
+                raise RuntimeError("quota_exhausted|Kuota penyedia TTS sudah habis. Berhenti; coba lagi setelah kuota diperbarui.")
+            if code == "network_error":
+                network_retries += 1
+                if network_retries > NETWORK_RETRIES:
+                    raise RuntimeError("network_error|Timeout/jaringan berulang untuk kalimat ini. Jalankan lagi nanti.")
+                print(f"{prefix}timeout/jaringan, mencoba ulang {network_retries}/{NETWORK_RETRIES} setelah {NETWORK_RETRY_PAUSE} detik")
+                sleep_fn(NETWORK_RETRY_PAUSE)
+                continue
             if code != "rate_limited":
                 raise
-            if attempt == 3:
+            rate_attempts += 1
+            if rate_attempts >= 3:
                 raise RuntimeError("rate_limited|Batas percobaan 3 kali tercapai untuk kalimat ini.")
 
-            wait_seconds = parse_retry_seconds(detail) or backoff[attempt - 1]
-            prefix = f"{progress} " if progress else ""
-            print(f"{prefix}menunggu {wait_seconds} detik (rate_limited, percobaan {attempt}/3)")
+            wait_seconds = parse_retry_seconds(detail) or backoff[rate_attempts - 1]
+            print(f"{prefix}menunggu {wait_seconds} detik (rate_limited, percobaan {rate_attempts}/3)")
             sleep_fn(wait_seconds)
 
 
@@ -329,8 +425,8 @@ def main():
         max_calls = args.max_calls
 
     provider = read_setting("TTS_PROVIDER", default="gemini").lower()
-    if provider not in ("gemini", "azure"):
-        print("Gagal: TTS_PROVIDER harus gemini atau azure.")
+    if provider not in ("gemini", "azure", "elevenlabs"):
+        print("Gagal: TTS_PROVIDER harus gemini, azure, atau elevenlabs.")
         return 2
 
     if args.previews:
@@ -359,6 +455,11 @@ def main():
         tts_delay_seconds = max(0.0, float(read_setting("FELISA_TTS_DELAY_SECONDS", default="25")))
     except ValueError:
         tts_delay_seconds = 25.0
+    if provider == "elevenlabs":
+        try:
+            tts_delay_seconds = max(0.0, float(read_setting("ELEVENLABS_DELAY_SECONDS", default="1")))
+        except ValueError:
+            tts_delay_seconds = 1.0
     narrator_voice = read_setting("NARRATOR_VOICE", default="Kore")
     if provider == "gemini" and felisa_voice.lower() == narrator_voice.lower():
         print(f"Gagal: FELISA_VOICE ({felisa_voice}) harus berbeda dari voice narator ({narrator_voice}).")
@@ -369,6 +470,16 @@ def main():
     if provider == "azure" and (not azure_key or not azure_region):
         print("Gagal: TTS_PROVIDER=azure memerlukan AZURE_SPEECH_KEY dan AZURE_SPEECH_REGION di .env.")
         return 2
+
+    eleven_key = read_setting("ELEVENLABS_API_KEY")
+    if provider == "elevenlabs":
+        if not eleven_key:
+            print("Gagal: TTS_PROVIDER=elevenlabs memerlukan ELEVENLABS_API_KEY di .env.")
+            return 2
+        missing = [lang for lang in args.lang if not elevenlabs_voice_id(lang)]
+        if missing:
+            print("Gagal: isi ELEVENLABS_VOICE_ID (atau ELEVENLABS_VOICE_ID_" + "/_".join(m.upper() for m in missing) + ") di .env.")
+            return 2
 
     if args.only:
         valid = any(args.only in LINES[lang] for lang in args.lang)
@@ -456,13 +567,13 @@ def main():
                     code = raw.split("|", 1)[0]
                     if code in ("rate_limited", "quota_exhausted", "max_calls_exhausted"):
                         if code == "quota_exhausted":
-                            print(f"Berhenti: quota_exhausted. Kuota harian Gemini sudah habis; coba lagi setelah kuota diperbarui.")
+                            print(f"Berhenti: quota_exhausted. Kuota penyedia TTS sudah habis; coba lagi setelah kuota diperbarui.")
                         elif code == "max_calls_exhausted":
                             print(f"Berhenti: batas {max_calls} panggilan Gemini untuk satu run tercapai.")
                         else:
                             print(f"Berhenti: rate_limited. 3 percobaan untuk kalimat ini sudah habis.")
                     else:
-                        print(f"Gagal: preview {lang}/{voice_name}: {code}")
+                        print(f"Gagal: preview {lang}/{voice_name}: {raw[:500]}")
                     stopped = True
                     break
 
@@ -485,13 +596,23 @@ def main():
 
     if not args.previews:
         if args.voice is None:
-            selected_voices = [felisa_voice] if provider == "gemini" else ["ava"]
+            if provider == "gemini":
+                selected_voices = [felisa_voice]
+            elif provider == "elevenlabs":
+                selected_voices = [ELEVENLABS_VOICE_KEY]
+            else:
+                selected_voices = ["ava"]
         else:
             selected_voices = args.voice
         if provider == "gemini":
             invalid = [voice for voice in selected_voices if voice not in GEMINI_VOICES]
             if invalid:
                 print("Gagal: voice Gemini tidak dikenal: " + ", ".join(invalid))
+                return 2
+        elif provider == "elevenlabs":
+            invalid = [voice for voice in selected_voices if voice != ELEVENLABS_VOICE_KEY]
+            if invalid:
+                print(f"Gagal: untuk elevenlabs gunakan nama voice '{ELEVENLABS_VOICE_KEY}' (atau tanpa --voice).")
                 return 2
         else:
             invalid = [voice for voice in selected_voices if voice not in AZURE_VOICES]
@@ -540,7 +661,9 @@ def main():
                 generation_digest = generation_hash(
                     provider,
                     voice_name,
-                    (felisa_style_id if lang == "id" else felisa_style_en) if provider == "gemini" else get_expression_style(line_id)[0],
+                    (felisa_style_id if lang == "id" else felisa_style_en)
+                    if provider == "gemini"
+                    else (f"{elevenlabs_model()}:{elevenlabs_voice_id(lang)}" if provider == "elevenlabs" else get_expression_style(line_id)[0]),
                 )
 
                 cache_matches = (
@@ -572,6 +695,17 @@ def main():
                             call_state=gemini_call_state,
                             max_calls=max_calls,
                         )
+                    elif provider == "elevenlabs":
+                        _eleven_voice_id = elevenlabs_voice_id(lang)
+                        _eleven_model = elevenlabs_model()
+                        synthesize_gemini_with_retry(
+                            text,
+                            voice_name,
+                            "",
+                            output,
+                            progress=f"[{line_index}/{line_total}] {lang}/{legacy_voice}/{line_id}",
+                            synth_fn=lambda _t, _v, _s, _o, _k=eleven_key, _i=_eleven_voice_id, _m=_eleven_model: synthesize_elevenlabs(_k, _i, _m, _t, _o),
+                        )
                     else:
                         synthesize_azure(
                             azure_key,
@@ -587,13 +721,13 @@ def main():
                     code = raw.split("|", 1)[0]
                     if code in ("rate_limited", "quota_exhausted", "max_calls_exhausted"):
                         if code == "quota_exhausted":
-                            print(f"Berhenti: quota_exhausted. Kuota harian Gemini sudah habis; coba lagi setelah kuota diperbarui.")
+                            print(f"Berhenti: quota_exhausted. Kuota penyedia TTS sudah habis; coba lagi setelah kuota diperbarui.")
                         elif code == "max_calls_exhausted":
                             print(f"Berhenti: batas {max_calls} panggilan Gemini untuk satu run tercapai.")
                         else:
                             print(f"Berhenti: rate_limited. 3 percobaan untuk kalimat ini sudah habis.")
                     else:
-                        print(f"Gagal: {lang}/{legacy_voice}/{line_id}: {code}")
+                        print(f"Gagal: {lang}/{legacy_voice}/{line_id}: {raw[:500]}")
                     stopped = True
                     break
 
@@ -628,18 +762,19 @@ def main():
         "voices": {
             **AZURE_VOICES,
             **{voice: {"name": voice, "label": voice} for voice in GEMINI_VOICES},
+            ELEVENLABS_VOICE_KEY: {"name": ELEVENLABS_VOICE_KEY, "label": "ElevenLabs"},
         },
         "text": texts,
         "files": files,
         "text_hashes": text_hashes,
         "generation_hashes": generation_hashes,
         "style_version": STYLE_VERSION,
-        "voice": felisa_voice if provider == "gemini" else AZURE_VOICES["ava"]["name"],
+        "voice": (felisa_voice if provider == "gemini" else (ELEVENLABS_VOICE_KEY if provider == "elevenlabs" else AZURE_VOICES["ava"]["name"])),
         "lines": {
             line_id: {
                 "file": f"{line_id}.{extension}",
                 "text": LINES["id"][line_id],
-                "voice": felisa_voice if provider == "gemini" else AZURE_VOICES["ava"]["name"],
+                "voice": (felisa_voice if provider == "gemini" else (ELEVENLABS_VOICE_KEY if provider == "elevenlabs" else AZURE_VOICES["ava"]["name"])),
             }
             for line_id in LINES["id"]
         },

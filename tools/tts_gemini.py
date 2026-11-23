@@ -2,13 +2,14 @@
 
 Pemakaian (dari folder utama proyek):
   python tools\\tts_gemini.py NASKAH.txt apps\\remotion\\public\\audio\\NAMA.wav
-Pilihan: --voice Kore  --model gemini-3.1-flash-tts-preview  --style "..."
+Pilihan: --voice Kore  --model gemini-3.1-flash-tts-preview  --style "..."  --timeout 180
 
 API key dibaca dari variabel GEMINI_API_KEY atau dari baris GEMINI_API_KEY=... di file .env
 (di folder utama proyek). Jangan pernah menempel key di chat atau meng-commit .env.
 """
 import argparse
 import base64
+import http.client
 import json
 import os
 import sys
@@ -19,6 +20,7 @@ from pathlib import Path
 
 DEFAULT_MODEL = "gemini-3.1-flash-tts-preview"
 DEFAULT_STYLE = "Bacakan dalam Bahasa Indonesia dengan nada ramah, santai, dan bersemangat, seperti menjelaskan ke teman: "
+DEFAULT_TIMEOUT = 180
 
 
 def read_key():
@@ -34,7 +36,7 @@ def read_key():
     return ""
 
 
-def synthesize(text, key, model, voice, style):
+def synthesize(text, key, model, voice, style, timeout=DEFAULT_TIMEOUT):
     base = os.environ.get("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com")
     url = f"{base}/v1beta/models/{model}:generateContent"
     body = {
@@ -51,12 +53,16 @@ def synthesize(text, key, model, voice, style):
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=180) as r:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
             data = json.loads(r.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         raise SystemExit(f"[GAGAL] Gemini menjawab {e.code}:\n{e.read().decode('utf-8', 'replace')[:1500]}")
     except urllib.error.URLError as e:
         raise SystemExit(f"[GAGAL] Tidak bisa menghubungi Gemini: {e.reason}")
+    except TimeoutError:
+        raise SystemExit(f"[GAGAL] Tidak bisa menghubungi Gemini: timeout setelah {timeout} detik")
+    except (OSError, http.client.HTTPException) as e:
+        raise SystemExit(f"[GAGAL] Tidak bisa menghubungi Gemini: koneksi terputus ({type(e).__name__})")
 
     try:
         part = data["candidates"][0]["content"]["parts"][0]["inlineData"]
@@ -76,6 +82,7 @@ def main():
     ap.add_argument("--voice", default="Kore")
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--style", default=DEFAULT_STYLE)
+    ap.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT, help="batas tunggu jawaban Gemini (detik)")
     args = ap.parse_args()
 
     src = Path(args.script)
@@ -92,7 +99,7 @@ def main():
         return 1
 
     print(f"Membuat suara ({len(text)} huruf, model {args.model}, suara {args.voice})...")
-    pcm, rate = synthesize(text, key, args.model, args.voice, args.style)
+    pcm, rate = synthesize(text, key, args.model, args.voice, args.style, args.timeout)
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

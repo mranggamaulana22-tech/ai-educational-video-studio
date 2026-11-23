@@ -1,0 +1,366 @@
+{
+  "schemaVersion": "1.3",
+  "video": {
+    "title": "Urutan Mengetes Aplikasi",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationMs": 43240,
+    "badge": {
+      "day": "Day 1",
+      "course": "Software Testing"
+    }
+  },
+  "audio": {
+    "src": "audio/p0-tutor.wav",
+    "durationMs": 43240
+  },
+  "scenes": [
+    {
+      "id": "scene-001",
+      "startMs": 0,
+      "durationMs": 5000,
+      "componentId": "IconHero",
+      "props": {
+        "icon": "rocket",
+        "title": "Alur Testing",
+        "subtitle": "Dari kode kecil sampai siap rilis",
+        "color": "teal",
+        "motion": "float"
+      },
+      "transition": "fade",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-002",
+      "startMs": 5000,
+      "durationMs": 6000,
+      "componentId": "IconGrid",
+      "props": {
+        "heading": "Unit Testing",
+        "items": [
+          {
+            "icon": "code",
+            "label": "Bagian Terkecil",
+            "color": "teal"
+          },
+          {
+            "icon": "gear",
+            "label": "Function & Method",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "slide",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-003",
+      "startMs": 11000,
+      "durationMs": 6900,
+      "componentId": "BigStatement",
+      "props": {
+        "kicker": "Komponen",
+        "icon": "check",
+        "iconColor": "green",
+        "lines": [
+          {
+            "text": "Berfungsi dengan baik",
+            "color": "teal"
+          }
+        ]
+      },
+      "transition": "zoom",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-004",
+      "startMs": 17900,
+      "durationMs": 7000,
+      "componentId": "CompareCards",
+      "props": {
+        "heading": "Integration Testing",
+        "left": {
+          "title": "Modul",
+          "color": "teal",
+          "icon": "puzzle",
+          "items": [
+            "Modul dibuat",
+            "Kerja terpisah"
+          ]
+        },
+        "right": {
+          "title": "Integrasi",
+          "color": "orange",
+          "icon": "server",
+          "items": [
+            "Bekerja sama",
+            "Diintegrasikan"
+          ]
+        }
+      },
+      "transition": "wipe",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-005",
+      "startMs": 24900,
+      "durationMs": 7000,
+      "componentId": "FlowSteps",
+      "props": {
+        "heading": "System Testing",
+        "steps": [
+          {
+            "label": "Keseluruhan",
+            "icon": "laptop",
+            "color": "teal"
+          },
+          {
+            "label": "Spesifikasi",
+            "icon": "book",
+            "color": "violet"
+          }
+        ]
+      },
+      "transition": "slide",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-006",
+      "startMs": 31900,
+      "durationMs": 6470,
+      "componentId": "CardList",
+      "props": {
+        "heading": "Acceptance Testing",
+        "items": [
+          {
+            "text": "Software memenuhi kebutuhan",
+            "icon": "target",
+            "color": "teal"
+          },
+          {
+            "text": "Harapan pengguna",
+            "icon": "people",
+            "color": "orange"
+          }
+        ]
+      },
+      "transition": "zoom",
+      "componentVersion": "1.0.0"
+    },
+    {
+      "id": "scene-007",
+      "startMs": 38370,
+      "durationMs": 4870,
+      "componentId": "CtaCard",
+      "props": {
+        "title": "Tools Testing",
+        "subtitle": "Jangan lupa follow akun ini ya",
+        "button": "Follow",
+        "color": "teal",
+        "icon": "star"
+      },
+      "transition": "fade",
+      "componentVersion": "1.0.0"
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "sub-001",
+      "startMs": 290,
+      "endMs": 4790,
+      "text": "Bagaimana urutan mengetes aplikasi dari kode kecil sampai siap release?",
+      "wordStartsMs": [
+        290,
+        940,
+        1400,
+        1840,
+        2520,
+        2880,
+        3100,
+        3680,
+        4100,
+        4380
+      ]
+    },
+    {
+      "id": "sub-002",
+      "startMs": 5330,
+      "endMs": 7930,
+      "text": "Kita mulai langkah pertama dari unitesting",
+      "wordStartsMs": [
+        5330,
+        5480,
+        5880,
+        6160,
+        6580,
+        6980
+      ]
+    },
+    {
+      "id": "sub-003",
+      "startMs": 8190,
+      "endMs": 11410,
+      "text": "untuk menguji bagian terkecil program secara terpisah.",
+      "wordStartsMs": [
+        8190,
+        8380,
+        8920,
+        9260,
+        9760,
+        10200,
+        10640
+      ]
+    },
+    {
+      "id": "sub-004",
+      "startMs": 11750,
+      "endMs": 14560,
+      "text": "Bagian kecil ini bisa berupa fungsin atau metod",
+      "wordStartsMs": [
+        11750,
+        12040,
+        12360,
+        12640,
+        12980,
+        13240,
+        13740,
+        13980
+      ]
+    },
+    {
+      "id": "sub-005",
+      "startMs": 14870,
+      "endMs": 17430,
+      "text": "agar setiap komponen dasar berfungsi dengan baik.",
+      "wordStartsMs": [
+        14870,
+        15220,
+        15540,
+        15880,
+        16320,
+        16860,
+        17000
+      ]
+    },
+    {
+      "id": "sub-006",
+      "startMs": 17900,
+      "endMs": 20250,
+      "text": "Lalu kita lanjut ke integration testing,",
+      "wordStartsMs": [
+        17900,
+        18260,
+        18520,
+        18920,
+        19140,
+        19600
+      ]
+    },
+    {
+      "id": "sub-007",
+      "startMs": 20570,
+      "endMs": 24690,
+      "text": "guna memastikan modul yang dibuat bisa bekerja saat diintegrasikan.",
+      "wordStartsMs": [
+        20570,
+        20960,
+        21540,
+        21920,
+        22040,
+        22540,
+        22820,
+        23340,
+        23680
+      ]
+    },
+    {
+      "id": "sub-008",
+      "startMs": 25110,
+      "endMs": 27040,
+      "text": "Berikutnya ada sistem testing",
+      "wordStartsMs": [
+        25110,
+        25680,
+        25980,
+        26340
+      ]
+    },
+    {
+      "id": "sub-009",
+      "startMs": 27280,
+      "endMs": 31270,
+      "text": "untuk menguji keseluruhan aplikasi agar berjalan sesuai spesifikasi.",
+      "wordStartsMs": [
+        27280,
+        27500,
+        28020,
+        28560,
+        29160,
+        29640,
+        30080,
+        30420
+      ]
+    },
+    {
+      "id": "sub-010",
+      "startMs": 31770,
+      "endMs": 34510,
+      "text": "Tahap akhir kita lakukan acceptance testing",
+      "wordStartsMs": [
+        31770,
+        32000,
+        32420,
+        32760,
+        33160,
+        33720
+      ]
+    },
+    {
+      "id": "sub-011",
+      "startMs": 34770,
+      "endMs": 37630,
+      "text": "agar software memenuhi kebutuhan dan harapan pengguna.",
+      "wordStartsMs": [
+        34770,
+        35080,
+        35400,
+        35920,
+        36440,
+        36720,
+        37040
+      ]
+    },
+    {
+      "id": "sub-012",
+      "startMs": 38370,
+      "endMs": 41130,
+      "text": "Besok kita bahas tools penting untuk software testing.",
+      "wordStartsMs": [
+        38370,
+        38860,
+        39140,
+        39540,
+        39740,
+        40200,
+        40360,
+        40620
+      ]
+    },
+    {
+      "id": "sub-013",
+      "startMs": 41500,
+      "endMs": 43070,
+      "text": "Jangan lupa untuk follow akun ini ya.",
+      "wordStartsMs": [
+        41500,
+        41660,
+        41880,
+        42040,
+        42240,
+        42540,
+        42740
+      ]
+    }
+  ]
+}

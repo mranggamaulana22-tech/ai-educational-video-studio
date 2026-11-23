@@ -149,6 +149,7 @@ Halaman ini mencatat seluruh peningkatan yang diterapkan pada sistem selama sesi
 7. Panel Felisa memuat sapaan status awal, form perintah, chip saran cepat, dan kotak konfirmasi Jalankan/Batal.
 8. Panel Felisa mendukung minimize menjadi kapsul kecil agar tidak menutupi area agen bawah.
 9. Callback aplikasi menghubungkan perintah Felisa ke pemilihan proyek, workspace Tutor, Gudang, tahap, dan approval.
+10. Dokumentasi handoff khusus tersedia di [felisa.md](./felisa.md).
 
 ## Ringkasan
 Fitur AI Learning Tutor diterapkan pada tahap `3. Notes`. Tutor memimpin diskusi berdasarkan materi mentah dan hasil analisis, menyimpan perkembangan konsep serta riwayat giliran di `catatan/{name}.session.json`, lalu meneruskan konteks yang relevan ke Learning Notes Agent.

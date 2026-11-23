@@ -1,0 +1,530 @@
+{
+ "audio": "p0-tutor.wav",
+ "durationMs": 43240,
+ "model": "small",
+ "silences": [
+  [
+   0,
+   290
+  ],
+  [
+   4860,
+   5330
+  ],
+  [
+   7780,
+   8190
+  ],
+  [
+   11260,
+   11750
+  ],
+  [
+   14410,
+   14870
+  ],
+  [
+   17430,
+   17900
+  ],
+  [
+   20250,
+   20570
+  ],
+  [
+   24540,
+   25110
+  ],
+  [
+   26890,
+   27280
+  ],
+  [
+   31200,
+   31770
+  ],
+  [
+   34360,
+   34770
+  ],
+  [
+   37520,
+   38370
+  ],
+  [
+   41110,
+   41490
+  ],
+  [
+   42970,
+   43240
+  ]
+ ],
+ "words": [
+  {
+   "text": "Bagaimana",
+   "startMs": 290,
+   "endMs": 940
+  },
+  {
+   "text": "urutan",
+   "startMs": 940,
+   "endMs": 1400
+  },
+  {
+   "text": "mengetes",
+   "startMs": 1400,
+   "endMs": 1840
+  },
+  {
+   "text": "aplikasi",
+   "startMs": 1840,
+   "endMs": 2520
+  },
+  {
+   "text": "dari",
+   "startMs": 2520,
+   "endMs": 2880
+  },
+  {
+   "text": "kode",
+   "startMs": 2880,
+   "endMs": 3100
+  },
+  {
+   "text": "kecil",
+   "startMs": 3100,
+   "endMs": 3680
+  },
+  {
+   "text": "sampai",
+   "startMs": 3680,
+   "endMs": 4100
+  },
+  {
+   "text": "siap",
+   "startMs": 4100,
+   "endMs": 4380
+  },
+  {
+   "text": "release?",
+   "startMs": 4380,
+   "endMs": 4640
+  },
+  {
+   "text": "Kita",
+   "startMs": 5330,
+   "endMs": 5480
+  },
+  {
+   "text": "mulai",
+   "startMs": 5480,
+   "endMs": 5880
+  },
+  {
+   "text": "langkah",
+   "startMs": 5880,
+   "endMs": 6160
+  },
+  {
+   "text": "pertama",
+   "startMs": 6160,
+   "endMs": 6580
+  },
+  {
+   "text": "dari",
+   "startMs": 6580,
+   "endMs": 6980
+  },
+  {
+   "text": "unitesting",
+   "startMs": 6980,
+   "endMs": 7780
+  },
+  {
+   "text": "untuk",
+   "startMs": 8190,
+   "endMs": 8380
+  },
+  {
+   "text": "menguji",
+   "startMs": 8380,
+   "endMs": 8920
+  },
+  {
+   "text": "bagian",
+   "startMs": 8920,
+   "endMs": 9260
+  },
+  {
+   "text": "terkecil",
+   "startMs": 9260,
+   "endMs": 9760
+  },
+  {
+   "text": "program",
+   "startMs": 9760,
+   "endMs": 10200
+  },
+  {
+   "text": "secara",
+   "startMs": 10200,
+   "endMs": 10640
+  },
+  {
+   "text": "terpisah.",
+   "startMs": 10640,
+   "endMs": 11260
+  },
+  {
+   "text": "Bagian",
+   "startMs": 11750,
+   "endMs": 12040
+  },
+  {
+   "text": "kecil",
+   "startMs": 12040,
+   "endMs": 12360
+  },
+  {
+   "text": "ini",
+   "startMs": 12360,
+   "endMs": 12640
+  },
+  {
+   "text": "bisa",
+   "startMs": 12640,
+   "endMs": 12980
+  },
+  {
+   "text": "berupa",
+   "startMs": 12980,
+   "endMs": 13240
+  },
+  {
+   "text": "fungsin",
+   "startMs": 13240,
+   "endMs": 13740
+  },
+  {
+   "text": "atau",
+   "startMs": 13740,
+   "endMs": 13980
+  },
+  {
+   "text": "metod",
+   "startMs": 13980,
+   "endMs": 14410
+  },
+  {
+   "text": "agar",
+   "startMs": 14870,
+   "endMs": 15220
+  },
+  {
+   "text": "setiap",
+   "startMs": 15220,
+   "endMs": 15540
+  },
+  {
+   "text": "komponen",
+   "startMs": 15540,
+   "endMs": 15880
+  },
+  {
+   "text": "dasar",
+   "startMs": 15880,
+   "endMs": 16320
+  },
+  {
+   "text": "berfungsi",
+   "startMs": 16320,
+   "endMs": 16860
+  },
+  {
+   "text": "dengan",
+   "startMs": 16860,
+   "endMs": 17000
+  },
+  {
+   "text": "baik.",
+   "startMs": 17000,
+   "endMs": 17280
+  },
+  {
+   "text": "Lalu",
+   "startMs": 17900,
+   "endMs": 18260
+  },
+  {
+   "text": "kita",
+   "startMs": 18260,
+   "endMs": 18520
+  },
+  {
+   "text": "lanjut",
+   "startMs": 18520,
+   "endMs": 18920
+  },
+  {
+   "text": "ke",
+   "startMs": 18920,
+   "endMs": 19140
+  },
+  {
+   "text": "integration",
+   "startMs": 19140,
+   "endMs": 19600
+  },
+  {
+   "text": "testing,",
+   "startMs": 19600,
+   "endMs": 20100
+  },
+  {
+   "text": "guna",
+   "startMs": 20570,
+   "endMs": 20960
+  },
+  {
+   "text": "memastikan",
+   "startMs": 20960,
+   "endMs": 21540
+  },
+  {
+   "text": "modul",
+   "startMs": 21540,
+   "endMs": 21920
+  },
+  {
+   "text": "yang",
+   "startMs": 21920,
+   "endMs": 22040
+  },
+  {
+   "text": "dibuat",
+   "startMs": 22040,
+   "endMs": 22540
+  },
+  {
+   "text": "bisa",
+   "startMs": 22540,
+   "endMs": 22820
+  },
+  {
+   "text": "bekerja",
+   "startMs": 22820,
+   "endMs": 23340
+  },
+  {
+   "text": "saat",
+   "startMs": 23340,
+   "endMs": 23680
+  },
+  {
+   "text": "diintegrasikan.",
+   "startMs": 23680,
+   "endMs": 24540
+  },
+  {
+   "text": "Berikutnya",
+   "startMs": 25110,
+   "endMs": 25680
+  },
+  {
+   "text": "ada",
+   "startMs": 25680,
+   "endMs": 25980
+  },
+  {
+   "text": "sistem",
+   "startMs": 25980,
+   "endMs": 26340
+  },
+  {
+   "text": "testing",
+   "startMs": 26340,
+   "endMs": 26890
+  },
+  {
+   "text": "untuk",
+   "startMs": 27280,
+   "endMs": 27500
+  },
+  {
+   "text": "menguji",
+   "startMs": 27500,
+   "endMs": 28020
+  },
+  {
+   "text": "keseluruhan",
+   "startMs": 28020,
+   "endMs": 28560
+  },
+  {
+   "text": "aplikasi",
+   "startMs": 28560,
+   "endMs": 29160
+  },
+  {
+   "text": "agar",
+   "startMs": 29160,
+   "endMs": 29640
+  },
+  {
+   "text": "berjalan",
+   "startMs": 29640,
+   "endMs": 30080
+  },
+  {
+   "text": "sesuai",
+   "startMs": 30080,
+   "endMs": 30420
+  },
+  {
+   "text": "spesifikasi.",
+   "startMs": 30420,
+   "endMs": 31120
+  },
+  {
+   "text": "Tahap",
+   "startMs": 31770,
+   "endMs": 32000
+  },
+  {
+   "text": "akhir",
+   "startMs": 32000,
+   "endMs": 32420
+  },
+  {
+   "text": "kita",
+   "startMs": 32420,
+   "endMs": 32760
+  },
+  {
+   "text": "lakukan",
+   "startMs": 32760,
+   "endMs": 33160
+  },
+  {
+   "text": "acceptance",
+   "startMs": 33160,
+   "endMs": 33720
+  },
+  {
+   "text": "testing",
+   "startMs": 33720,
+   "endMs": 34360
+  },
+  {
+   "text": "agar",
+   "startMs": 34770,
+   "endMs": 35080
+  },
+  {
+   "text": "software",
+   "startMs": 35080,
+   "endMs": 35400
+  },
+  {
+   "text": "memenuhi",
+   "startMs": 35400,
+   "endMs": 35920
+  },
+  {
+   "text": "kebutuhan",
+   "startMs": 35920,
+   "endMs": 36440
+  },
+  {
+   "text": "dan",
+   "startMs": 36440,
+   "endMs": 36720
+  },
+  {
+   "text": "harapan",
+   "startMs": 36720,
+   "endMs": 37040
+  },
+  {
+   "text": "pengguna.",
+   "startMs": 37040,
+   "endMs": 37480
+  },
+  {
+   "text": "Besok",
+   "startMs": 38370,
+   "endMs": 38860
+  },
+  {
+   "text": "kita",
+   "startMs": 38860,
+   "endMs": 39140
+  },
+  {
+   "text": "bahas",
+   "startMs": 39140,
+   "endMs": 39540
+  },
+  {
+   "text": "tools",
+   "startMs": 39540,
+   "endMs": 39740
+  },
+  {
+   "text": "penting",
+   "startMs": 39740,
+   "endMs": 40200
+  },
+  {
+   "text": "untuk",
+   "startMs": 40200,
+   "endMs": 40360
+  },
+  {
+   "text": "software",
+   "startMs": 40360,
+   "endMs": 40620
+  },
+  {
+   "text": "testing.",
+   "startMs": 40620,
+   "endMs": 40980
+  },
+  {
+   "text": "Jangan",
+   "startMs": 41500,
+   "endMs": 41660
+  },
+  {
+   "text": "lupa",
+   "startMs": 41660,
+   "endMs": 41880
+  },
+  {
+   "text": "untuk",
+   "startMs": 41880,
+   "endMs": 42040
+  },
+  {
+   "text": "follow",
+   "startMs": 42040,
+   "endMs": 42240
+  },
+  {
+   "text": "akun",
+   "startMs": 42240,
+   "endMs": 42540
+  },
+  {
+   "text": "ini",
+   "startMs": 42540,
+   "endMs": 42740
+  },
+  {
+   "text": "ya.",
+   "startMs": 42740,
+   "endMs": 42920
+  }
+ ]
+}
