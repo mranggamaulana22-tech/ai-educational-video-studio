@@ -16,7 +16,7 @@ from app import config, db, stages  # noqa: E402
 # Semua file kerja diarahkan ke folder sementara
 config.ROOT = tmp
 config.STORAGE = tmp / "storage"
-config.REMOTION = tmp / "apps" / "remotion"
+config.REMOTION = tmp / "apps" / "frontend" / "remotion"
 stages.R, stages.REM = config.ROOT, config.REMOTION
 
 db.init("sqlite:///" + str(tmp / "t.db"))

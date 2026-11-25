@@ -5,26 +5,26 @@
     "width": 1080,
     "height": 1920,
     "fps": 30,
-    "durationMs": 51760,
+    "durationMs": 43560,
     "badge": {
-      "day": "Day 01",
-      "course": "SDLC Planning"
+      "day": "Day 1",
+      "course": "SDLC"
     }
   },
   "audio": {
     "src": "audio/string.wav",
-    "durationMs": 51760
+    "durationMs": 43560
   },
   "scenes": [
     {
       "id": "scene-001",
       "startMs": 0,
-      "durationMs": 4000,
+      "durationMs": 7500,
       "componentId": "IconHero",
       "props": {
-        "icon": "folder",
-        "title": "Spesifikasi Proyek",
-        "subtitle": "Software",
+        "icon": "file",
+        "title": "Dokumen SDLC",
+        "subtitle": "Bandingkan 3 dokumen penting",
         "color": "teal",
         "motion": "float"
       },
@@ -33,42 +33,55 @@
     },
     {
       "id": "scene-002",
-      "startMs": 4000,
-      "durationMs": 4780,
-      "componentId": "BigStatement",
+      "startMs": 7500,
+      "durationMs": 7500,
+      "componentId": "CompareCards",
       "props": {
-        "kicker": "SDLC Planning",
-        "icon": "target",
-        "iconColor": "orange",
-        "lines": [
-          {
-            "text": "3 Dokumen",
-            "color": "teal"
-          },
-          {
-            "text": "Penting"
-          }
-        ]
+        "heading": "Fokus URS",
+        "left": {
+          "title": "Bisnis",
+          "color": "teal",
+          "icon": "people",
+          "items": [
+            "Kebutuhan bisnis",
+            "Ekspektasi pengguna"
+          ]
+        },
+        "right": {
+          "title": "Fitur",
+          "color": "orange",
+          "icon": "target",
+          "items": [
+            "Siapa pengguna",
+            "Fitur yang diperlukan"
+          ]
+        }
       },
       "transition": "slide",
       "componentVersion": "1.0.0"
     },
     {
       "id": "scene-003",
-      "startMs": 8780,
-      "durationMs": 5090,
-      "componentId": "BigStatement",
+      "startMs": 15000,
+      "durationMs": 7500,
+      "componentId": "CardList",
       "props": {
-        "kicker": "Dokumen Pertama",
-        "icon": "book",
-        "iconColor": "orange",
-        "lines": [
+        "heading": "SRS & Performa",
+        "items": [
           {
-            "text": "URS",
+            "text": "Fungsionalitas utama",
+            "icon": "code",
             "color": "teal"
           },
           {
-            "text": "User Requirements"
+            "text": "Standar performa",
+            "icon": "gear",
+            "color": "orange"
+          },
+          {
+            "text": "Keamanan sistem",
+            "icon": "lock",
+            "color": "violet"
           }
         ]
       },
@@ -77,26 +90,26 @@
     },
     {
       "id": "scene-004",
-      "startMs": 13870,
-      "durationMs": 6540,
-      "componentId": "CardList",
+      "startMs": 22500,
+      "durationMs": 7500,
+      "componentId": "IconGrid",
       "props": {
-        "heading": "Fokus URS",
+        "heading": "SysRS Teknis",
         "items": [
           {
-            "text": "Kebutuhan bisnis",
-            "icon": "target",
+            "icon": "server",
+            "label": "Aspek Teknis",
             "color": "teal"
           },
           {
-            "text": "Ekspektasi user",
-            "icon": "people",
+            "icon": "folder",
+            "label": "Operasional",
             "color": "orange"
           },
           {
-            "text": "User stories",
-            "icon": "chat",
-            "color": "violet"
+            "icon": "check",
+            "label": "Kebijakan",
+            "color": "green"
           }
         ]
       },
@@ -105,311 +118,196 @@
     },
     {
       "id": "scene-005",
-      "startMs": 20410,
-      "durationMs": 4840,
+      "startMs": 30000,
+      "durationMs": 7500,
       "componentId": "BigStatement",
       "props": {
-        "kicker": "Dokumen Kedua",
-        "icon": "code",
+        "kicker": "Tips SDLC",
+        "icon": "bulb",
         "iconColor": "teal",
         "lines": [
           {
-            "text": "SRS",
-            "color": "orange"
+            "text": "Pahami dokumen",
+            "color": "teal"
           },
           {
-            "text": "Software Requirements"
+            "text": "Proyek berjalan lancar",
+            "color": "orange"
           }
         ]
       },
-      "transition": "slide",
+      "transition": "fade",
       "componentVersion": "1.0.0"
     },
     {
       "id": "scene-006",
-      "startMs": 25250,
-      "durationMs": 7060,
-      "componentId": "IconGrid",
-      "props": {
-        "heading": "Rincian SRS",
-        "items": [
-          {
-            "icon": "gear",
-            "label": "Fungsionalitas",
-            "color": "teal"
-          },
-          {
-            "icon": "lock",
-            "label": "Batasan Sistem",
-            "color": "orange"
-          },
-          {
-            "icon": "check",
-            "label": "Requirement",
-            "color": "green"
-          }
-        ]
-      },
-      "transition": "zoom",
-      "componentVersion": "1.0.0"
-    },
-    {
-      "id": "scene-007",
-      "startMs": 32310,
-      "durationMs": 5040,
-      "componentId": "BigStatement",
-      "props": {
-        "kicker": "Dokumen Ketiga",
-        "icon": "server",
-        "iconColor": "violet",
-        "lines": [
-          {
-            "text": "SysRS",
-            "color": "teal"
-          },
-          {
-            "text": "System Requirements"
-          }
-        ]
-      },
-      "transition": "wipe",
-      "componentVersion": "1.0.0"
-    },
-    {
-      "id": "scene-008",
-      "startMs": 37350,
-      "durationMs": 6950,
-      "componentId": "IconGrid",
-      "props": {
-        "heading": "Fokus SysRS",
-        "items": [
-          {
-            "icon": "laptop",
-            "label": "Teknis Sistem",
-            "color": "orange"
-          },
-          {
-            "icon": "database",
-            "label": "Hardware",
-            "color": "teal"
-          },
-          {
-            "icon": "lock",
-            "label": "Keamanan",
-            "color": "violet"
-          }
-        ]
-      },
-      "transition": "slide",
-      "componentVersion": "1.0.0"
-    },
-    {
-      "id": "scene-009",
-      "startMs": 44300,
-      "durationMs": 3820,
-      "componentId": "BigStatement",
-      "props": {
-        "kicker": "Kesimpulan",
-        "icon": "star",
-        "iconColor": "yellow",
-        "lines": [
-          {
-            "text": "Fondasi Sukses",
-            "color": "teal"
-          },
-          {
-            "text": "Aplikasi"
-          }
-        ]
-      },
-      "transition": "zoom",
-      "componentVersion": "1.0.0"
-    },
-    {
-      "id": "scene-010",
-      "startMs": 48120,
-      "durationMs": 3640,
+      "startMs": 37500,
+      "durationMs": 6060,
       "componentId": "CtaCard",
       "props": {
         "title": "Jangan Lupa Follow",
-        "subtitle": "Tips software engineering",
+        "subtitle": "Untuk tips berikutnya",
         "button": "Follow",
-        "color": "teal",
+        "color": "green",
         "icon": "rocket"
       },
-      "transition": "fade",
+      "transition": "zoom",
       "componentVersion": "1.0.0"
     }
   ],
   "subtitles": [
     {
       "id": "sub-001",
-      "startMs": 310,
-      "endMs": 3520,
-      "text": "Bingung membedakan dokumen spesifikasi proyek software?",
+      "startMs": 260,
+      "endMs": 3190,
+      "text": "Bingung membedakan dokumen spesifikasi proyek software.",
       "wordStartsMs": [
-        310,
-        800,
-        1320,
-        1720,
-        2380,
-        2740
+        260,
+        760,
+        1220,
+        1620,
+        2280,
+        2640
       ]
     },
     {
       "id": "sub-002",
-      "startMs": 3520,
-      "endMs": 8090,
-      "text": "Mari kita bandingkan 3 dokumen penting dari tahap planning SDLC.",
+      "startMs": 3780,
+      "endMs": 7550,
+      "text": "Mari kita bandingkan 3 dokumen penting dalam tahapan SDLC.",
       "wordStartsMs": [
-        3520,
-        4100,
-        4320,
-        4880,
-        5300,
-        5740,
-        6160,
-        6420,
-        6820,
-        7160
+        3780,
+        4020,
+        4260,
+        4820,
+        5220,
+        5640,
+        6060,
+        6320,
+        6740
       ]
     },
     {
       "id": "sub-003",
-      "startMs": 8780,
-      "endMs": 13290,
-      "text": "Pertama ada URS atau User Requirements Specification.",
+      "startMs": 8210,
+      "endMs": 12470,
+      "text": "URS, fokus pada kebutuhan bisnis dan ekspektasi pengguna aplikasi.",
       "wordStartsMs": [
-        8780,
-        9470,
-        10080,
-        10930,
-        11120,
-        11680,
-        12320
+        8210,
+        8850,
+        9400,
+        9640,
+        10040,
+        10500,
+        10820,
+        11460,
+        11820
       ]
     },
     {
       "id": "sub-004",
-      "startMs": 13870,
-      "endMs": 19630,
-      "text": "Dokumen ini fokus mendeskripsikan kebutuhan bisnis dan ekspektasi user lewat user stories.",
+      "startMs": 12980,
+      "endMs": 17870,
+      "text": "Dokumen ini mendeskripsikan siapa pengguna dan fitur apa yang mereka perlukan.",
       "wordStartsMs": [
-        13870,
-        14160,
-        14460,
-        14980,
-        15760,
-        16240,
-        16720,
+        12980,
+        13320,
+        13700,
+        14580,
+        15200,
+        16030,
+        16180,
+        16540,
+        16900,
         17120,
-        17760,
-        18060,
-        18720,
-        19060
+        17280
       ]
     },
     {
       "id": "sub-005",
-      "startMs": 20410,
-      "endMs": 25080,
-      "text": "Kedua ada SRS atau Software Requirements Specification.",
+      "startMs": 18490,
+      "endMs": 24350,
+      "text": "Sedangkan SRS merinci fungsionalitas utama serta standar performa software secara spesifik.",
       "wordStartsMs": [
-        20410,
-        20960,
-        21280,
-        22450,
-        22600,
-        23220,
-        23800
+        18490,
+        18940,
+        20050,
+        20400,
+        21160,
+        21660,
+        22180,
+        22500,
+        22940,
+        23340,
+        23640
       ]
     },
     {
       "id": "sub-006",
-      "startMs": 25250,
-      "endMs": 31730,
-      "text": "Dokumen ini merinci fungsionalitas software, batasan, serta requirement fungsional dan non fungsional.",
+      "startMs": 24850,
+      "endMs": 29710,
+      "text": "Ini mencakup functional requirement dan non-functional requirement seperti keamanan sistem.",
       "wordStartsMs": [
-        25250,
-        25560,
-        25860,
-        26360,
-        27200,
-        27870,
-        28820,
-        29260,
-        29500,
-        30240,
-        30720,
-        30940
+        24850,
+        25040,
+        25520,
+        25900,
+        26910,
+        27040,
+        27800,
+        28300,
+        28580,
+        29120
       ]
     },
     {
       "id": "sub-007",
-      "startMs": 32310,
-      "endMs": 36770,
-      "text": "Ketiga ada SysRS atau System Requirements Specification.",
+      "startMs": 30150,
+      "endMs": 36930,
+      "text": "Terakhir, SysRS menjelaskan aspek teknis dan operasional secara menyeluruh, termasuk kebijakan internal.",
       "wordStartsMs": [
-        32310,
-        32920,
-        33140,
-        34390,
-        34580,
-        35060,
-        35760
+        30150,
+        31010,
+        32120,
+        32680,
+        33080,
+        33500,
+        33640,
+        34200,
+        34600,
+        35450,
+        35900,
+        36340
       ]
     },
     {
       "id": "sub-008",
-      "startMs": 37350,
-      "endMs": 43570,
-      "text": "Dokumen ini menjelaskan kapabilitas teknis sistem, hardware, hingga standar keamanan dan regulasi.",
+      "startMs": 37510,
+      "endMs": 40730,
+      "text": "Pahami dokumen ini agar proyek software berjalan lancar.",
       "wordStartsMs": [
-        37350,
-        37640,
-        37960,
-        38620,
-        39300,
-        39740,
-        40520,
-        41360,
-        41660,
-        42100,
-        42700,
-        42900
+        37510,
+        37820,
+        38200,
+        38500,
+        38960,
+        39260,
+        39520,
+        40080
       ]
     },
     {
       "id": "sub-009",
-      "startMs": 44300,
-      "endMs": 47670,
-      "text": "Ketiga dokumen ini jadi fondasi suksesnya pengembangan aplikasi.",
+      "startMs": 41060,
+      "endMs": 43290,
+      "text": "Jangan lupa follow untuk tips berikutnya.",
       "wordStartsMs": [
-        44300,
-        44560,
-        44860,
-        45160,
-        45400,
-        46000,
-        46580,
-        47000
-      ]
-    },
-    {
-      "id": "sub-010",
-      "startMs": 48120,
-      "endMs": 51510,
-      "text": "Jangan lupa follow untuk tips belajar software engineering berikutnya.",
-      "wordStartsMs": [
-        48120,
-        48300,
-        48500,
-        48840,
-        49200,
-        49500,
-        49920,
-        50200,
-        50780
+        41060,
+        41240,
+        41930,
+        42120,
+        42420,
+        42620
       ]
     }
   ]

@@ -1,0 +1,31 @@
+Kursus: Catatan Belajar: SDLC dan Pengelolaan Requirement
+Modul: 
+
+Topik: SRS (Software Requirements Specification)
+Dokumen SRS merinci fungsionalitas dan standar performa software:
+- Tujuan dan ruang lingkup, batasan, asumsi, ketergantungan.
+- **Functional Requirement**: Fitur utama yang harus dapat dilakukan oleh sistem.
+- **External Interface Requirement**: Cara sistem berinteraksi dengan pihak atau komponen eksternal.
+- **Non-functional Requirement**: Kualitas sistem yang harus dipenuhi seperti security, performa, usability, dan reliability.
+- Istilah SRS: Software Requirements Specification dokumen spesifikasi kebutuhan perangkat lunak.
+- Istilah Functional Requirement: Fitur spesifik yang harus disediakan oleh sistem.
+- Istilah Non-functional Requirement: Aturan kualitas, performa, dan keamanan sistem.
+- Contoh: Fitur login aplikasi untuk membedakan functional dan non-functional requirement
+- Contoh: Buku petunjuk dan cetak biru detail sebelum pabrik merakit mobil baru untuk menggambarkan dokumen SRS, URS, dan SysRS.
+- Contoh: Buku petunjuk dan cetak biru detail sebelum pabrik merakit mobil baru
+
+Topik: URS (User Requirement Specification) & UAT
+URS mendeskripsikan kebutuhan bisnis dan ekspektasi user menggunakan user stories:
+- Siapa pengguna aplikasinya?
+- Fitur apa yang dibutuhkan untuk perform?
+- Kenapa user membutuhkan fiturnya?
+URS dikonfirmasi melalui **UAT (User Acceptance Testing)** yaitu pengujian oleh pengguna atau perwakilan untuk memastikan aplikasi sesuai kebutuhan, kemudian digabungkan ke dalam SRS.
+- Istilah URS: User Requirement Specification dokumen kebutuhan dari sisi pengguna dan bisnis.
+- Istilah UAT: User Acceptance Testing pengujian penerimaan oleh pengguna.
+
+Topik: SysRS (System Requirement Specification)
+SysRS menjelaskan aspek teknis dan operasional secara menyeluruh:
+- System capabilities dan interface/user characteristics.
+- Policy (kebijakan internal) dan Regulation (standar eksternal).
+- Personnel, Performance, Security, System acceptance criteria, dan Hardware expectation.
+- Istilah SysRS: System Requirement Specification dokumen spesifikasi sistem secara komprehensif.

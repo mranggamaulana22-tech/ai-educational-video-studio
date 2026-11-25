@@ -20,4 +20,4 @@ def _env(name, default=""):
 
 DATABASE_URL = _env("DATABASE_URL", "")
 STORAGE = ROOT / "storage"  # salinan tiap versi hasil tahap (naskah, suara, video, ...)
-REMOTION = ROOT / "apps" / "remotion"
+REMOTION = ROOT / "apps" / "frontend" / "remotion"

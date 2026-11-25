@@ -1,0 +1,12 @@
+Kursus: Catatan Belajar: SDLC dan Pengelolaan Requirement
+Modul: 
+
+Topik: Tahap Planning dan Pengumpulan Requirement
+Langkah awal dalam SDLC berfokus pada pengumpulan kebutuhan sistem:
+- **Identifikasi Stakeholders**: Melibatkan PM, end user, system admin, engineering, marketing, sales, dan customer support.
+- **Menetapkan Goals & Objectives**: Goals adalah tujuan jangka panjang, sedangkan objectives dapat ditindaklanjuti dan diukur.
+- **Penggalian Kebutuhan**: Dilakukan melalui survei, kuisioner, dan interview.
+- **Dokumentasi & Analisis**: Dokumen harus sejalan dengan goals, mudah dipahami, konsisten, jelas, lengkap, serta ditentukan skala prioritasnya.
+- Istilah Stakeholders: Pemangku kepentingan yang terlibat dalam proyek.
+- Istilah Goals: Tujuan jangka panjang yang ingin dicapai.
+- Istilah Objectives: Target yang dapat ditindaklanjuti dan diukur.

@@ -1,8 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import FelisaLayered from "./FelisaLayered.jsx";
-import { api } from "./api.js";
+import { api, felisaChatAudioUrl, getEventsUrl, sendFelisaChat, sendFelisaEvent } from "./api.js";
 import { AGENT_STAGES } from "./agentsConfig.js";
 import { getGreeting, getStatusLine } from "./felisaLines.js";
+import { detectIntent, getReply } from "./felisaIntents.js";
+import { createListener, isListenSupported } from "./felisaListen.js";
+import FelisaChatPanel from "./FelisaChatPanel.jsx";
+import FelisaIntakeCard from "./FelisaIntakeCard.jsx";
 import {
   getFelisaLang,
   getFelisaVoice,
@@ -13,11 +17,37 @@ import {
   setFelisaMuted,
   setFelisaVoice,
   speak,
+  speakChatReply,
+  speakReply,
   stopSpeaking,
 } from "./felisaVoice.js";
 
 const NAME_KEY = "felisaUserName";
 const ROOM_KEY = "felisaRoomOpen";
+const LOG_KEY = "felisaChatLog";
+
+const NEW_PROJECT_RE =
+  /\b(proyek|project|video)\s+(baru|new)\b|\b(buat|bikin|mulai|start|create|begin)\s+(proyek|project|video)\b|\bnew\s+project\b/i;
+
+function slugify(text) {
+  return String(text || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40)
+    .replace(/-+$/g, "");
+}
+
+function loadLog() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
+    return Array.isArray(raw) ? raw.filter((m) => m && m.id && m.role && typeof m.text === "string").slice(-40) : [];
+  } catch {
+    return [];
+  }
+}
 
 const SHORT_STAGE_LABELS = {
   material: "Material",
@@ -53,9 +83,10 @@ export default function FelisaRoom({
   onOpen,
   onAdvance,
   onApprove,
-  onOpenWorkspace,
+  onOpenWorkspace: openWorkspaceRaw,
   onOpenStorage,
   onStatusUpdate,
+  onProjectCreated,
 }) {
   const [name, setName] = useState(() => localStorage.getItem(NAME_KEY) || "");
   const [nameDraft, setNameDraft] = useState("");
@@ -66,12 +97,345 @@ export default function FelisaRoom({
   const [opacity, setOpacity] = useState(1);
   const [speaking, setSpeaking] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
+  // Ruang Felisa menutup dulu, kalau tidak ruang kerja tahap terbuka di belakang panel dan tombol terlihat tidak bereaksi.
+  const onOpenWorkspace = (idx) => {
+    onClose?.();
+    openWorkspaceRaw?.(idx);
+  };
   const [muted, setMuted] = useState(() => isFelisaMuted());
   const [felisaLang, setFelisaLangState] = useState(() => getFelisaLang());
   const [felisaVoice, setFelisaVoiceState] = useState(() => getFelisaVoice());
   const [felisaVoiceOptions, setFelisaVoiceOptions] = useState([]);
   const [felisaStatus, setFelisaStatus] = useState(null);
   const [displayedText, setDisplayedText] = useState("");
+
+  // --- Suara masuk (tekan-untuk-bicara) ---
+  const [listenStatus, setListenStatus] = useState(() => (isListenSupported() ? "idle" : "unsupported"));
+  const [messages, setMessages] = useState(loadLog);
+  const [thinking, setThinking] = useState(false);
+  const [tab, setTab] = useState("chat");
+  const [intake, setIntake] = useState({ open: false, busy: false, error: "" });
+  const pendingProjectRef = useRef(null); // proyek yang sudah terbuat tapi bahannya gagal (coba lagi tanpa duplikat)
+  const listenerRef = useRef(null);
+  const lastReplyRef = useRef(null);
+  const liveRef = useRef({});
+  liveRef.current = { felisaLang, felisaVoice, name, speaking, listenStatus };
+
+  // Semua fungsi di bawah hanya memakai setter, ref, dan fungsi impor (stabil), jadi aman dipegang listener sejak render pertama.
+  function newId() {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  }
+  function pushMessage(message) {
+    const id = message.id || newId();
+    setMessages((list) => [...list, { ...message, id, ts: Date.now() }].slice(-60));
+    return id;
+  }
+  function patchMessage(id, patch) {
+    setMessages((list) => list.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+  }
+  function voiceHint(res, t) {
+    if (!res.voice_limited) return "";
+    return res.voice_reason === "limit"
+      ? t("suara hari ini habis", "voice limit reached today")
+      : t(`suara gagal dibuat: ${res.voice_reason || "?"}`, `voice failed: ${res.voice_reason || "?"}`);
+  }
+
+  // Satu giliran obrolan (dari suara atau ketikan): LLM + cache di backend, templat sapaan bila gagal.
+  function askFelisa(text, options = {}) {
+    const lang = liveRef.current.felisaLang;
+    const t = (idText, enText) => (lang === "en" ? enText : idText);
+    const candidates = [text, ...(options.alternatives || [])].filter(Boolean);
+    if (candidates.some((c) => NEW_PROJECT_RE.test(c))) {
+      setTab("chat");
+      pushMessage({ role: "user", text });
+      pushMessage({
+        role: "felisa",
+        text: t("Siap, Bos. Isi judul dan bahan belajarnya di form ini ya.", "Sure, Boss. Fill in the title and study material in this form."),
+      });
+      openIntake();
+      return;
+    }
+    const isGreeting = candidates.some((c) => detectIntent(c).intent === "greeting");
+    setTab("chat");
+    pushMessage({ role: "user", text });
+    setThinking(true);
+
+    const fallback = () => {
+      setThinking(false);
+      const reply = getReply(isGreeting ? "greeting" : "unknown", { lastReplyId: lastReplyRef.current });
+      if (reply.kind === "line") {
+        lastReplyRef.current = reply.lineId;
+        let msgId = null;
+        speakReply(reply.lineId, {
+          lang,
+          voice: liveRef.current.felisaVoice,
+          onText: (line) => {
+            if (msgId) patchMessage(msgId, { text: line });
+            else msgId = pushMessage({ role: "felisa", text: line });
+          },
+          onSpeaking: setSpeaking,
+          onLevel: setAudioLevel,
+        });
+      } else {
+        pushMessage({
+          role: "felisa",
+          text: t(
+            "Aku belum bisa menjawab itu sekarang. Coba bilang \u201cHai Felisa\u201d.",
+            "I can't answer that right now. Try saying \u201cHi Felisa\u201d.",
+          ),
+        });
+      }
+    };
+
+    sendFelisaChat(text, lang, liveRef.current.name || "Rangga")
+      .then((res) => {
+        setThinking(false);
+        const audioUrl = res.audio_url ? felisaChatAudioUrl(res.audio_url) : "";
+        pushMessage({ role: "felisa", text: res.reply, audioUrl, hint: voiceHint(res, t), q: text });
+        speakChatReply(res.reply, audioUrl, { onSpeaking: setSpeaking, onLevel: setAudioLevel });
+      })
+      .catch(fallback);
+  }
+
+  function replayMessage(m) {
+    const lang = liveRef.current.felisaLang;
+    const t = (idText, enText) => (lang === "en" ? enText : idText);
+    if (m.audioUrl) {
+      speakChatReply(m.text, m.audioUrl, { onSpeaking: setSpeaking, onLevel: setAudioLevel });
+      return;
+    }
+    if (!m.q) return;
+    // Jawaban sudah tersimpan: backend hanya mencoba membuat suaranya bila kuota harian ada.
+    sendFelisaChat(m.q, lang, liveRef.current.name || "Rangga")
+      .then((res) => {
+        const audioUrl = res.audio_url ? felisaChatAudioUrl(res.audio_url) : "";
+        patchMessage(m.id, { audioUrl, hint: voiceHint(res, t) });
+        if (audioUrl) speakChatReply(m.text, audioUrl, { onSpeaking: setSpeaking, onLevel: setAudioLevel });
+      })
+      .catch(() => {});
+  }
+
+  function openIntake() {
+    setTab("chat");
+    setIntake({ open: true, busy: false, error: "" });
+  }
+
+  // Alur proyek baru: tolak bila judul/bahan kosong; selain itu buat proyek, kirim bahan, lalu jalankan otomatis.
+  async function startProject({ title, file, text }) {
+    const lang = liveRef.current.felisaLang;
+    const t = (idText, enText) => (lang === "en" ? enText : idText);
+    const cleanTitle = String(title || "").trim();
+    const body = String(text || "").trim();
+    if (!cleanTitle || (!file && !body)) {
+      const refusal = !cleanTitle
+        ? t("Aku belum bisa mulai, Bos. Judul proyeknya belum ada.", "I can't start yet, Boss. The project title is missing.")
+        : t(
+            "Aku belum bisa mulai, Bos. Aku butuh bahan belajarnya dulu, entah file atau teks yang ditempel.",
+            "I can't start yet, Boss. I need the study material first, either a file or pasted text.",
+          );
+      setIntake({ open: true, busy: false, error: refusal });
+      pushMessage({ role: "felisa", text: refusal, tag: t("DITOLAK", "DECLINED") });
+      return;
+    }
+    setIntake({ open: true, busy: true, error: "" });
+    let created = pendingProjectRef.current;
+    try {
+      if (!created) {
+        const list = await api.videos();
+        const day = list.reduce((m, v) => Math.max(m, Number(v.day) || 0), 0) + 1;
+        const base = slugify(cleanTitle) || "proyek";
+        const taken = new Set(list.map((v) => v.name));
+        let slug = base;
+        let n = 2;
+        while (taken.has(slug)) slug = `${base}-${n++}`;
+        created = await api.createVideo({ name: slug, title: cleanTitle, day });
+        pendingProjectRef.current = created;
+      }
+      try {
+        if (file) await api.uploadMaterial(created.id, file);
+        else await api.saveText(created.id, "material", body);
+      } catch (error) {
+        const issue = t(`Bahannya gagal dibaca, Bos: ${error.message}`, `I couldn't read the material, Boss: ${error.message}`);
+        setIntake({ open: true, busy: false, error: issue });
+        pushMessage({ role: "felisa", text: issue, tag: t("MASALAH", "ISSUE") });
+        return;
+      }
+      await api.advance(created.id);
+      pendingProjectRef.current = null;
+      onProjectCreated?.(created);
+      setIntake({ open: false, busy: false, error: "" });
+      pushMessage({
+        role: "felisa",
+        text: t(
+          `Siap, Bos. "${cleanTitle}" kumulai. Aku jalankan otomatis dan kabari kalau ada masalah atau butuh persetujuanmu.`,
+          `On it, Boss. I'm starting "${cleanTitle}". I'll run it on my own and tell you if anything breaks or I need your approval.`,
+        ),
+        tag: t("MULAI", "STARTED"),
+      });
+    } catch (error) {
+      const failure = t(`Gagal memulai proyek, Bos: ${error.message}`, `Couldn't start the project, Boss: ${error.message}`);
+      setIntake({ open: true, busy: false, error: failure });
+      pushMessage({ role: "felisa", text: failure, tag: t("MASALAH", "ISSUE") });
+    }
+  }
+
+  function cancelIntake() {
+    pendingProjectRef.current = null;
+    setIntake({ open: false, busy: false, error: "" });
+  }
+
+  function handleListenEvent(event) {
+    const lang = liveRef.current.felisaLang;
+    const t = (idText, enText) => (lang === "en" ? enText : idText);
+    if (event.status === "listening") {
+      setListenStatus("listening");
+      return;
+    }
+    if (event.status === "heard") {
+      setListenStatus("idle");
+      askFelisa(event.transcript || "", { alternatives: event.alternatives });
+      return;
+    }
+    if (event.status === "no_speech") {
+      setListenStatus("idle");
+      pushMessage({ role: "system", text: t("Tidak ada suara terdengar. Coba lagi.", "I didn't hear anything. Try again.") });
+      return;
+    }
+    if (event.status === "denied") {
+      setListenStatus("denied");
+      pushMessage({
+        role: "system",
+        text: t(
+          "Izin mikrofon ditolak. Aktifkan lewat ikon gembok di address bar browser.",
+          "Microphone permission was denied. Enable it from the lock icon in the address bar.",
+        ),
+      });
+      return;
+    }
+    if (event.status === "unsupported") {
+      setListenStatus("unsupported");
+      pushMessage({
+        role: "system",
+        text: t(
+          "Browser ini belum mendukung pengenalan suara. Gunakan Chrome.",
+          "This browser doesn't support speech recognition. Please use Chrome.",
+        ),
+      });
+      return;
+    }
+    if (event.status === "error") {
+      setListenStatus("idle");
+      pushMessage({ role: "system", text: t(`Gagal mendengarkan (${event.code || "error"}).`, `Listening failed (${event.code || "error"}).`) });
+      return;
+    }
+    setListenStatus("idle");
+  }
+
+  function getListener() {
+    if (!listenerRef.current) {
+      listenerRef.current = createListener({ lang: liveRef.current.felisaLang, onStatus: handleListenEvent });
+    }
+    return listenerRef.current;
+  }
+
+  function startListening() {
+    if (!started) return;
+    stopSpeaking();
+    setSpeaking(false);
+    setAudioLevel(0);
+    const listener = getListener();
+    listener.setLang(liveRef.current.felisaLang);
+    listener.start();
+  }
+
+  function stopListening() {
+    listenerRef.current?.stop();
+  }
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOG_KEY, JSON.stringify(messages.slice(-40)));
+    } catch {
+      /* penyimpanan tidak tersedia */
+    }
+  }, [messages]);
+
+  // Tombol mikrofon: ketuk untuk mulai, ketuk lagi untuk selesai (berhenti sendiri saat kamu diam).
+  function toggleListening() {
+    if (listenStatus === "listening") stopListening();
+    else startListening();
+  }
+
+  // Felisa melapor sendiri saat ada kejadian penting di studio (hanya saat ruang Felisa terbuka).
+  useEffect(() => {
+    if (!open || !started || typeof EventSource === "undefined") return undefined;
+    const connectedAt = Date.now();
+    const seen = new Set();
+    const shouldReport = (e) =>
+      e.type === "waiting_approval" ||
+      e.type === "stage_failed" ||
+      e.type === "tutor_ready" ||
+      (e.type === "stage_completed" && e.stage === "render");
+    let source;
+    try {
+      source = new EventSource(getEventsUrl());
+    } catch {
+      return undefined;
+    }
+    source.onmessage = (message) => {
+      let event;
+      try {
+        event = JSON.parse(message.data);
+      } catch {
+        return;
+      }
+      if (!event?.id || seen.has(event.id)) return;
+      seen.add(event.id);
+      const sentAt = Date.parse(event.timestamp || "");
+      if (Number.isFinite(sentAt) && sentAt < connectedAt - 3000) return; // riwayat lama saat tersambung
+      if (!shouldReport(event)) return;
+      const before = liveRef.current;
+      if (before.listenStatus === "listening") return; // jangan memotong saat kamu bicara
+      sendFelisaEvent(event, before.felisaLang)
+        .then((res) => {
+          const busy = liveRef.current.speaking || liveRef.current.listenStatus === "listening";
+          const audioUrl = res.audio_url ? felisaChatAudioUrl(res.audio_url) : "";
+          pushMessage({
+            role: "felisa",
+            text: res.reply,
+            audioUrl,
+            // Tahap dan judul hanya tampil sebagai teks, tidak diucapkan (hemat kuota suara).
+            hint: [event.stage, event.title].filter(Boolean).join(" \u00b7 "),
+            tag: liveRef.current.felisaLang === "en" ? "REPORT" : "LAPORAN",
+          });
+          if (!busy && audioUrl) speakChatReply(res.reply, audioUrl, { onSpeaking: setSpeaking, onLevel: setAudioLevel });
+        })
+        .catch(() => {});
+    };
+    return () => source.close();
+  }, [open, started]);
+
+  // Tahan spasi untuk bicara (diabaikan saat fokus di input, select, atau tombol).
+  useEffect(() => {
+    if (!open || !started) return undefined;
+    const typing = (el) =>
+      Boolean(el) && (["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(el.tagName) || el.isContentEditable);
+    const onKeyDown = (event) => {
+      if (event.code !== "Space" || event.repeat || typing(event.target)) return;
+      event.preventDefault();
+      startListening();
+    };
+    const onKeyUp = (event) => {
+      if (event.code !== "Space" || typing(event.target)) return;
+      stopListening();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    };
+  }, [open, started]);
 
   useEffect(() => {
     let alive = true;
@@ -92,6 +456,7 @@ export default function FelisaRoom({
   useEffect(() => {
     return () => {
       stopSpeaking();
+      listenerRef.current?.stop();
     };
   }, []);
 
@@ -225,12 +590,12 @@ export default function FelisaRoom({
           type: "failed",
           title: `Tahap gagal: ${s.shortName}`,
           detail: errorCode ? `Kode: ${errorCode}` : "Periksa log tahap untuk mengulang.",
-          actionLabel: "Buka Log",
+          actionLabel: felisaLang === "en" ? "Open Log" : "Buka Log",
           onAction: () => onOpenWorkspace?.(s.index),
         });
       });
     return items;
-  }, [video?.waiting_approval, stageItems, errorCode, busy, onOpenWorkspace, onApprove]);
+  }, [video?.waiting_approval, stageItems, errorCode, busy, felisaLang, onOpenWorkspace, onApprove]);
 
   const activeAgents = stageItems.filter((s) => s.state === "running" || s.state === "waiting");
   const doneCount = stageItems.filter((s) => s.state === "done").length;
@@ -240,6 +605,26 @@ export default function FelisaRoom({
     const waitingStage = stageItems.find((s) => s.state === "waiting");
     const failedStage = stageItems.find((s) => s.state === "failed");
     const nextStage = stageItems.find((s) => s.state === "idle");
+    const needsMaterial = !Object.values(video?.stages || {}).some((s) => s && s.artifact_id);
+
+    if (needsMaterial && !sleep) {
+      return {
+        headline: felisaLang === "en"
+          ? "I need a project title and study material first."
+          : "Aku butuh judul proyek dan bahan belajar dulu.",
+        bullets: [
+          felisaLang === "en"
+            ? "Without material I can't start production."
+            : "Tanpa bahan, aku tidak bisa memulai produksi.",
+          felisaLang === "en"
+            ? "Give me the title and a file or notes, then I'll run on my own."
+            : "Beri aku judul dan file atau catatannya, setelah itu aku jalan sendiri.",
+        ],
+        primaryLabel: felisaLang === "en" ? "Start new project" : "Mulai proyek baru",
+        primaryAction: () => openIntake(),
+        hideNewProject: true,
+      };
+    }
 
     if (sleep) {
       return {
@@ -272,8 +657,10 @@ export default function FelisaRoom({
             ? `Pipeline progress is paused at ${doneCount}/${stageItems.length} stages.`
             : `Progres pipeline tertahan di ${doneCount}/${stageItems.length} tahap.`,
         ],
-        primaryLabel: felisaLang === "en" ? `Review ${failedStage.shortName}` : `Periksa ${failedStage.shortName}`,
-        primaryAction: () => onOpenWorkspace?.(failedStage.index),
+        primaryLabel: felisaLang === "en" ? `Retry ${failedStage.shortName}` : `Coba ulang ${failedStage.shortName}`,
+        primaryAction: () => {
+          if (!busy) onAdvance?.();
+        },
       };
     }
 
@@ -284,7 +671,9 @@ export default function FelisaRoom({
           : `Menunggu keputusanmu untuk ${waitingStage.shortName}.`,
         bullets: [
           displayedText || message,
-          `Selesai ${doneCount}/${stageItems.length} tahap · Tidak ada kuota terpakai saat menunggu.`,
+          felisaLang === "en"
+            ? `${doneCount}/${stageItems.length} stages done · No quota is used while waiting.`
+            : `Selesai ${doneCount}/${stageItems.length} tahap · Tidak ada kuota terpakai saat menunggu.`,
         ],
         primaryLabel: felisaLang === "en" ? `Review ${waitingStage.shortName}` : `Tinjau Hasil ${waitingStage.shortName}`,
         primaryAction: () => onOpenWorkspace?.(waitingStage.index),
@@ -298,10 +687,31 @@ export default function FelisaRoom({
           : `${activeStage.shortName} sedang bekerja sekarang.`,
         bullets: [
           displayedText || message,
-          `Tahap selesai: ${doneCount}/${stageItems.length}.`,
+          felisaLang === "en"
+            ? `Stages done: ${doneCount}/${stageItems.length}.`
+            : `Tahap selesai: ${doneCount}/${stageItems.length}.`,
         ],
         primaryLabel: felisaLang === "en" ? `Monitor ${activeStage.shortName}` : `Pantau ${activeStage.shortName}`,
         primaryAction: () => onOpenWorkspace?.(activeStage.index),
+      };
+    }
+
+    // Tahap terakhir (Render) selesai: video tamat. Tombol utama = mulai proyek baru, bukan "Continue".
+    if (stageItems[stageItems.length - 1]?.state === "done") {
+      return {
+        headline: felisaLang === "en" ? "This video is finished." : "Video ini sudah selesai.",
+        bullets: [
+          felisaLang === "en"
+            ? "The final render is done. It's saved in the project folder."
+            : "Render akhir sudah jadi. Tersimpan di folder proyek.",
+          felisaLang === "en" ? "Ready for the next project." : "Siap untuk proyek berikutnya.",
+        ],
+        primaryLabel: felisaLang === "en" ? "Done · Start new project" : "Selesai · Mulai proyek baru",
+        primaryAction: () => {
+          setMessages([]);
+          openIntake();
+        },
+        hideNewProject: true,
       };
     }
 
@@ -312,17 +722,23 @@ export default function FelisaRoom({
       bullets: [
         pulse <= 1 ? message : (displayedText || message),
         nextStage
-          ? `Tahap berikutnya: ${nextStage.shortName} (${doneCount}/${stageItems.length} selesai).`
-          : `Seluruh ${stageItems.length} tahap telah selesai.`,
+          ? (felisaLang === "en"
+            ? `Next stage: ${nextStage.shortName} (${doneCount}/${stageItems.length} done).`
+            : `Tahap berikutnya: ${nextStage.shortName} (${doneCount}/${stageItems.length} selesai).`)
+          : (felisaLang === "en"
+            ? `All ${stageItems.length} stages are complete.`
+            : `Seluruh ${stageItems.length} tahap telah selesai.`),
       ],
-      primaryLabel: nextStage ? `Jalankan ${nextStage.shortName}` : "Lihat Hasil Akhir",
+      primaryLabel: nextStage
+        ? (felisaLang === "en" ? "Continue automatically" : "Lanjutkan otomatis")
+        : (felisaLang === "en" ? "View Final Result" : "Lihat Hasil Akhir"),
       primaryAction: () => {
         if (busy) return;
         if (nextStage) onAdvance?.();
         else onOpenWorkspace?.(stageItems.length - 1);
       },
     };
-  }, [sleep, stageItems, doneCount, displayedText, message, pulse, greeting, felisaLang, busy, onOpenWorkspace, onAdvance]);
+  }, [sleep, video, stageItems, doneCount, displayedText, message, pulse, greeting, felisaLang, busy, onOpenWorkspace, onAdvance]);
 
   const start = (event) => {
     event.preventDefault();
@@ -371,6 +787,7 @@ export default function FelisaRoom({
 
   const closeRoom = () => {
     stopSpeaking();
+    listenerRef.current?.stop();
     setSpeaking(false);
     setAudioLevel(0);
     localStorage.setItem(ROOM_KEY, "closed");
@@ -783,8 +1200,8 @@ export default function FelisaRoom({
         {/* Kanan: Panel Briefing & Kontrol Pemimpin Studio */}
         <aside className="pointer-events-auto relative rounded-2xl border border-white/15 bg-slate-950/88 p-5 text-slate-100 shadow-2xl backdrop-blur-xl">
           {/* Header Kartu + Tombol Pengaturan Dev */}
-          <div className="mb-3.5 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5">
+          <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2.5">
               <span
                 className={`rounded-full border px-2.5 py-0.5 text-[10px] font-mono-tech font-bold uppercase tracking-wider ${theme.badge}`}
               >
@@ -802,13 +1219,13 @@ export default function FelisaRoom({
                 🔊
               </button>
               {video?.title && (
-                <span className="hidden truncate text-[11px] font-mono-tech text-slate-400 sm:inline max-w-[170px]">
+                <span className="hidden truncate text-[11px] font-mono-tech text-slate-400 2xl:inline max-w-[170px]">
                   · {video.title}
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex shrink-0 items-center gap-1.5">
               <button
                 type="button"
                 onClick={toggleMute}
@@ -816,7 +1233,7 @@ export default function FelisaRoom({
                 title={muted ? "Aktifkan suara Felisa" : "Bisukan suara Felisa"}
                 aria-label={muted ? "Suara Aktif" : "Bisukan"}
               >
-                {muted ? "🔇" : "🔊"} {muted ? "Suara Aktif" : "Bisukan"}
+                {muted ? "🔇" : "🔊"}
               </button>
               <button
                 onClick={() => setShowSettings((v) => !v)}
@@ -951,6 +1368,53 @@ export default function FelisaRoom({
               </button>
             </form>
           ) : (
+            <>
+            <div className="mb-2.5 flex gap-1 rounded-lg border border-white/10 bg-slate-900/60 p-0.5 font-mono-tech text-[10px]" role="tablist">
+              {[
+                ["chat", "Chat"],
+                ["briefing", `Briefing${attentionItems.length ? ` (${attentionItems.length})` : ""}`],
+              ].map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === key}
+                  onClick={() => setTab(key)}
+                  className={`flex-1 rounded-md px-2 py-1.5 uppercase tracking-wider transition ${
+                    tab === key ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {tab === "chat" && intake.open ? (
+              <FelisaIntakeCard
+                lang={felisaLang}
+                accent={theme.accent}
+                busy={intake.busy}
+                error={intake.error}
+                onSubmit={startProject}
+                onCancel={cancelIntake}
+              />
+            ) : tab === "chat" ? (
+              <FelisaChatPanel
+                messages={messages}
+                thinking={thinking}
+                listening={listenStatus === "listening"}
+                speaking={speaking}
+                level={audioLevel}
+                lang={felisaLang}
+                userLabel={name || (felisaLang === "en" ? "You" : "Kamu")}
+                accent={theme.accent}
+                micDisabled={!started || listenStatus === "unsupported"}
+                onSend={askFelisa}
+                onMicToggle={toggleListening}
+                onReplay={replayMessage}
+                onClear={() => setMessages([])}
+                onNewProject={openIntake}
+              />
+            ) : (
             <div className="space-y-3.5">
               {/* 1. Briefing Terstruktur (Headline + 2 Poin Singkat) */}
               <div className="rounded-xl border border-white/10 bg-slate-900/75 p-3.5">
@@ -987,7 +1451,7 @@ export default function FelisaRoom({
                     onClick={closeRoom}
                     className="rounded-lg border border-white/10 bg-slate-900/70 px-3 py-2 text-[11px] font-mono-tech text-slate-300 hover:bg-slate-800"
                   >
-                    Lihat Studio 3D
+                    {felisaLang === "en" ? "View 3D Studio" : "Lihat Studio 3D"}
                   </button>
                   <button
                     onClick={() => {
@@ -1007,9 +1471,17 @@ export default function FelisaRoom({
                     }}
                     className="rounded-lg border border-white/10 bg-slate-900/70 px-3 py-2 text-[11px] font-mono-tech text-slate-300 hover:bg-slate-800"
                   >
-                    {showExplain ? "Tutup Detail" : "Detail Status"}
+                    {showExplain ? (felisaLang === "en" ? "Close Details" : "Tutup Detail") : (felisaLang === "en" ? "Status Details" : "Detail Status")}
                   </button>
                 </div>
+                {!briefing.hideNewProject && (
+                  <button
+                    onClick={openIntake}
+                    className="w-full rounded-lg border border-white/10 bg-slate-900/70 px-3 py-2 text-[11px] font-mono-tech text-slate-300 hover:bg-slate-800"
+                  >
+                    {felisaLang === "en" ? "＋ New Project" : "＋ Proyek Baru"}
+                  </button>
+                )}
               </div>
 
               {/* 3. Daftar "Butuh Perhatianmu" (Hanya muncul bila ada approval / gagal) */}
@@ -1068,6 +1540,8 @@ export default function FelisaRoom({
                 </span>
               </div>
             </div>
+            )}
+            </>
           )}
         </aside>
       </main>

@@ -156,6 +156,7 @@ function findLineId(manifest, lineId, options) {
     return `greeting_${period}`;
   }
   if (lineId === "explain") return "explain_status";
+  if (lineId?.startsWith("reply_")) return lineId;
   if (lineId?.startsWith("status:")) {
     const status = lineId.slice(7);
     if (status === "failed" && options.errorCode) return `error_${options.errorCode}`;
@@ -220,7 +221,9 @@ async function playUrl(url, options) {
   }
 
   activeOptions = options;
-  const audio = new Audio(url);
+  const audio = new Audio();
+  audio.crossOrigin = "anonymous";
+  audio.src = url;
   activeAudio = audio;
   audio.preload = "auto";
 
@@ -312,4 +315,25 @@ export async function previewVoice({ lang = getFelisaLang(), voice = getFelisaVo
     onSpeaking,
     onLevel,
   });
+}
+
+// Balasan sapaan: teks diambil dari manifest, lalu diputar lewat jalur speak() yang sama
+// (bisu, fallback voice lengkap, level mulut). Sumber id kalimat ditentukan felisaIntents.getReply().
+export async function speakReply(lineId, options = {}) {
+  const lang = options.lang === "en" ? "en" : getFelisaLang();
+  const manifest = await loadManifest();
+  const text = manifest?.text?.[lang]?.[lineId] || lineId;
+  return speak(lineId, { ...options, lang, text });
+}
+
+// Balasan obrolan dari backend: teks sudah jadi, audio (bila ada) berupa URL mp3 di backend.
+export async function speakChatReply(text, audioUrl, options = {}) {
+  options.onText?.(text);
+  if (!audioUrl || isFelisaMuted()) {
+    options.onSpeaking?.(false);
+    options.onLevel?.(0);
+    return { text, implemented: false };
+  }
+  await playUrl(audioUrl, options);
+  return { text, implemented: true };
 }

@@ -572,6 +572,10 @@ export default function App() {
         onOpenStorage={() => setShowStorage(true)}
         onStatusUpdate={handleFelisaStatusUpdate}
         onInfo={showInfo}
+        onProjectCreated={async (created) => {
+          await loadVideos();
+          setSelectedId(created.id);
+        }}
       />
 
       {/* BOTTOM DOCK BAR: 10 AGENT WORKSTATIONS */}

@@ -1,0 +1,14 @@
+Kursus: Catatan Belajar: SDLC dan Pengelolaan Requirement
+Modul: 
+
+Topik: Tahapan dalam SDLC (Software Development Life Cycle)
+Siklus pengembangan perangkat lunak terdiri dari beberapa tahapan utama:
+- **Planning**: Mencatat requirement dan mengembangkan Software Requirement Specification (SRS).
+- **Design**: Membuat dokumen arsitektur software dan desain sistem.
+- **Development**: Membagikan task ke developer dan menulis kode sesuai produk requirement.
+- **Testing**: Mencoba aplikasi untuk memastikan aman, stabil, dan sesuai requirement.
+- **Deployment**: Menyiapkan production environment dan mendeploy aplikasi.
+- **Maintenance**: Memperbaiki bug yang dilaporkan pengguna serta menjaga kestabilan aplikasi.
+- Istilah SDLC: Software Development Life Cycle atau siklus hidup pengembangan perangkat lunak.
+- Contoh: Membangun gedung pencakar langit untuk menggambarkan tahapan SDLC dari planning hingga maintenance.
+- Contoh: Membangun aplikasi e-commerce dari planning hingga maintenance di dunia nyata.

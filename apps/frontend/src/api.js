@@ -86,6 +86,16 @@ export const sendLeaderCommand = (message, videoId = null) =>
   call("POST", "/leader/command", { message, video_id: videoId });
 export const executeLeaderAction = (pendingAction) =>
   call("POST", "/leader/execute", { pending_action: pendingAction });
+export const sendFelisaChat = (message, lang = "id", name = "Rangga") =>
+  call("POST", "/felisa/chat", { message, lang, name });
+export const sendFelisaEvent = (event, lang = "id") =>
+  call("POST", "/felisa/event", {
+    type: event.type,
+    stage: event.stage || "",
+    video_title: event.video_title || "",
+    lang,
+  });
+export const felisaChatAudioUrl = (path) => `${API}${path}`;
 
 export const fileUrl = (artifactId) => `${API}/artifacts/${artifactId}/file`;
 export const sampleUrl = (voice) => `${API}/voices/${voice}/sample`;

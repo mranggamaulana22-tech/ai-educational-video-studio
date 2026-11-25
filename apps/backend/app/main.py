@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from . import config, db, leader, service, stages
+from . import config, db, felisa_chat, leader, service, stages
 from .events import emit_studio_event, studio_events
 from .models import Artifact, Run, Series, Video
 
@@ -122,6 +122,19 @@ class TutorTurnIn(BaseModel):
 class LeaderCommandIn(BaseModel):
     message: str
     video_id: int | None = None
+
+
+class FelisaChatIn(BaseModel):
+    message: str
+    lang: str = "id"
+    name: str = "Rangga"
+
+
+class FelisaEventIn(BaseModel):
+    type: str
+    stage: str = ""
+    video_title: str = ""
+    lang: str = "id"
 
 
 class LeaderExecuteIn(BaseModel):
@@ -480,6 +493,40 @@ def leader_command(body: LeaderCommandIn, session: Session = Depends(db.get_sess
         }
         return {"result": payload, "pending_action": pending_action}
     return {"result": payload}
+
+
+@app.post("/felisa/chat")
+def felisa_chat_turn(body: FelisaChatIn, session: Session = Depends(db.get_session)):
+    try:
+        brief = leader.build_studio_brief(session)
+    except Exception:
+        brief = None
+    out = felisa_chat.chat(body.message, body.lang, body.name, brief=brief)
+    if not out.get("ok"):
+        raise HTTPException(429 if out.get("error") == "batas_harian" else 503, out.get("error", "gagal"))
+    return out
+
+
+@app.post("/felisa/event")
+def felisa_event(body: FelisaEventIn):
+    out = felisa_chat.say_event(body.type, body.stage, body.video_title, body.lang)
+    if not out.get("ok"):
+        raise HTTPException(400, out.get("error", "gagal"))
+    return out
+
+
+@app.get("/felisa/chat/audio/{key}.mp3")
+def felisa_chat_audio(key: str):
+    if not key.isalnum():
+        raise HTTPException(404)
+    f = felisa_chat.audio_path(key)
+    if not f.exists():
+        raise HTTPException(404)
+    return FileResponse(
+        f,
+        media_type="audio/mpeg",
+        headers={"Access-Control-Allow-Origin": "*"},
+    )
 
 
 @app.post("/leader/execute")

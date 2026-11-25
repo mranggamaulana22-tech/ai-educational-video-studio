@@ -1,7 +1,7 @@
 """Jalankan Storyboard Agent lewat API: naskah + waktu kata -> storyboard JSON v1.3 yang sudah divalidasi.
 
 Pemakaian (dari folder utama proyek):
-  python tools\\run_storyboard_agent.py naskah\\NAMA.txt apps\\remotion\\public\\audio\\NAMA.words.json apps\\remotion\\src\\storyboards\\NAMA.json
+  python tools\\run_storyboard_agent.py naskah\\NAMA.txt apps\\frontend\\remotion\\public\\audio\\NAMA.words.json apps\\frontend\\remotion\\src\\storyboards\\NAMA.json
 Pilihan:
   --provider gemini|openrouter|deepseek   --model NAMA_MODEL
   --day "HARI 1/15" --course "Intro to Software Engineering"   (lencana atas)
@@ -21,7 +21,7 @@ import llm  # noqa: E402
 import make_agent_input  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-VALIDATOR = ROOT / "apps" / "remotion" / "scripts" / "validate-storyboard.mjs"
+VALIDATOR = ROOT / "apps" / "frontend" / "remotion" / "scripts" / "validate-storyboard.mjs"
 PROMPT = ROOT / "prompts" / "storyboard_agent.md"
 APPLY = ROOT / "tools" / "apply_word_times.py"
 DEFAULT_COMPONENT_VERSION = "1.0.0"

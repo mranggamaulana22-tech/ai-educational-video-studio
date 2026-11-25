@@ -5,10 +5,10 @@ Pemakaian (dari folder utama proyek, pakai python di .venv-audio):
 
 Yang dibutuhkan: file naskah\\NAMA.txt, ATAU catatan belajar catatan\\NAMA.txt dengan opsi --notes
 (naskah lalu dibuat otomatis oleh Scriptwriter + Reviewer). Hasil:
-  apps\\remotion\\public\\audio\\NAMA.wav            (suara)
-  apps\\remotion\\public\\audio\\NAMA.words.json     (waktu tiap kata)
-  apps\\remotion\\src\\storyboards\\NAMA.json        (storyboard dari AI)
-  apps\\remotion\\out\\NAMA.mp4                      (video)
+  apps\\frontend\\remotion\\public\\audio\\NAMA.wav            (suara)
+  apps\\frontend\\remotion\\public\\audio\\NAMA.words.json     (waktu tiap kata)
+  apps\\frontend\\remotion\\src\\storyboards\\NAMA.json        (storyboard dari AI)
+  apps\\frontend\\remotion\\out\\NAMA.mp4                      (video)
 
 Pilihan:
   --voice Kore            suara Gemini TTS
@@ -30,7 +30,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PY = sys.executable
-REMOTION = ROOT / "apps" / "remotion"
+REMOTION = ROOT / "apps" / "frontend" / "remotion"
 
 
 def run(title, cmd, cwd=ROOT, shell=False):
