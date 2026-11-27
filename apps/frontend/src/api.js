@@ -95,6 +95,8 @@ export const sendFelisaEvent = (event, lang = "id") =>
     video_title: event.video_title || "",
     lang,
   });
+export const getFelisaPreflight = () => call("GET", "/felisa/preflight");
+export const speakFelisaPreflight = (lang = "id") => call("POST", `/felisa/preflight/speak?lang=${lang}`);
 export const felisaChatAudioUrl = (path) => `${API}${path}`;
 
 export const fileUrl = (artifactId) => `${API}/artifacts/${artifactId}/file`;

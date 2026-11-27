@@ -1,0 +1,74 @@
+{
+ "40d5fd29b59735e1d9ca": {
+  "q": "hai felisa",
+  "norm": "hai felisa",
+  "lang": "en",
+  "reply": "Hey there, Boss. Ready to conquer another mountain of projects today, or are we just procrastinating in style?",
+  "hits": 0,
+  "created": "2026-11-26",
+  "ctx": ""
+ },
+ "25eeb74f985b7e61e657": {
+  "q": "aku punya kerjaan sih",
+  "norm": "aku punya kerjaan sih",
+  "lang": "en",
+  "reply": "Spill the details, Boss. Are we conquering the world today or just finishing yesterday's mountain of tasks?",
+  "hits": 0,
+  "created": "2026-11-26",
+  "ctx": ""
+ },
+ "15cfa75ca94e03dcebb0": {
+  "q": "hei felisa",
+  "norm": "hei felisa",
+  "lang": "en",
+  "reply": "Hey Boss, right on time. I've got the studio warmed up and ready to roll. What are we making today?",
+  "hits": 0,
+  "created": "2026-11-26",
+  "ctx": ""
+ },
+ "da4d6b5cafbd8a38bea6": {
+  "q": "can u celp me?",
+  "norm": "can u celp me",
+  "lang": "en",
+  "reply": "Always, Boss. Consider me your most overqualified intern today. So, what's first, studying or making a video?",
+  "hits": 0,
+  "created": "2026-11-26",
+  "ctx": ""
+ },
+ "740af5465114626a3c65": {
+  "q": "felisa u so cute",
+  "norm": "felisa u so cute",
+  "lang": "en",
+  "reply": "Flattery won't get your projects approved faster, Boss, but I'll take it. Now, should we get back to work or just stare at each other?",
+  "hits": 0,
+  "created": "2026-11-26",
+  "ctx": ""
+ },
+ "ae84af3b8aa8530c932f": {
+  "q": "can u help me?",
+  "norm": "can u help me",
+  "lang": "en",
+  "reply": "Always, Boss. Consider me your most reliable sidekick today. What are we tackling first?",
+  "hits": 1,
+  "created": "2026-11-26",
+  "ctx": ""
+ },
+ "d050f7ef97ae45a0adf1": {
+  "q": "Project status",
+  "norm": "project status",
+  "lang": "en",
+  "reply": "We are looking at four projects in total, Boss, with three chilling in idle and one stuck back in the analysis phase for SDLC. Want me to pull up the details on that failed one?",
+  "hits": 0,
+  "created": "2026-11-26",
+  "ctx": "86766320"
+ },
+ "4967fd0ed468c967c86c": {
+  "q": "(laporan)",
+  "norm": "say|all set boss we re ready to build",
+  "lang": "en",
+  "reply": "All set, Boss. We're ready to build.",
+  "kind": "say",
+  "hits": 3,
+  "created": "2026-11-27"
+ }
+}

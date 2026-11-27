@@ -3,6 +3,7 @@
 Cache: storage/felisa_chat/index.json + <kunci>.mp3 (storage tidak ikut Git).
 Pertanyaan yang sama (setelah dinormalisasi, atau sangat mirip) dijawab dari cache tanpa LLM/TTS.
 Batas harian lewat .env: FELISA_CHAT_MAX_TURNS (default 40), FELISA_CHAT_MAX_VOICE (default 15).
+Urutan penyedia LLM lewat .env: FELISA_CHAT_PROVIDERS (default gemini,openrouter,deepseek).
 """
 import hashlib
 import json
@@ -18,6 +19,7 @@ from . import config
 MAX_INPUT = 300
 MAX_REPLY = 400
 SIMILARITY = 0.85
+PROVIDER_ORDER_DEFAULT = "gemini,openrouter,deepseek"
 
 
 def normalize(text):
@@ -118,23 +120,42 @@ def find_cached(index, lang, norm, ctx=""):
     return best if best_s >= SIMILARITY and len(_tokens(norm)) >= 3 else None
 
 
-def llm_reply(text, lang, name, studio=""):
-    """Satu giliran LLM -> teks jawaban. Lempar RuntimeError bila gagal."""
-    import llm  # dari folder tools (sudah di sys.path oleh main.py)
+def llm_reply(text, lang, name, studio="", providers=None, gen=None):
+    """Satu giliran LLM -> teks jawaban. Coba penyedia berurutan; lempar RuntimeError bila semua gagal.
+
+    Urutan bisa diatur lewat .env: FELISA_CHAT_PROVIDERS=gemini,openrouter,deepseek
+    Parameter providers dan gen hanya untuk tes (penyedia palsu tanpa jaringan).
+    """
+    if gen is None:
+        import llm  # dari folder tools (sudah di sys.path oleh main.py)
+
+        gen = llm.generate_json
 
     system = (config.ROOT / "prompts" / "leader_felisa" / "chat_v1.md").read_text(encoding="utf-8-sig")
     payload = {"lang": lang, "operator_name": name, "message": text}
     if studio:
         payload["studio"] = studio
     msg = json.dumps(payload, ensure_ascii=False)
-    try:
-        raw = llm.generate_json("gemini", system, [("user", msg)], None)
-        reply = str(json.loads(raw).get("reply", "")).strip()
-    except (SystemExit, ValueError, AttributeError) as exc:
-        raise RuntimeError(f"llm_gagal: {exc}") from exc
-    if not reply:
-        raise RuntimeError("llm_kosong")
-    return reply[:MAX_REPLY]
+
+    if providers is None:
+        raw_order = config._env("FELISA_CHAT_PROVIDERS", PROVIDER_ORDER_DEFAULT)
+        providers = [p.strip() for p in raw_order.split(",") if p.strip()]
+
+    errors = []
+    for provider in providers:
+        try:
+            raw = gen(provider, system, [("user", msg)], None)
+            reply = str(json.loads(raw).get("reply", "")).strip()
+        except (SystemExit, ValueError, AttributeError, KeyError) as exc:
+            errors.append(f"{provider}: {str(exc)[:200]}")
+            continue
+        if not reply:
+            errors.append(f"{provider}: kosong")
+            continue
+        if errors:
+            print(f"[felisa_chat] dijawab oleh cadangan {provider}; sebelumnya gagal: {' | '.join(errors)}")
+        return reply[:MAX_REPLY]
+    raise RuntimeError("llm_gagal: " + " | ".join(errors))
 
 
 def tts_elevenlabs(text):
@@ -234,31 +255,30 @@ def chat(text, lang="id", name="Rangga", llm_fn=llm_reply, tts_fn=tts_elevenlabs
     return result(key, entry, False, limited)
 
 
-def _stage_label(stage):
-    return str(stage or "").replace("_", " ").strip() or "produksi"
+# Kalimat laporan TETAP (tanpa judul proyek dan nama tahap) supaya audio di-cache dan dipakai ulang.
+# Total hanya 4 kalimat per bahasa. Judul/tahap ditampilkan sebagai teks di layar, tidak diucapkan.
+EVENT_LINES = {
+    "en": {
+        "stage_failed": "Boss, a step just failed. I logged it, let's take a look together.",
+        "waiting_approval": "Boss, a result is ready. Just waiting on your approval.",
+        "tutor_ready": "Boss, the Tutor session is ready whenever you are.",
+        "stage_completed": "The video is done rendering, Boss. Nice work.",
+    },
+    "id": {
+        "stage_failed": "Bos, ada tahap yang gagal nih. Udah kucatat, yuk kita lihat bareng.",
+        "waiting_approval": "Bos, ada hasil yang udah siap. Tinggal nunggu persetujuanmu.",
+        "tutor_ready": "Bos, sesi belajar bareng Tutor udah siap kapan pun kamu mau.",
+        "stage_completed": "Videonya udah selesai dirender, Bos. Mantap.",
+    },
+}
 
 
 def event_line(event_type, stage="", title="", lang="id"):
-    """Kalimat laporan Felisa untuk satu event studio. None bila event tidak perlu diucapkan."""
-    title = " ".join(str(title or "").split())[:60]
-    st = _stage_label(stage)
-    if lang == "en":
-        for_t = f" for {title}" if title else ""
-        lines = {
-            "stage_failed": f"Boss, the {st} step{for_t} just failed. I logged it, let's take a look together.",
-            "waiting_approval": f"Boss, the {st} result{for_t} is ready. Just waiting on your approval.",
-            "tutor_ready": "Boss, the Tutor session is ready whenever you are.",
-            "stage_completed": f"The {st} step{for_t} is done, Boss. Nice work.",
-        }
-    else:
-        for_t = f" untuk {title}" if title else ""
-        lines = {
-            "stage_failed": f"Bos, tahap {st}{for_t} gagal nih. Udah kucatat, yuk kita lihat bareng.",
-            "waiting_approval": f"Bos, hasil tahap {st}{for_t} udah siap. Tinggal nunggu persetujuanmu.",
-            "tutor_ready": "Bos, sesi belajar bareng Tutor udah siap kapan pun kamu mau.",
-            "stage_completed": f"Tahap {st}{for_t} udah selesai, Bos. Mantap.",
-        }
-    return lines.get(event_type)
+    """Kalimat laporan Felisa untuk satu event studio. None bila event tidak perlu diucapkan.
+
+    Parameter stage dan title dipertahankan agar pemanggil lama tidak rusak, tetapi sengaja tidak dipakai.
+    """
+    return EVENT_LINES["en" if lang == "en" else "id"].get(event_type)
 
 
 def say(text, lang="id", tts_fn=tts_elevenlabs, today=None):

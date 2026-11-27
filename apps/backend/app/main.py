@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from . import config, db, felisa_chat, leader, service, stages
+from . import config, db, felisa_chat, felisa_preflight, leader, service, stages
 from .events import emit_studio_event, studio_events
 from .models import Artifact, Run, Series, Video
 
@@ -473,6 +473,20 @@ def voice_sample(voice: str):
 @app.get("/health")
 def health():
     return {"ok": True}
+
+
+@app.get("/felisa/preflight")
+def felisa_preflight_check():
+    """Cek kesiapan sebelum produksi (kunci, kuota suara, FFmpeg). Hanya baca .env, tanpa kuota."""
+    return felisa_preflight.run_preflight()
+
+
+@app.post("/felisa/preflight/speak")
+def felisa_preflight_speak(lang: str = "id"):
+    """Cek kesiapan lalu Felisa mengucapkan hasilnya (kalimat tetap, audio di-cache)."""
+    result = felisa_preflight.run_preflight()
+    voice = felisa_chat.say(felisa_preflight.preflight_line(result, lang), lang)
+    return {**result, "voice": voice}
 
 
 @app.get("/leader/status")

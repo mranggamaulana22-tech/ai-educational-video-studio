@@ -3,6 +3,8 @@
 Penyedia: gemini, openrouter, deepseek.
 Kunci dibaca dari variabel lingkungan atau file .env di folder utama proyek:
   GEMINI_API_KEY, OPENROUTER_API_KEY, DEEPSEEK_API_KEY
+Model bawaan bisa diganti tanpa mengubah kode lewat variabel (opsional):
+  GEMINI_MODEL, OPENROUTER_MODEL, DEEPSEEK_MODEL
 """
 import json
 import os
@@ -57,7 +59,8 @@ def generate_json(provider, system, messages, model=None):
     key = read_key(cfg["key"])
     if not key:
         raise SystemExit(f"[GAGAL] {cfg['key']} belum diisi (variabel lingkungan atau file .env).")
-    model = model or cfg["model"]
+    # Urutan: argumen model > <PENYEDIA>_MODEL di .env/lingkungan > bawaan di PROVIDERS.
+    model = model or read_key(provider.upper() + "_MODEL") or cfg["model"]
 
     if provider == "gemini":
         base = os.environ.get("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com")

@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import FelisaLayered from "./FelisaLayered.jsx";
-import { api, felisaChatAudioUrl, getEventsUrl, sendFelisaChat, sendFelisaEvent } from "./api.js";
+import { api, felisaChatAudioUrl, getEventsUrl, getFelisaPreflight, speakFelisaPreflight, sendFelisaChat, sendFelisaEvent } from "./api.js";
 import { AGENT_STAGES } from "./agentsConfig.js";
-import { getGreeting, getStatusLine } from "./felisaLines.js";
+import { describeFailure, getGreeting, getStatusLine } from "./felisaLines.js";
 import { detectIntent, getReply } from "./felisaIntents.js";
 import { createListener, isListenSupported } from "./felisaListen.js";
 import FelisaChatPanel from "./FelisaChatPanel.jsx";
@@ -25,6 +25,29 @@ import {
 const NAME_KEY = "felisaUserName";
 const ROOM_KEY = "felisaRoomOpen";
 const LOG_KEY = "felisaChatLog";
+
+const PREFLIGHT_TEXT = {
+  llm_primary: {
+    id: "GEMINI_API_KEY kosong. Isi di file .env lalu restart backend.",
+    en: "GEMINI_API_KEY is empty. Set it in .env and restart the backend.",
+  },
+  llm_backup: {
+    id: "Belum ada LLM cadangan. Isi OPENROUTER_API_KEY di .env supaya Felisa tetap menjawab saat Gemini down.",
+    en: "No backup LLM. Set OPENROUTER_API_KEY in .env so Felisa still answers when Gemini is down.",
+  },
+  tts_keys: {
+    id: "ElevenLabs belum lengkap, Felisa hanya bicara lewat teks.",
+    en: "ElevenLabs is not fully set up, so Felisa is text-only.",
+  },
+  voice_quota: {
+    id: "Kuota suara Felisa hari ini habis. Besok aktif lagi, atau naikkan FELISA_CHAT_MAX_VOICE.",
+    en: "Felisa's voice quota is used up today. It resets tomorrow, or raise FELISA_CHAT_MAX_VOICE.",
+  },
+  ffmpeg: {
+    id: "FFmpeg tidak ditemukan. Pasang FFmpeg dan masukkan ke PATH sebelum render.",
+    en: "FFmpeg not found. Install it and add it to PATH before rendering.",
+  },
+};
 
 const NEW_PROJECT_RE =
   /\b(proyek|project|video)\s+(baru|new)\b|\b(buat|bikin|mulai|start|create|begin)\s+(proyek|project|video)\b|\bnew\s+project\b/i;
@@ -107,6 +130,9 @@ export default function FelisaRoom({
   const [felisaVoice, setFelisaVoiceState] = useState(() => getFelisaVoice());
   const [felisaVoiceOptions, setFelisaVoiceOptions] = useState([]);
   const [felisaStatus, setFelisaStatus] = useState(null);
+  const [preflight, setPreflight] = useState(null);
+  const [pfBusy, setPfBusy] = useState(false);
+  const [pfSay, setPfSay] = useState("");
   const [displayedText, setDisplayedText] = useState("");
 
   // --- Suara masuk (tekan-untuk-bicara) ---
@@ -119,7 +145,54 @@ export default function FelisaRoom({
   const listenerRef = useRef(null);
   const lastReplyRef = useRef(null);
   const liveRef = useRef({});
-  liveRef.current = { felisaLang, felisaVoice, name, speaking, listenStatus };
+  liveRef.current = { felisaLang, felisaVoice, name, speaking, listenStatus, video };
+
+  const loadPreflight = () => {
+    setPfBusy(true);
+    return getFelisaPreflight()
+      .then(setPreflight)
+      .catch(() => setPreflight(null))
+      .finally(() => setPfBusy(false));
+  };
+  // Tombol "Cek sekarang": ada jeda pendek supaya terlihat mengecek, lalu Felisa menyampaikan hasilnya (kalimat tetap, audio di-cache).
+  const runCheck = async () => {
+    const en = liveRef.current.felisaLang === "en";
+    setPfBusy(true);
+    setPfSay("");
+    const startedAt = Date.now();
+    let pf = null;
+    try {
+      pf = await getFelisaPreflight();
+    } catch {
+      pf = null;
+    }
+    const wait = 1100 - (Date.now() - startedAt);
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    setPreflight(pf);
+    setPfBusy(false);
+    if (!pf) {
+      setPfSay(en ? "I can't reach the backend, Boss. Is uvicorn running?" : "Aku tidak bisa menghubungi backend, Bos. Uvicorn-nya jalan?");
+      return;
+    }
+    // Kalimat tetap dari backend (audio di-cache, hanya 4 variasi total), jadi hemat kuota suara.
+    const local =
+      pf.level === "ok"
+        ? en ? "All set, Boss. We're ready to build." : "Semua siap, Bos. Kita bisa mulai bikin videonya."
+        : en ? "Boss, something isn't ready yet. Check the list below." : "Bos, ada yang belum siap. Cek daftarnya di bawah ya.";
+    setPfSay(local);
+    try {
+      const res = await speakFelisaPreflight(liveRef.current.felisaLang);
+      const voice = res.voice || {};
+      const audioUrl = voice.audio_url ? felisaChatAudioUrl(voice.audio_url) : "";
+      if (voice.reply) setPfSay(voice.reply);
+      if (audioUrl) speakChatReply(voice.reply, audioUrl, { onSpeaking: setSpeaking, onLevel: setAudioLevel });
+    } catch {
+      /* suara gagal: teks lokal tetap tampil */
+    }
+  };
+  useEffect(() => {
+    if (open && started) loadPreflight();
+  }, [open, started]);
 
   // Semua fungsi di bawah hanya memakai setter, ref, dan fungsi impor (stabil), jadi aman dipegang listener sejak render pertama.
   function newId() {
@@ -400,12 +473,19 @@ export default function FelisaRoom({
         .then((res) => {
           const busy = liveRef.current.speaking || liveRef.current.listenStatus === "listening";
           const audioUrl = res.audio_url ? felisaChatAudioUrl(res.audio_url) : "";
+          // Penyebab + saran hanya teks (tanpa LLM, tanpa suara), diambil dari log tahap yang gagal.
+          let cause = "";
+          if (event.type === "stage_failed") {
+            const log = liveRef.current.video?.stages?.[event.stage]?.last_run?.log || "";
+            const d = describeFailure(log, liveRef.current.felisaLang);
+            cause = `${d.what} ${d.fix}`;
+          }
           pushMessage({
             role: "felisa",
             text: res.reply,
             audioUrl,
             // Tahap dan judul hanya tampil sebagai teks, tidak diucapkan (hemat kuota suara).
-            hint: [event.stage, event.title].filter(Boolean).join(" \u00b7 "),
+            hint: [[event.stage, event.title].filter(Boolean).join(" \u00b7 "), cause].filter(Boolean).join(" \u2014 "),
             tag: liveRef.current.felisaLang === "en" ? "REPORT" : "LAPORAN",
           });
           if (!busy && audioUrl) speakChatReply(res.reply, audioUrl, { onSpeaking: setSpeaking, onLevel: setAudioLevel });
@@ -585,17 +665,31 @@ export default function FelisaRoom({
     stageItems
       .filter((s) => s.state === "failed")
       .forEach((s) => {
+        const d = describeFailure(s.log, felisaLang);
         items.push({
           id: `failed-${s.key}`,
           type: "failed",
-          title: `Tahap gagal: ${s.shortName}`,
-          detail: errorCode ? `Kode: ${errorCode}` : "Periksa log tahap untuk mengulang.",
+          title: `${felisaLang === "en" ? "Stage failed" : "Tahap gagal"}: ${s.shortName}`,
+          detail: `${d.what} ${d.fix}`,
           actionLabel: felisaLang === "en" ? "Open Log" : "Buka Log",
           onAction: () => onOpenWorkspace?.(s.index),
         });
       });
+    (preflight?.checks || [])
+      .filter((c) => !c.ok)
+      .forEach((c) => {
+        const text = PREFLIGHT_TEXT[c.key];
+        items.push({
+          id: `preflight-${c.key}`,
+          type: c.level === "error" ? "failed" : "warn",
+          title: felisaLang === "en" ? "Before you start" : "Sebelum mulai",
+          detail: text ? text[felisaLang === "en" ? "en" : "id"] : c.detail,
+          actionLabel: felisaLang === "en" ? "Recheck" : "Cek ulang",
+          onAction: loadPreflight,
+        });
+      });
     return items;
-  }, [video?.waiting_approval, stageItems, errorCode, busy, felisaLang, onOpenWorkspace, onApprove]);
+  }, [video?.waiting_approval, stageItems, errorCode, busy, felisaLang, preflight, onOpenWorkspace, onApprove]);
 
   const activeAgents = stageItems.filter((s) => s.state === "running" || s.state === "waiting");
   const doneCount = stageItems.filter((s) => s.state === "done").length;
@@ -605,6 +699,7 @@ export default function FelisaRoom({
     const waitingStage = stageItems.find((s) => s.state === "waiting");
     const failedStage = stageItems.find((s) => s.state === "failed");
     const nextStage = stageItems.find((s) => s.state === "idle");
+    const failureInfo = failedStage ? describeFailure(failedStage.log, felisaLang) : { what: "", fix: "" };
     const needsMaterial = !Object.values(video?.stages || {}).some((s) => s && s.artifact_id);
 
     if (needsMaterial && !sleep) {
@@ -652,7 +747,8 @@ export default function FelisaRoom({
           ? `An issue was detected in the ${failedStage.shortName} stage.`
           : `Hambatan terdeteksi di tahap ${failedStage.shortName}.`,
         bullets: [
-          displayedText || message,
+          failureInfo.what,
+          failureInfo.fix,
           felisaLang === "en"
             ? `Pipeline progress is paused at ${doneCount}/${stageItems.length} stages.`
             : `Progres pipeline tertahan di ${doneCount}/${stageItems.length} tahap.`,
@@ -1389,14 +1485,55 @@ export default function FelisaRoom({
               ))}
             </div>
             {tab === "chat" && intake.open ? (
-              <FelisaIntakeCard
-                lang={felisaLang}
-                accent={theme.accent}
-                busy={intake.busy}
-                error={intake.error}
-                onSubmit={startProject}
-                onCancel={cancelIntake}
-              />
+              <div className="space-y-2.5">
+                <div className="rounded-xl border border-white/10 bg-slate-900/60 p-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono-tech text-slate-300">
+                      {felisaLang === "en" ? "Step 1 · Check readiness" : "Langkah 1 · Cek kesiapan"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={runCheck}
+                      disabled={pfBusy}
+                      className="flex items-center gap-1.5 rounded-md border border-cyan-400/30 bg-cyan-950/60 px-2.5 py-1 text-[10px] font-mono-tech font-bold text-cyan-100 hover:border-cyan-300/60 disabled:opacity-60"
+                    >
+                      {pfBusy && <span className="h-3 w-3 animate-spin rounded-full border-2 border-cyan-300/30 border-t-cyan-200" />}
+                      {pfBusy ? (felisaLang === "en" ? "Checking..." : "Mengecek...") : felisaLang === "en" ? "Check now" : "Cek sekarang"}
+                    </button>
+                  </div>
+                  <div className="mt-1.5 space-y-1 text-[10px] leading-snug">
+                    {pfBusy ? (
+                      <p className="animate-pulse text-cyan-200">
+                        {felisaLang === "en" ? "Checking keys, voice quota, and FFmpeg..." : "Mengecek kunci, kuota suara, dan FFmpeg..."}
+                      </p>
+                    ) : !preflight ? (
+                      <p className="text-slate-400">{felisaLang === "en" ? "Not checked yet." : "Belum dicek."}</p>
+                    ) : preflight.checks.every((c) => c.ok) ? (
+                      <p className="text-emerald-300">{felisaLang === "en" ? "All set, Boss." : "Semua siap, Bos."}</p>
+                    ) : (
+                      preflight.checks
+                        .filter((c) => !c.ok)
+                        .map((c) => (
+                          <p key={c.key} className={c.level === "error" ? "text-rose-300" : "text-amber-300"}>
+                            {PREFLIGHT_TEXT[c.key] ? PREFLIGHT_TEXT[c.key][felisaLang === "en" ? "en" : "id"] : c.detail}
+                          </p>
+                        ))
+                    )}
+                    {!pfBusy && pfSay && <p className="pt-1 italic text-slate-200">{"\u201c"}{pfSay}{"\u201d"}</p>}
+                  </div>
+                </div>
+                <div className="text-[10px] font-mono-tech text-slate-400">
+                  {felisaLang === "en" ? "Step 2 · Create the project" : "Langkah 2 · Buat proyek"}
+                </div>
+                <FelisaIntakeCard
+                  lang={felisaLang}
+                  accent={theme.accent}
+                  busy={intake.busy}
+                  error={intake.error}
+                  onSubmit={startProject}
+                  onCancel={cancelIntake}
+                />
+              </div>
             ) : tab === "chat" ? (
               <FelisaChatPanel
                 messages={messages}
@@ -1501,7 +1638,7 @@ export default function FelisaRoom({
                     >
                       <div className="min-w-0">
                         <div className="truncate text-xs font-semibold text-white">{item.title}</div>
-                        <div className="truncate text-[10px] text-slate-300">{item.detail}</div>
+                        <div className={`text-[10px] text-slate-300 ${item.type === "approval" ? "truncate" : "leading-snug"}`}>{item.detail}</div>
                       </div>
                       <div className="flex shrink-0 items-center gap-1.5">
                         <button
